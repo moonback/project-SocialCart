@@ -23,7 +23,7 @@ export function BottomNav() {
     >
       <div className="bg-white/90 backdrop-blur-lg border-t border-surface-200 shadow-large">
         <div className="flex relative">
-          {tabs.map(({ icon: Icon, label, path, special }, index) => {
+          {tabs.map(({ icon: Icon, label, path, special }) => {
             const isActive = location.pathname === path;
             
             return (

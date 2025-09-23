@@ -77,6 +77,17 @@ export interface Product {
   rating_count: number;
   created_at: string;
   updated_at: string;
+  seller?: {
+    id: string;
+    username: string;
+    avatar_url?: string;
+    email: string;
+    loyalty_points: number;
+    is_seller: boolean;
+    is_verified: boolean;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 export class ProductService {
@@ -219,12 +230,25 @@ export class ProductService {
     }
   }
 
-  // Récupérer tous les produits
+  // Récupérer tous les produits avec les informations utilisateur
   static async getProducts(): Promise<Product[]> {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          seller:users!products_seller_id_fkey(
+            id,
+            username,
+            avatar_url,
+            email,
+            loyalty_points,
+            is_seller,
+            is_verified,
+            created_at,
+            updated_at
+          )
+        `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 

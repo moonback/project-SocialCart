@@ -26,10 +26,11 @@ export function Home() {
           user_id: product.seller_id,
           user: {
             id: product.seller_id,
-            email: 'user@example.com',
-            username: 'user',
-            loyalty_points: 0,
+            email: product.seller?.email || 'user@example.com',
+            username: product.seller?.username || 'Utilisateur',
+            loyalty_points: product.seller?.loyalty_points || 0,
             created_at: product.created_at,
+            avatar_url: product.seller?.avatar_url || undefined,
           },
           created_at: product.created_at,
         }));
