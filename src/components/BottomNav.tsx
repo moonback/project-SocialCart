@@ -20,7 +20,7 @@ export function BottomNav() {
       animate={{ y: 0, opacity: 1 }}
       className="fixed bottom-0 left-0 right-0 z-50 mobile-safe-area"
     >
-      <div className="bg-white/95 backdrop-blur-2xl border-t border-surface-200 shadow-2xl rounded-t-2xl px-2 pb-2 pt-1">
+      <div className="bg-white/95 backdrop-blur-2xl border-t border-surface-200 shadow-2xl rounded-t-2xl ">
         <div className="flex relative justify-between items-end">
           {tabs.map(({ icon: Icon, label, path, special }) => {
             const isActive = location.pathname === path;
