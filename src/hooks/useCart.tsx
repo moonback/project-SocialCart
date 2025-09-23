@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem, Product } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
@@ -10,12 +10,32 @@ interface CartContextType {
   clearCart: () => void;
   total: number;
   itemCount: number;
+  getCartItemCount: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+
+  // Charger le panier depuis localStorage au montage
+  useEffect(() => {
+    const savedCart = localStorage.getItem('shopping-cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        setItems(parsedCart);
+      } catch (error) {
+        console.error('Erreur lors du chargement du panier:', error);
+        localStorage.removeItem('shopping-cart');
+      }
+    }
+  }, []);
+
+  // Sauvegarder le panier dans localStorage à chaque changement
+  useEffect(() => {
+    localStorage.setItem('shopping-cart', JSON.stringify(items));
+  }, [items]);
 
   const addToCart = (product: Product, variants: Record<string, string> = {}) => {
     const existingItem = items.find(
@@ -33,13 +53,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         selected_variants: variants,
       };
       setItems(prev => [...prev, newItem]);
-      toast.success('Added to cart!');
+      toast.success('Ajouté au panier !');
     }
   };
 
   const removeFromCart = (itemId: string) => {
     setItems(prev => prev.filter(item => item.id !== itemId));
-    toast.success('Removed from cart');
+    toast.success('Retiré du panier');
   };
 
   const updateQuantity = (itemId: string, quantity: number) => {
@@ -57,10 +77,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setItems([]);
+    localStorage.removeItem('shopping-cart');
+    toast.success('Panier vidé');
   };
 
   const total = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Fonction pour récupérer le nombre d'articles depuis localStorage
+  const getCartItemCount = () => {
+    const savedCart = localStorage.getItem('shopping-cart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        return parsedCart.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
+      } catch (error) {
+        return 0;
+      }
+    }
+    return 0;
+  };
 
   return (
     <CartContext.Provider value={{
@@ -71,6 +107,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       clearCart,
       total,
       itemCount,
+      getCartItemCount,
     }}>
       {children}
     </CartContext.Provider>
