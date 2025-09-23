@@ -13,8 +13,6 @@ import {
   MoreVertical,
   UserPlus,
   Maximize,
-  SkipBack,
-  SkipForward,
   X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -158,13 +156,6 @@ export function VideoFeed({ products }: VideoFeedProps) {
     toast.success(`Vitesse: ${speeds[nextIndex]}x`);
   };
 
-  const skipVideo = (direction: 'prev' | 'next') => {
-    if (direction === 'prev' && currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else if (direction === 'next' && currentIndex < products.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
 
   const handleScroll = useCallback(() => {
     // Throttling pour éviter les re-renders excessifs
@@ -338,28 +329,6 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   )}
                 </AnimatePresence>
 
-                {/* Compact Skip Buttons */}
-                <div className="absolute left-3 right-3 top-1/2 transform -translate-y-1/2 flex justify-between pointer-events-auto z-20">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => skipVideo('prev')}
-                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto z-30 ${currentIndex === 0 ? 'opacity-30' : ''}`}
-                    disabled={currentIndex === 0}
-                  >
-                    <SkipBack className="w-5 h-5 text-white" />
-                  </motion.button>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => skipVideo('next')}
-                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto z-30 ${currentIndex === products.length - 1 ? 'opacity-30' : ''}`}
-                    disabled={currentIndex === products.length - 1}
-                  >
-                    <SkipForward className="w-5 h-5 text-white" />
-                  </motion.button>
-                </div>
               </div>
             ) : (
               <img
