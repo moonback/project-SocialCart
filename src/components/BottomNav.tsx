@@ -20,8 +20,8 @@ export function BottomNav() {
       animate={{ y: 0, opacity: 1 }}
       className="fixed bottom-0 left-0 right-0 z-50 mobile-safe-area"
     >
-      <div className="bg-white/90 backdrop-blur-lg border-t border-surface-200 shadow-large">
-        <div className="flex relative">
+      <div className="bg-white/95 backdrop-blur-2xl border-t border-surface-200 shadow-2xl rounded-t-2xl px-2 pb-2 pt-1">
+        <div className="flex relative justify-between items-end">
           {tabs.map(({ icon: Icon, label, path, special }) => {
             const isActive = location.pathname === path;
             
@@ -29,55 +29,55 @@ export function BottomNav() {
               <motion.button
                 key={path}
                 onClick={() => navigate(path)}
-                className={`flex-1 py-2 px-1 flex flex-col items-center space-y-0.5 transition-all duration-300 relative touch-target ${
+                className={`flex-1 py-2 px-1 flex flex-col items-center space-y-1 transition-all duration-300 relative touch-target group ${
                   isActive 
-                    ? 'text-primary-600' 
-                    : 'text-surface-400 hover:text-surface-600'
+                    ? 'text-primary-700'
+                    : 'text-surface-400 hover:text-primary-500'
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.96 }}
               >
-                {/* Active indicator */}
+                {/* Indicateur actif amélioré */}
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute top-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-primary rounded-full"
+                    className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-10 h-2 bg-gradient-to-r from-primary-400 via-primary-600 to-primary-400 rounded-full shadow-lg"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
 
-                {/* Icon container */}
-                <div className={`relative ${special && !isActive ? 'mb-1' : ''}`}>
+                {/* Conteneur d'icône amélioré */}
+                <div className={`relative flex items-center justify-center ${special && !isActive ? 'mb-1' : ''}`}>
                   {special && !isActive ? (
-                    <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow">
-                      <Icon className="w-5 h-5 text-white" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500 via-primary-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-glow border-4 border-white group-hover:scale-105 transition-transform duration-200">
+                      <Icon className="w-6 h-6 text-white" />
                     </div>
                   ) : (
                     <motion.div
-                      animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                      animate={isActive ? { scale: 1.18 } : { scale: 1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      className={`flex items-center justify-center rounded-xl ${isActive ? 'bg-primary-50 shadow-md' : ''} w-10 h-10`}
                     >
-                      <Icon className={`w-5 h-5 ${isActive ? 'text-primary-600' : 'text-surface-400'}`} />
+                      <Icon className={`w-6 h-6 ${isActive ? 'text-primary-700' : 'text-surface-400 group-hover:text-primary-500'}`} />
                     </motion.div>
+                  )}
+                  {/* Pastille de notification pour Bell */}
+                  {path === '/notifications' && (
+                    <motion.div
+                      className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full shadow"
+                      animate={{ scale: [1, 1.25, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
                   )}
                 </div>
 
-                {/* Label */}
-                <span className={`text-[10px] font-medium transition-all duration-300 ${
-                  special && !isActive ? 'text-white' : ''
+                {/* Label amélioré */}
+                <span className={`text-[11px] font-semibold transition-all duration-300 tracking-wide ${
+                  special && !isActive ? 'text-white drop-shadow' : isActive ? 'text-primary-700' : 'text-surface-400 group-hover:text-primary-500'
                 }`}>
                   {label}
                 </span>
-
-                {/* Notification dot for Bell */}
-                {path === '/notifications' && (
-                  <motion.div
-                    className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                )}
               </motion.button>
             );
           })}
