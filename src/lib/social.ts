@@ -514,60 +514,70 @@ export class SocialService {
    */
   static async toggleWishlistItem(productId: string, userId: string): Promise<boolean> {
     try {
-      // Récupérer ou créer la wishlist par défaut
-      let { data: wishlist, error: wishlistError } = await supabase
-        .from('wishlists')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('name', 'Favoris')
-        .single();
-
-      if (wishlistError && wishlistError.code === 'PGRST116') {
-        // Créer la wishlist par défaut
-        const { data: newWishlist, error: createError } = await supabase
-          .from('wishlists')
-          .insert({
-            user_id: userId,
-            name: 'Favoris',
-            is_public: false
-          })
-          .select('id')
-          .single();
-
-        if (createError) throw createError;
-        wishlist = newWishlist;
-      } else if (wishlistError) {
-        throw wishlistError;
-      }
-
       // Vérifier si le produit est déjà dans la wishlist
-      const { data: existingItem, error: checkError } = await supabase
+      const { data: existingItems, error: checkError } = await supabase
         .from('wishlist_items')
-        .select('id')
-        .eq('wishlist_id', wishlist.id)
+        .select(`
+          id,
+          wishlist:wishlist_id(
+            user_id,
+            name
+          )
+        `)
+        .eq('wishlist.user_id', userId)
         .eq('product_id', productId)
-        .single();
+        .limit(1);
 
       if (checkError && checkError.code !== 'PGRST116') {
         throw checkError;
       }
 
-      if (existingItem) {
+      if (existingItems && existingItems.length > 0) {
         // Retirer de la wishlist
         const { error: deleteError } = await supabase
           .from('wishlist_items')
           .delete()
-          .eq('wishlist_id', wishlist.id)
-          .eq('product_id', productId);
+          .eq('id', existingItems[0].id);
 
         if (deleteError) throw deleteError;
         return false; // Retiré de la wishlist
       } else {
+        // Trouver la wishlist par défaut
+        let { data: wishlists, error: wishlistError } = await supabase
+          .from('wishlists')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('name', 'Favoris')
+          .limit(1);
+
+        if (wishlistError && wishlistError.code !== 'PGRST116') {
+          throw wishlistError;
+        }
+
+        let wishlistId;
+        if (!wishlists || wishlists.length === 0) {
+          // Créer la wishlist par défaut
+          const { data: newWishlist, error: createError } = await supabase
+            .from('wishlists')
+            .insert({
+              user_id: userId,
+              name: 'Favoris',
+              is_public: false
+            })
+            .select('id')
+            .single();
+
+          if (createError) throw createError;
+          wishlistId = newWishlist.id;
+        } else {
+          wishlistId = wishlists[0].id;
+        }
+
         // Ajouter à la wishlist
         const { error: insertError } = await supabase
           .from('wishlist_items')
           .insert({
-            wishlist_id: wishlist.id,
+            wishlist_id: wishlistId,
             product_id: productId
           });
 

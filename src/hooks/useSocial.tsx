@@ -121,7 +121,7 @@ export function useSocial() {
       });
     } catch (error) {
       console.error('Error toggling bookmark:', error);
-      toast.error('Erreur lors de la sauvegarde');
+      toast.error('Impossible de modifier les favoris. Vérifiez votre connexion.');
     }
   }, [user?.id]);
 
