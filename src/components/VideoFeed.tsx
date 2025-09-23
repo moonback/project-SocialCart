@@ -19,9 +19,12 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserAvatar } from './UserAvatar';
+import { CommentsModal } from './CommentsModal';
+import { ShareModal } from './ShareModal';
 import { Product as ProductFromProducts, ProductVariant } from '../lib/products';
 import { Product as ProductFromSupabase } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
+import { useSocial } from '../hooks/useSocial';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -41,18 +44,26 @@ interface VideoFeedProps {
 
 export function VideoFeed({ products }: VideoFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
-  const [bookmarkedProducts, setBookmarkedProducts] = useState<Set<string>>(new Set());
   const [isPlaying, setIsPlaying] = useState<{ [key: string]: boolean }>({});
   const [isMuted, setIsMuted] = useState<{ [key: string]: boolean }>({});
   const [autoPlay, setAutoPlay] = useState(true);
   const [showControls, setShowControls] = useState<{ [key: string]: boolean }>({});
   const [showInfo, setShowInfo] = useState<{ [key: string]: boolean }>({});
+  const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
+  const [showShare, setShowShare] = useState<{ [key: string]: boolean }>({});
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const { addToCart } = useCart();
+  const { 
+    toggleLike, 
+    toggleBookmark, 
+    toggleFollow, 
+    recordView,
+    isLiked, 
+    isBookmarked, 
+    isFollowing 
+  } = useSocial();
   const navigate = useNavigate();
 
   // Charger le paramètre autoPlay depuis le localStorage
@@ -70,47 +81,17 @@ export function VideoFeed({ products }: VideoFeedProps) {
     localStorage.setItem('video-autoplay', newAutoPlay.toString());
   };
 
-  // Nouvelles fonctions pour les fonctionnalités avancées
-  const toggleBookmark = (productId: string) => {
-    setBookmarkedProducts(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-        toast.success('Retiré des favoris');
-      } else {
-        newSet.add(productId);
-        toast.success('Ajouté aux favoris');
-      }
-      return newSet;
-    });
-  };
-
-  const toggleFollow = (sellerId: string) => {
-    setFollowingUsers(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(sellerId)) {
-        newSet.delete(sellerId);
-        toast.success('Abonnement annulé');
-      } else {
-        newSet.add(sellerId);
-        toast.success('Abonnement activé');
-      }
-      return newSet;
-    });
-  };
-
-
-  const handleShare = (product: VideoFeedProduct) => {
-    if (navigator.share) {
-      navigator.share({
-        title: product.name,
-        text: product.description,
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Lien copié !');
+  // Enregistrer une vue quand un produit devient visible
+  useEffect(() => {
+    if (products.length > 0 && currentIndex < products.length) {
+      const currentProduct = products[currentIndex];
+      recordView(currentProduct.id);
     }
+  }, [currentIndex, products, recordView]);
+
+  // Nouvelles fonctions pour les fonctionnalités avancées
+  const handleShare = async (product: VideoFeedProduct) => {
+    setShowShare(prev => ({ ...prev, [product.id]: true }));
   };
 
   const handleReport = () => {
@@ -175,18 +156,6 @@ export function VideoFeed({ products }: VideoFeedProps) {
       }
     }
   }, [autoPlay, products]);
-
-  const toggleLike = (productId: string) => {
-    setLikedProducts(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
 
   const togglePlayPause = (productId: string) => {
     const video = videoRefs.current[productId];
@@ -404,23 +373,23 @@ export function VideoFeed({ products }: VideoFeedProps) {
             >
               <motion.div 
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  likedProducts.has(product.id) 
+                  isLiked(product.id) 
                     ? 'bg-red-500 shadow-lg shadow-red-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
                 }`}
-                animate={likedProducts.has(product.id) ? { scale: [1, 1.2, 1] } : {}}
+                animate={isLiked(product.id) ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 0.3 }}
               >
                 <Heart 
                   className={`w-4 h-4 transition-all duration-300 ${
-                    likedProducts.has(product.id) 
+                    isLiked(product.id) 
                       ? 'text-white fill-white' 
                       : 'text-white hover:text-red-300'
                   }`} 
                 />
               </motion.div>
               <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                {product.likes_count + (likedProducts.has(product.id) ? 1 : 0)}
+                {product.likes_count + (isLiked(product.id) ? 1 : 0)}
               </span>
             </motion.button>
 
@@ -428,13 +397,14 @@ export function VideoFeed({ products }: VideoFeedProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowComments(prev => ({ ...prev, [product.id]: !prev[product.id] }))}
               className="flex flex-col items-center space-y-1"
             >
               <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
                 <MessageCircle className="w-4 h-4 text-white" />
               </div>
               <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                42
+                Commentaires
               </span>
             </motion.button>
 
@@ -462,23 +432,23 @@ export function VideoFeed({ products }: VideoFeedProps) {
             >
               <motion.div 
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  bookmarkedProducts.has(product.id) 
+                  isBookmarked(product.id) 
                     ? 'bg-yellow-500 shadow-lg shadow-yellow-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
                 }`}
-                animate={bookmarkedProducts.has(product.id) ? { scale: [1, 1.2, 1] } : {}}
+                animate={isBookmarked(product.id) ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 0.3 }}
               >
                 <Bookmark 
                   className={`w-4 h-4 transition-all duration-300 ${
-                    bookmarkedProducts.has(product.id) 
+                    isBookmarked(product.id) 
                       ? 'text-white fill-white' 
                       : 'text-white hover:text-yellow-300'
                   }`} 
                 />
               </motion.div>
               <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                {bookmarkedProducts.has(product.id) ? 'Sauvé' : 'Sauver'}
+                {isBookmarked(product.id) ? 'Sauvé' : 'Sauver'}
               </span>
             </motion.button>
 
@@ -491,23 +461,23 @@ export function VideoFeed({ products }: VideoFeedProps) {
             >
               <motion.div 
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  followingUsers.has(product.seller_id) 
+                  isFollowing(product.seller_id) 
                     ? 'bg-blue-500 shadow-lg shadow-blue-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
                 }`}
-                animate={followingUsers.has(product.seller_id) ? { scale: [1, 1.2, 1] } : {}}
+                animate={isFollowing(product.seller_id) ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 0.3 }}
               >
                 <UserPlus 
                   className={`w-4 h-4 transition-all duration-300 ${
-                    followingUsers.has(product.seller_id) 
+                    isFollowing(product.seller_id) 
                       ? 'text-white' 
                       : 'text-white hover:text-blue-300'
                   }`} 
                 />
               </motion.div>
               <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                {followingUsers.has(product.seller_id) ? 'Suivi' : 'Suivre'}
+                {isFollowing(product.seller_id) ? 'Suivi' : 'Suivre'}
               </span>
             </motion.button>
 
@@ -708,6 +678,20 @@ export function VideoFeed({ products }: VideoFeedProps) {
           </AnimatePresence>
         </motion.div>
       ))}
+
+      {/* Comments Modal */}
+      <CommentsModal
+        productId={products[currentIndex]?.id || ''}
+        isOpen={showComments[products[currentIndex]?.id] || false}
+        onClose={() => setShowComments(prev => ({ ...prev, [products[currentIndex]?.id]: false }))}
+      />
+
+      {/* Share Modal */}
+      <ShareModal
+        product={products[currentIndex] || { id: '', name: '', description: '', price: 0 }}
+        isOpen={showShare[products[currentIndex]?.id] || false}
+        onClose={() => setShowShare(prev => ({ ...prev, [products[currentIndex]?.id]: false }))}
+      />
     </div>
   );
 }
