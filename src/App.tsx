@@ -13,6 +13,8 @@ import { Cart } from './pages/Cart';
 import { Payment } from './pages/Payment';
 import { Auth } from './pages/Auth';
 import { LiveShopping } from './pages/LiveShopping';
+import { CreateProduct } from './pages/CreateProduct';
+import { Settings } from './pages/Settings';
 
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
@@ -62,26 +64,6 @@ function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
   );
 }
 
-// Placeholder components for missing pages
-function CreateProduct() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100 flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-6 p-8"
-      >
-        <div className="w-24 h-24 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto shadow-glow">
-          <span className="text-white font-bold text-3xl">+</span>
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-3xl font-bold text-surface-900">Créer un produit</h2>
-          <p className="text-surface-600 text-lg">Téléchargez votre vidéo/image et ajoutez les détails</p>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
 
 function Notifications() {
   return (
@@ -143,6 +125,11 @@ function AppRoutes() {
           </ProtectedRoute>
         } />
         <Route path="live" element={<LiveShopping />} />
+        <Route path="settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
       </Route>
     </Routes>
   );

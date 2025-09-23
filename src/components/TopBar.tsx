@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, ShoppingCart, Bell, Menu, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, ShoppingCart, Bell, Menu, X, Settings, User, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -7,9 +7,25 @@ import { useNavigate } from 'react-router-dom';
 
 export function TopBar() {
   const { itemCount } = useCart();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Fermer le menu profil quand on clique à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,6 +34,16 @@ export function TopBar() {
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
       setIsSearchOpen(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/auth');
+      setIsProfileMenuOpen(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
     }
   };
 
@@ -109,18 +135,84 @@ export function TopBar() {
           </motion.button>
 
           {/* Profile */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => navigate('/profile')}
-            className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-primary-200 hover:border-primary-400 transition-colors"
-          >
-            <img
-              src={user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face`}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </motion.button>
+          <div className="relative" ref={profileMenuRef}>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-primary-200 hover:border-primary-400 transition-colors"
+            >
+              <img
+                src={user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face`}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </motion.button>
+
+            {/* Profile Menu Dropdown */}
+            <AnimatePresence>
+              {isProfileMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 top-12 w-56 bg-white rounded-2xl shadow-large border border-surface-200 overflow-hidden z-50"
+                >
+                  <div className="p-3 border-b border-surface-100">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face`}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-xl object-cover"
+                      />
+                      <div>
+                        <p className="font-semibold text-surface-900">{user?.username}</p>
+                        <p className="text-sm text-surface-600">{user?.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="py-2">
+                    <motion.button
+                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                      onClick={() => {
+                        navigate('/profile');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-surface-50 transition-colors"
+                    >
+                      <User className="w-5 h-5 text-surface-600" />
+                      <span className="text-surface-900">Profil</span>
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                      onClick={() => {
+                        navigate('/settings');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-surface-50 transition-colors"
+                    >
+                      <Settings className="w-5 h-5 text-surface-600" />
+                      <span className="text-surface-900">Paramètres</span>
+                    </motion.button>
+                    
+                    <div className="border-t border-surface-100 my-2" />
+                    
+                    <motion.button
+                      whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.05)' }}
+                      onClick={handleSignOut}
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="w-5 h-5 text-red-600" />
+                      <span className="text-red-600">Se déconnecter</span>
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 

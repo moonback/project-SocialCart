@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Product } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { ProductCard } from '../components/ProductCard';
+import { ProductService } from '../lib/products';
+import toast from 'react-hot-toast';
 
 export function ProductDetail() {
   const { id } = useParams();
@@ -16,84 +18,179 @@ export function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock product data
-    const mockProduct: Product = {
-      id: id || '1',
-      name: 'Wireless Earbuds Pro',
-      description: 'Experience premium sound quality with our latest wireless earbuds. Features advanced noise cancellation, crystal clear audio, and up to 30 hours of battery life with the charging case.',
-      price: 129.99,
-      image_url: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      images: [
-        'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-        'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-        'https://images.pexels.com/photos/8534088/pexels-photo-8534088.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      ],
-      variants: [
-        { id: '1', name: 'Color', options: ['Black', 'White', 'Blue'] },
-        { id: '2', name: 'Size', options: ['Regular', 'Large'] }
-      ],
-      likes_count: 1234,
-      user_id: '1',
-      user: {
-        id: '1',
-        email: 'user@example.com',
-        username: 'techguru',
-        loyalty_points: 500,
-        created_at: '2024-01-01',
-      },
-      created_at: '2024-01-01',
+    const loadProduct = async () => {
+      if (!id) {
+        navigate('/');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        // Essayer de charger le produit depuis la base de données
+        const dbProduct = await ProductService.getProductById(id);
+        
+        if (dbProduct) {
+          // Convertir le produit de la BDD vers le format attendu
+          const convertedProduct: Product = {
+            id: dbProduct.id,
+            name: dbProduct.name,
+            description: dbProduct.description,
+            price: dbProduct.price,
+            image_url: dbProduct.primary_image_url || (dbProduct.images && dbProduct.images[0]) || '',
+            images: dbProduct.images || [],
+            video_url: dbProduct.video_url || undefined,
+            variants: [], // Les variantes sont stockées dans les tags
+            likes_count: dbProduct.likes_count || 0,
+            user_id: dbProduct.seller_id,
+            user: {
+              id: dbProduct.seller_id,
+              email: 'user@example.com',
+              username: 'user',
+              loyalty_points: 0,
+              created_at: dbProduct.created_at,
+            },
+            created_at: dbProduct.created_at,
+          };
+          
+          setProduct(convertedProduct);
+        } else {
+          // Fallback vers des données mockées si le produit n'est pas trouvé
+          const mockProduct: Product = {
+            id: id,
+            name: 'Écouteurs Sans Fil Pro',
+            description: 'Qualité sonore exceptionnelle avec réduction de bruit active. Parfait pour la musique et les appels.',
+            price: 129.99,
+            image_url: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+            images: [
+              'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+              'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+              'https://images.pexels.com/photos/8534088/pexels-photo-8534088.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+            ],
+            variants: [
+              { id: '1', name: 'Couleur', options: ['Noir', 'Blanc', 'Bleu'] },
+              { id: '2', name: 'Taille', options: ['Standard', 'Grand'] }
+            ],
+            likes_count: 1234,
+            user_id: '1',
+            user: {
+              id: '1',
+              email: 'user@example.com',
+              username: 'techguru',
+              loyalty_points: 500,
+              created_at: '2024-01-01',
+            },
+            created_at: '2024-01-01',
+          };
+          
+          setProduct(mockProduct);
+        }
+
+        // Charger des suggestions
+        const allProducts = await ProductService.getProducts();
+        const otherProducts = allProducts.filter(p => p.id !== id).slice(0, 2);
+        
+        const convertedSuggestions: Product[] = otherProducts.map(p => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          price: p.price,
+          image_url: p.primary_image_url || (p.images && p.images[0]) || '',
+          images: p.images || [],
+          variants: [],
+          likes_count: p.likes_count || 0,
+          user_id: p.seller_id,
+          user: {
+            id: p.seller_id,
+            email: 'user@example.com',
+            username: 'user',
+            loyalty_points: 0,
+            created_at: p.created_at,
+          },
+          created_at: p.created_at,
+        }));
+
+        setSuggestions(convertedSuggestions);
+
+      } catch (error) {
+        console.error('Error loading product:', error);
+        toast.error('Erreur lors du chargement du produit');
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const mockSuggestions: Product[] = [
-      {
-        id: '2',
-        name: 'Wireless Charging Pad',
-        description: 'Fast wireless charging',
-        price: 49.99,
-        image_url: 'https://images.pexels.com/photos/4790613/pexels-photo-4790613.jpeg?auto=compress&cs=tinysrgb&w=500',
-        images: [],
-        variants: [],
-        likes_count: 567,
-        user_id: '1',
-        user: mockProduct.user,
-        created_at: '2024-01-01',
-      },
-      {
-        id: '3',
-        name: 'Phone Case Premium',
-        description: 'Protect your device',
-        price: 29.99,
-        image_url: 'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=500',
-        images: [],
-        variants: [],
-        likes_count: 892,
-        user_id: '1',
-        user: mockProduct.user,
-        created_at: '2024-01-01',
-      }
-    ];
-
-    setProduct(mockProduct);
-    setSuggestions(mockSuggestions);
-  }, [id]);
+    loadProduct();
+  }, [id, navigate]);
 
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, selectedVariants);
+      toast.success(`${product.name} ajouté au panier !`);
     }
   };
 
   const handleBuyNow = () => {
     if (product) {
       addToCart(product, selectedVariants);
+      toast.success(`${product.name} ajouté au panier !`);
       navigate('/cart');
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-6 p-8"
+        >
+          <div className="w-24 h-24 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto shadow-glow">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              className="w-12 h-12 border-4 border-white border-t-transparent rounded-full"
+            />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-surface-900">Chargement du produit</h2>
+            <p className="text-surface-600">Récupération des informations...</p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (!product) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-6 p-8"
+        >
+          <div className="w-24 h-24 bg-gradient-secondary rounded-3xl flex items-center justify-center mx-auto shadow-glow">
+            <span className="text-white font-bold text-3xl">❌</span>
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-surface-900">Produit non trouvé</h2>
+            <p className="text-surface-600">Ce produit n'existe pas ou a été supprimé</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/')}
+            className="btn-primary px-8 py-3"
+          >
+            Retour à l'accueil
+          </motion.button>
+        </motion.div>
+      </div>
+    );
   }
 
   return (
@@ -145,21 +242,53 @@ export function ProductDetail() {
           </div>
         </div>
 
-        {/* Product Info */}
-        <div className="space-y-6">
-          <div>
-            <div className="flex items-start justify-between mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-              <span className="text-2xl font-bold text-purple-600">${product.price}</span>
-            </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-600">
-              <span>by @{product.user.username}</span>
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span>4.8 (324 reviews)</span>
+          {/* Product Info */}
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
+                  {product.sku && (
+                    <p className="text-sm text-gray-500 mt-1">Réf: {product.sku}</p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-purple-600">€{product.price}</span>
+                  {product.compare_price && product.compare_price > product.price && (
+                    <p className="text-sm text-gray-500 line-through">€{product.compare_price}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 text-sm text-gray-600 mb-4">
+                <span>par @{product.user.username}</span>
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span>{product.rating_average || 4.8} ({product.rating_count || 324} avis)</span>
+                </div>
+              </div>
+              
+              {product.short_description && (
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="text-gray-700 text-sm leading-relaxed">{product.short_description}</p>
+                </div>
+              )}
+
+              {/* Product Stats */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-purple-600">{product.likes_count || 0}</div>
+                  <div className="text-xs text-gray-600">J'aime</div>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-purple-600">{product.views_count || 0}</div>
+                  <div className="text-xs text-gray-600">Vues</div>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-purple-600">{product.sales_count || 0}</div>
+                  <div className="text-xs text-gray-600">Ventes</div>
+                </div>
               </div>
             </div>
-          </div>
 
           {/* Variants */}
           {product.variants.map((variant) => (

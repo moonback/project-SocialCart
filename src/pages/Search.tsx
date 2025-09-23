@@ -1,58 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search as SearchIcon, Filter, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ProductCard } from '../components/ProductCard';
 import { Product } from '../lib/supabase';
+import { ProductService } from '../lib/products';
 
 export function Search() {
   const [query, setQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
-
-  // Mock search results
-  const searchResults: Product[] = [
-    {
-      id: '1',
-      name: 'Wireless Earbuds Pro',
-      description: 'Premium sound quality',
-      price: 129.99,
-      image_url: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=500',
-      images: [],
-      variants: [],
-      likes_count: 1234,
-      user_id: '1',
-      user: {
-        id: '1',
-        email: 'user@example.com',
-        username: 'techguru',
-        loyalty_points: 500,
-        created_at: '2024-01-01',
-      },
-      created_at: '2024-01-01',
-    },
-    {
-      id: '2',
-      name: 'Smart Fitness Watch',
-      description: 'Track your fitness',
-      price: 299.99,
-      image_url: 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=500',
-      images: [],
-      variants: [],
-      likes_count: 2156,
-      user_id: '2',
-      user: {
-        id: '2',
-        email: 'fitness@example.com',
-        username: 'fitnessfan',
-        loyalty_points: 750,
-        created_at: '2024-01-01',
-      },
-      created_at: '2024-01-01',
-    },
-  ];
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   const categories = ['all', 'electronics', 'fashion', 'home', 'sports', 'beauty'];
+
+  // Charger tous les produits au montage du composant
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  // Effectuer la recherche quand la query ou les filtres changent
+  useEffect(() => {
+    performSearch();
+  }, [query, selectedCategory, priceRange, allProducts]);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const products = await ProductService.getProducts();
+      setAllProducts(products);
+    } catch (error) {
+      console.error('Erreur lors du chargement des produits:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const performSearch = () => {
+    let filteredProducts = [...allProducts];
+
+    // Filtrer par recherche textuelle
+    if (query.trim()) {
+      const searchTerm = query.toLowerCase();
+      filteredProducts = filteredProducts.filter(product =>
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.description.toLowerCase().includes(searchTerm) ||
+        (product.tags && product.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
+      );
+    }
+
+    // Filtrer par catégorie (si vous avez des catégories dans votre BDD)
+    if (selectedCategory !== 'all') {
+      // Pour l'instant, on garde tous les produits car la structure de catégorie n'est pas encore définie
+      // Vous pouvez ajouter le filtrage par catégorie ici plus tard
+    }
+
+    // Filtrer par prix
+    filteredProducts = filteredProducts.filter(product =>
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+
+    setSearchResults(filteredProducts);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -137,11 +148,30 @@ export function Search() {
         )}
 
         {/* Results */}
-        <div className="grid grid-cols-2 gap-4">
-          {searchResults.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          </div>
+        ) : (
+          <>
+            {searchResults.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4">
+                {searchResults.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-lg mb-2">
+                  {query ? 'Aucun produit trouvé' : 'Aucun produit disponible'}
+                </div>
+                <div className="text-gray-500 text-sm">
+                  {query ? 'Essayez avec d\'autres mots-clés' : 'Les produits apparaîtront ici une fois créés'}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Popular Searches */}
         {!query && (
