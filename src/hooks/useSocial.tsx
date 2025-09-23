@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
 import { SocialService } from '../lib/social';
 import toast from 'react-hot-toast';
@@ -30,14 +30,7 @@ export function useSocial() {
     loading: false
   });
 
-  // Charger les données sociales de l'utilisateur au montage
-  useEffect(() => {
-    if (user?.id) {
-      loadUserSocialData();
-    }
-  }, [user?.id]);
-
-  const loadUserSocialData = async () => {
+  const loadUserSocialData = useCallback(async () => {
     if (!user?.id) return;
 
     setState(prev => ({ ...prev, loading: true }));
@@ -57,8 +50,9 @@ export function useSocial() {
         // Continuer sans la wishlist
       }
 
-      // Charger les utilisateurs suivis (à implémenter si nécessaire)
-      const followingUsers = new Set<string>(); // TODO: implémenter getUserFollowing
+      // Charger les utilisateurs suivis
+      const followingUserIds = await SocialService.getUserFollowing(user.id);
+      const followingUsers = new Set(followingUserIds);
 
       setState(prev => ({
         ...prev,
@@ -71,7 +65,14 @@ export function useSocial() {
       console.error('Error loading user social data:', error);
       setState(prev => ({ ...prev, loading: false }));
     }
-  };
+  }, [user?.id]);
+
+  // Charger les données sociales de l'utilisateur au montage
+  useEffect(() => {
+    if (user?.id) {
+      loadUserSocialData();
+    }
+  }, [user?.id, loadUserSocialData]);
 
   const toggleLike = useCallback(async (productId: string) => {
     if (!user?.id) {
@@ -131,6 +132,11 @@ export function useSocial() {
       return;
     }
 
+    if (!userId || userId === 'undefined') {
+      toast.error('ID utilisateur invalide');
+      return;
+    }
+
     if (userId === user.id) {
       toast.error('Vous ne pouvez pas vous suivre vous-même');
       return;
@@ -150,11 +156,16 @@ export function useSocial() {
         }
         return { ...prev, followingUsers: newFollowingUsers };
       });
+      
+      // Recharger les données de suivi pour s'assurer de la cohérence
+      setTimeout(() => {
+        loadUserSocialData();
+      }, 500);
     } catch (error) {
       console.error('Error toggling follow:', error);
       toast.error('Erreur lors du suivi');
     }
-  }, [user?.id]);
+  }, [user?.id, loadUserSocialData]);
 
   const shareProduct = useCallback(async (productId: string, platform: string) => {
     if (!user?.id) {
@@ -249,7 +260,7 @@ export function useSocial() {
     return state.followingUsers.has(userId);
   }, [state.followingUsers]);
 
-  const actions: SocialActions = {
+  const actions: SocialActions = useMemo(() => ({
     toggleLike,
     toggleBookmark,
     toggleFollow,
@@ -258,7 +269,16 @@ export function useSocial() {
     addComment,
     deleteComment,
     toggleCommentLike
-  };
+  }), [
+    toggleLike,
+    toggleBookmark,
+    toggleFollow,
+    shareProduct,
+    recordView,
+    addComment,
+    deleteComment,
+    toggleCommentLike
+  ]);
 
   return {
     ...state,

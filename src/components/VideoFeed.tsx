@@ -95,12 +95,19 @@ export function VideoFeed({ products }: VideoFeedProps) {
   }, [showActionsMenu]);
 
 
+  // Fonction mémorisée pour enregistrer une vue
+  const handleRecordView = useCallback((productId: string) => {
+    recordView(productId);
+  }, [recordView]);
+
   // Logique de lecture centralisée - s'exécute à chaque changement de currentIndex
   useEffect(() => {
     if (!currentProduct) return;
 
-    // Enregistrer une vue
-    recordView(currentProduct.id);
+    // Enregistrer une vue (dans un setTimeout pour éviter les setState pendant le rendu)
+    setTimeout(() => {
+      handleRecordView(currentProduct.id);
+    }, 0);
 
     // Mettre en pause toutes les vidéos
     Object.values(videoRefs.current).forEach(video => {
@@ -124,7 +131,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
     } else {
       setIsPlaying(false);
     }
-  }, [currentIndex, currentProduct, autoPlay, recordView]);
+  }, [currentIndex, currentProduct, autoPlay, handleRecordView]);
 
  
 
@@ -489,24 +496,24 @@ export function VideoFeed({ products }: VideoFeedProps) {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
-                            toggleFollow(product.seller_id);
+                            toggleFollow(product.user_id);
                             setShowActionsMenu(false);
                           }}
                           className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
                         >
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            isFollowing(product.seller_id) ? 'bg-purple-100' : 'bg-gray-100'
+                            isFollowing(product.user_id) ? 'bg-purple-100' : 'bg-gray-100'
                           }`}>
                             <UserPlus className={`w-5 h-5 ${
-                              isFollowing(product.seller_id) ? 'text-purple-600' : 'text-gray-600'
+                              isFollowing(product.user_id) ? 'text-purple-600' : 'text-gray-600'
                             }`} />
                           </div>
                           <div className="flex-1 text-left">
                             <span className="text-gray-900 font-medium">
-                              {isFollowing(product.seller_id) ? 'Ne plus suivre' : 'Suivre'}
+                              {isFollowing(product.user_id) ? 'Ne plus suivre' : 'Suivre'}
                             </span>
                             <p className="text-sm text-gray-500">
-                              {isFollowing(product.seller_id) ? 'Arrêter de suivre ce vendeur' : 'Suivre ce vendeur'}
+                              {isFollowing(product.user_id) ? 'Arrêter de suivre ce vendeur' : 'Suivre ce vendeur'}
                             </p>
                           </div>
                         </motion.button>
@@ -563,11 +570,16 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   <h3 className="text-white font-bold text-base drop-shadow-lg">@{product.user?.username}</h3>
                 </div>
                   <motion.button
-                  whileHover={{ scale: 1.08 }}
+                    whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
-                  className="px-3 py-1 bg-gradient-to-r from-blue-500/60 to-blue-400/60 backdrop-blur-sm text-white rounded-full text-xs font-semibold hover:bg-blue-500/80 transition-all border border-white/20 shadow"
+                    onClick={() => toggleFollow(product.user_id)}
+                    className={`px-3 py-1 backdrop-blur-sm text-white rounded-full text-xs font-semibold transition-all border border-white/20 shadow ${
+                      isFollowing(product.user_id) 
+                        ? 'bg-gradient-to-r from-purple-500/60 to-purple-400/60 hover:bg-purple-500/80' 
+                        : 'bg-gradient-to-r from-blue-500/60 to-blue-400/60 hover:bg-blue-500/80'
+                    }`}
                   >
-                    Suivre
+                    {isFollowing(product.user_id) ? 'Suivi' : 'Suivre'}
                   </motion.button>
                 </div>
               

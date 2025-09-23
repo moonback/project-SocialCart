@@ -442,6 +442,13 @@ export class SocialService {
    */
   static async toggleFollow(followerId: string, followingId: string): Promise<boolean> {
     try {
+      // Validation des paramètres
+      if (!followerId || followerId === 'undefined') {
+        throw new Error('ID du follower invalide');
+      }
+      if (!followingId || followingId === 'undefined') {
+        throw new Error('ID de la personne à suivre invalide');
+      }
       // Vérifier si l'utilisateur suit déjà
       const { data: existingFollow, error: checkError } = await supabase
         .from('follows')
@@ -479,6 +486,25 @@ export class SocialService {
     } catch (error) {
       console.error('Error toggling follow:', error);
       throw new Error('Erreur lors de la gestion du suivi');
+    }
+  }
+
+  /**
+   * Récupérer la liste des utilisateurs suivis par un utilisateur
+   */
+  static async getUserFollowing(userId: string): Promise<string[]> {
+    try {
+      const { data, error } = await supabase
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', userId);
+
+      if (error) throw error;
+      
+      return data.map(item => item.following_id);
+    } catch (error) {
+      console.error('Error getting user following:', error);
+      return [];
     }
   }
 
