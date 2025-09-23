@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nettoyage Service Worker - SocialCart</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .container {
+            max-width: 500px;
+            text-align: center;
+            padding: 2rem;
+        }
+        button {
+            background: white;
+            color: #a855f7;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        .log {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Nettoyage Service Worker</h1>
+        <p>Cliquez sur le bouton pour nettoyer complètement le Service Worker et les caches.</p>
+        
+        <button onclick="clearServiceWorker()">Nettoyer tout</button>
+        <button onclick="location.href='/'">Retour à l'app</button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        async function clearServiceWorker() {
+            log('🧹 Début du nettoyage...');
+            
+            try {
+                // 1. Désinscrire tous les Service Workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    log(`📱 Service Workers trouvés: ${registrations.length}`);
+                    
+                    for (const registration of registrations) {
+                        log(`🗑️ Désinscription du Service Worker: ${registration.scope}`);
+                        await registration.unregister();
+                    }
+                    
+                    log('✅ Tous les Service Workers ont été désinscrits');
+                }
+                
+                // 2. Nettoyer tous les caches
+                const cacheNames = await caches.keys();
+                log(`📋 Caches trouvés: ${cacheNames.join(', ')}`);
+                
+                const deletePromises = cacheNames.map(cacheName => {
+                    log(`🗑️ Suppression du cache: ${cacheName}`);
+                    return caches.delete(cacheName);
+                });
+                
+                await Promise.all(deletePromises);
+                log('✅ Tous les caches ont été supprimés');
+                
+                // 3. Nettoyer le stockage local
+                localStorage.clear();
+                sessionStorage.clear();
+                log('✅ Stockage local nettoyé');
+                
+                log('🎉 Nettoyage terminé ! Redirection dans 3 secondes...');
+                
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 3000);
+                
+            } catch (error) {
+                log(`❌ Erreur lors du nettoyage: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
