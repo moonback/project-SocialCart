@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff, CheckCircle, XCircle, Mail, Lock, User, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,29 +25,26 @@ export function Auth() {
 
   // Validation en temps réel
   useEffect(() => {
-    // Validation email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setValidation(prev => ({
       ...prev,
       email: {
         isValid: emailRegex.test(formData.email),
-        message: formData.email && !emailRegex.test(formData.email) ? 'Email invalide' : ''
+        message: formData.email && !emailRegex.test(formData.email) ? 'Format email invalide' : ''
       }
     }));
   }, [formData.email]);
 
   useEffect(() => {
-    // Validation mot de passe
     setValidation(prev => ({
       ...prev,
       password: {
         isValid: formData.password.length >= 6,
-        message: formData.password && formData.password.length < 6 ? 'Au moins 6 caractères' : ''
+        message: formData.password && formData.password.length < 6 ? 'Au moins 6 caractères requis' : ''
       }
     }));
   }, [formData.password]);
 
-  // Vérification du nom d'utilisateur avec debounce
   useEffect(() => {
     if (!isSignUp || !formData.username) return;
 
@@ -73,7 +70,7 @@ export function Auth() {
           ...prev,
           username: {
             isValid: isAvailable,
-            message: isAvailable ? 'Disponible' : 'Déjà pris',
+            message: isAvailable ? 'Nom disponible' : 'Nom déjà pris',
             checking: false
           }
         }));
@@ -98,7 +95,6 @@ export function Auth() {
 
     try {
       if (isSignUp) {
-        // Vérifier que tous les champs sont valides
         if (!validation.email.isValid || !validation.username.isValid || !validation.password.isValid) {
           throw new Error('Veuillez corriger les erreurs dans le formulaire');
         }
@@ -114,95 +110,143 @@ export function Auth() {
     }
   };
 
+  const isFormValid = isSignUp 
+    ? validation.email.isValid && validation.username.isValid && validation.password.isValid
+    : formData.email && formData.password;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-600 via-secondary-600 to-primary-800 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
       >
-        <div className="bg-white rounded-3xl p-8 shadow-2xl">
+        <div className="surface-glass rounded-4xl p-8 shadow-large">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <motion.div 
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <motion.div 
+              className="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-glow"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <span className="text-white font-bold text-2xl">SC</span>
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            </motion.div>
+            <h1 className="text-display text-3xl text-gradient mb-2">
               SocialCart
             </h1>
-            <p className="text-gray-600 mt-2">
-              {isSignUp ? 'Créez votre compte' : 'Bon retour !'}
+            <p className="text-surface-600 text-lg">
+              {isSignUp ? 'Rejoignez la communauté' : 'Bon retour parmi nous !'}
             </p>
-          </div>
+          </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {isSignUp && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom complet (optionnel)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Votre nom complet"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom d'utilisateur
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      required
-                      value={formData.username}
-                      onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                      className={`w-full p-4 pr-12 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                        formData.username ? (validation.username.isValid ? 'border-green-500' : 'border-red-500') : 'border-gray-300'
-                      }`}
-                      placeholder="Votre nom d'utilisateur"
-                    />
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                      {validation.username.checking ? (
-                        <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
-                      ) : formData.username ? (
-                        validation.username.isValid ? (
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-500" />
-                        )
-                      ) : null}
+          <motion.form 
+            onSubmit={handleSubmit} 
+            className="space-y-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <AnimatePresence mode="wait">
+              {isSignUp && (
+                <motion.div
+                  key="signup-fields"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-6"
+                >
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 mb-3">
+                      Nom complet (optionnel)
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+                      <input
+                        type="text"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="input pl-12"
+                        placeholder="Votre nom complet"
+                      />
                     </div>
                   </div>
-                  {validation.username.message && (
-                    <p className={`text-sm mt-1 ${
-                      validation.username.isValid ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {validation.username.message}
-                    </p>
-                  )}
-                </div>
-              </>
-            )}
+
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 mb-3">
+                      Nom d'utilisateur
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+                      <input
+                        type="text"
+                        required
+                        value={formData.username}
+                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                        className={`input pl-12 pr-12 ${
+                          formData.username 
+                            ? (validation.username.isValid ? 'input-success' : 'input-error') 
+                            : ''
+                        }`}
+                        placeholder="Votre nom d'utilisateur"
+                      />
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        {validation.username.checking ? (
+                          <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                        ) : formData.username ? (
+                          validation.username.isValid ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-500" />
+                          )
+                        ) : null}
+                      </div>
+                    </div>
+                    {validation.username.message && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`text-sm mt-2 font-medium ${
+                          validation.username.isValid ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        {validation.username.message}
+                      </motion.p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-surface-700 mb-3">
                 Email
               </label>
               <div className="relative">
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full p-4 pr-12 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                    formData.email ? (validation.email.isValid ? 'border-green-500' : 'border-red-500') : 'border-gray-300'
+                  className={`input pl-12 pr-12 ${
+                    formData.email 
+                      ? (validation.email.isValid ? 'input-success' : 'input-error') 
+                      : ''
                   }`}
-                  placeholder="Votre email"
+                  placeholder="votre@email.com"
                 />
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                   {formData.email ? (
@@ -215,24 +259,31 @@ export function Auth() {
                 </div>
               </div>
               {validation.email.message && (
-                <p className="text-sm mt-1 text-red-600">
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm mt-2 text-red-600 font-medium"
+                >
                   {validation.email.message}
-                </p>
+                </motion.p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-surface-700 mb-3">
                 Mot de passe
               </label>
               <div className="relative">
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={`w-full p-4 pr-20 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                    formData.password ? (validation.password.isValid ? 'border-green-500' : 'border-red-500') : 'border-gray-300'
+                  className={`input pl-12 pr-20 ${
+                    formData.password 
+                      ? (validation.password.isValid ? 'input-success' : 'input-error') 
+                      : ''
                   }`}
                   placeholder="Votre mot de passe"
                 />
@@ -245,50 +296,67 @@ export function Auth() {
                     )
                   ) : null}
                 </div>
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5 text-gray-400" />
+                    <EyeOff className="w-5 h-5 text-surface-400" />
                   ) : (
-                    <Eye className="w-5 h-5 text-gray-400" />
+                    <Eye className="w-5 h-5 text-surface-400" />
                   )}
-                </button>
+                </motion.button>
               </div>
               {validation.password.message && (
-                <p className="text-sm mt-1 text-red-600">
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm mt-2 text-red-600 font-medium"
+                >
                   {validation.password.message}
-                </p>
+                </motion.p>
               )}
             </div>
 
             <motion.button
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading || (isSignUp && (!validation.email.isValid || !validation.username.isValid || !validation.password.isValid))}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-xl font-semibold text-lg disabled:opacity-50 flex items-center justify-center"
+              disabled={loading || !isFormValid}
+              className="w-full btn-primary py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
             >
               {loading ? (
                 <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                isSignUp ? 'Créer le compte' : 'Se connecter'
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  <span>{isSignUp ? 'Créer mon compte' : 'Se connecter'}</span>
+                </>
               )}
             </motion.button>
-          </form>
+          </motion.form>
 
-          <div className="mt-6 text-center">
-            <button
+          <motion.div 
+            className="mt-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-purple-600 hover:text-purple-700 font-medium"
+              className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"
             >
               {isSignUp 
                 ? 'Déjà un compte ? Se connecter' 
                 : "Pas de compte ? S'inscrire"
               }
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </div>
       </motion.div>
     </div>
