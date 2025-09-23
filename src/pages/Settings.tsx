@@ -31,7 +31,7 @@ interface UserSettings {
   emailNotifications: boolean;
 }
 
-export function Settings() {
+export default function Settings() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [settings, setSettings] = useState<UserSettings>({

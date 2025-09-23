@@ -28,7 +28,7 @@ import { Product } from '../lib/supabase';
 import { getCategoryName, getBrandName } from '../lib/categories';
 import toast from 'react-hot-toast';
 
-export function ProductManagement() {
+export default function ProductManagement() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);

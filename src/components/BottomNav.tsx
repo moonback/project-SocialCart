@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, Search, Plus, Bell, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -30,7 +29,7 @@ export function BottomNav() {
               <motion.button
                 key={path}
                 onClick={() => navigate(path)}
-                className={`flex-1 py-3 px-2 flex flex-col items-center space-y-1 transition-all duration-300 relative ${
+                className={`flex-1 py-3 px-2 flex flex-col items-center space-y-1 transition-all duration-300 relative touch-target ${
                   isActive 
                     ? 'text-primary-600' 
                     : 'text-surface-400 hover:text-surface-600'

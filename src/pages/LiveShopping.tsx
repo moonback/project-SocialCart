@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 
-export function LiveShopping() {
+export default function LiveShopping() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [message, setMessage] = useState('');

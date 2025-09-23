@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { CartProvider } from './hooks/useCart';
 import { Layout } from './components/Layout';
-import { Home } from './pages/Home';
-import { Search } from './pages/Search';
-import { Profile } from './pages/Profile';
-import { ProductDetail } from './pages/ProductDetail';
-import { Cart } from './pages/Cart';
-import { Payment } from './pages/Payment';
-import { Auth } from './pages/Auth';
-import { LiveShopping } from './pages/LiveShopping';
-import { CreateProduct } from './pages/CreateProduct';
-import { ProductManagement } from './pages/ProductManagement';
-import { EditProduct } from './pages/EditProduct';
-import { Settings } from './pages/Settings';
+
+// Lazy loading des pages pour optimiser les performances
+const Home = lazy(() => import('./pages/Home'));
+const Search = lazy(() => import('./pages/Search'));
+const Profile = lazy(() => import('./pages/Profile'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Payment = lazy(() => import('./pages/Payment'));
+const Auth = lazy(() => import('./pages/Auth'));
+const LiveShopping = lazy(() => import('./pages/LiveShopping'));
+const CreateProduct = lazy(() => import('./pages/CreateProduct'));
+const ProductManagement = lazy(() => import('./pages/ProductManagement'));
+const EditProduct = lazy(() => import('./pages/EditProduct'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
@@ -103,52 +105,54 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="search" element={<Search />} />
-        <Route path="create" element={
-          <ProtectedRoute>
-            <CreateProduct />
-          </ProtectedRoute>
-        } />
-        <Route path="create-product" element={
-          <ProtectedRoute>
-            <CreateProduct />
-          </ProtectedRoute>
-        } />
-        <Route path="products" element={
-          <ProtectedRoute>
-            <ProductManagement />
-          </ProtectedRoute>
-        } />
-        <Route path="edit-product/:id" element={
-          <ProtectedRoute>
-            <EditProduct />
-          </ProtectedRoute>
-        } />
-        <Route path="notifications" element={
-          <ProtectedRoute>
-            <Notifications />
-          </ProtectedRoute>
-        } />
-        <Route path="profile" element={<Profile />} />
-        <Route path="product/:id" element={<ProductDetail />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="payment" element={
-          <ProtectedRoute>
-            <Payment />
-          </ProtectedRoute>
-        } />
-        <Route path="live" element={<LiveShopping />} />
-        <Route path="settings" element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        } />
-      </Route>
-    </Routes>
+    <Suspense fallback={<LoadingScreen message="Chargement de la page..." />}>
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="search" element={<Search />} />
+          <Route path="create" element={
+            <ProtectedRoute>
+              <CreateProduct />
+            </ProtectedRoute>
+          } />
+          <Route path="create-product" element={
+            <ProtectedRoute>
+              <CreateProduct />
+            </ProtectedRoute>
+          } />
+          <Route path="products" element={
+            <ProtectedRoute>
+              <ProductManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="edit-product/:id" element={
+            <ProtectedRoute>
+              <EditProduct />
+            </ProtectedRoute>
+          } />
+          <Route path="notifications" element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          } />
+          <Route path="profile" element={<Profile />} />
+          <Route path="product/:id" element={<ProductDetail />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="payment" element={
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          } />
+          <Route path="live" element={<LiveShopping />} />
+          <Route path="settings" element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
 

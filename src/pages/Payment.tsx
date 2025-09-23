@@ -44,7 +44,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
-export function Payment() {
+export default function Payment() {
   const navigate = useNavigate();
   const { total, clearCart, items } = useCart();
   const { user } = useAuth();

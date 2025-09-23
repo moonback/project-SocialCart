@@ -1,0 +1,51 @@
+{
+  "name": "SocialCart - Shopping Social",
+  "short_name": "SocialCart",
+  "description": "Plateforme de shopping social moderne avec vidéos et interactions sociales",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#a855f7",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["shopping", "social", "entertainment"],
+  "icons": [
+    {
+      "src": "/icons/icon-base.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Rechercher",
+      "short_name": "Recherche",
+      "description": "Rechercher des produits",
+      "url": "/search"
+    },
+    {
+      "name": "Panier",
+      "short_name": "Panier",
+      "description": "Voir mon panier",
+      "url": "/cart"
+    },
+    {
+      "name": "Profil",
+      "short_name": "Profil",
+      "description": "Mon profil utilisateur",
+      "url": "/profile"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
+}

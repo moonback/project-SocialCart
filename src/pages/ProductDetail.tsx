@@ -57,7 +57,7 @@ import { getCategoryName, getBrandName } from '../lib/categories';
 import { UserAvatar } from '../components/UserAvatar';
 import toast from 'react-hot-toast';
 
-export function ProductDetail() {
+export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
