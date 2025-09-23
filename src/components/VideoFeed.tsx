@@ -265,7 +265,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.8 }}
-              onClick={() => navigate(`/product/${product.id}`)}
+              onClick={() => navigate('/profile')}
               className="w-16 h-16 rounded-full overflow-hidden border-3 border-white shadow-lg"
             >
               <img
