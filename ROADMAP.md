@@ -1,303 +1,261 @@
-# 🗺️ Roadmap - Shopping Connect
+# 🗺️ Roadmap - SocialCart
 
-## Vue d'Ensemble
+## Vue d'ensemble
 
-Shopping Connect évolue selon une approche **MVP → V1 → V2** avec des fonctionnalités progressives pour créer la plateforme de shopping vidéo social la plus innovante du marché.
+Cette roadmap présente l'évolution prévue de SocialCart, de la version MVP actuelle vers une plateforme de commerce social complète et scalable.
 
-## 🎯 Phase MVP (Actuelle) ✅
+## 🎯 Vision à long terme
 
-### Fonctionnalités Implémentées
-
-#### ✅ **Authentification & Profils**
-- [x] Inscription/Connexion utilisateur
-- [x] Upload d'avatar avec preview
-- [x] Profil utilisateur complet
-- [x] Gestion des paramètres
-- [x] Système de points de fidélité
-
-#### ✅ **Feed Vidéo Interactif**
-- [x] Feed vertical style TikTok
-- [x] Contrôles vidéo avancés (play/pause, vitesse, son)
-- [x] Actions sociales (like, partage, sauvegarde, suivi)
-- [x] Navigation fluide entre produits
-- [x] Auto-play intelligent
-- [x] Interface mobile-first optimisée
-
-#### ✅ **Gestion des Produits**
-- [x] Création de produits avec images/vidéos
-- [x] Upload multiple de médias
-- [x] Gestion des variantes (couleur, taille, matériau)
-- [x] Catégorisation et marques prédéfinies
-- [x] Système d'inventaire et stocks
-- [x] Dashboard vendeur pour gestion des produits
-
-#### ✅ **E-commerce de Base**
-- [x] Panier d'achat fonctionnel
-- [x] Détails produit enrichis avec onglets
-- [x] Recherche et filtres de produits
-- [x] Processus de commande
-- [x] Gestion des adresses
-
-#### ✅ **Design & UX**
-- [x] Design system cohérent avec Tailwind
-- [x] Animations fluides avec Framer Motion
-- [x] Interface responsive mobile-first
-- [x] Glassmorphism et gradients modernes
-- [x] Navigation intuitive avec bottom nav
-
-## 🚀 Phase V1 (Q2 2024) 🚧
-
-### Fonctionnalités Prioritaires
-
-#### 🎥 **Live Shopping**
-- [ ] **Streaming en direct** avec WebRTC
-- [ ] **Chat interactif** pendant les streams
-- [ ] **Présentation de produits** en temps réel
-- [ ] **Achat instantané** pendant le live
-- [ ] **Notifications push** pour les streams
-- [ ] **Replay des streams** avec produits associés
-
-#### 💳 **Paiements Intégrés**
-- [ ] **Stripe** pour les paiements par carte
-- [ ] **PayPal** pour paiements alternatifs
-- [ ] **Apple Pay / Google Pay** mobile
-- [ ] **Paiements fractionnés** (Klarna, Afterpay)
-- [ ] **Gestion des remboursements**
-- [ ] **Facturation automatique**
-
-#### 🔔 **Système de Notifications**
-- [ ] **Notifications push** natives
-- [ ] **Notifications email** transactionnelles
-- [ ] **Notifications in-app** temps réel
-- [ ] **Préférences de notification** personnalisées
-- [ ] **Templates de notification** configurables
-
-#### 📊 **Analytics Avancées**
-- [ ] **Dashboard vendeur** avec métriques
-- [ ] **Analytics produit** (vues, likes, conversions)
-- [ ] **Analytics utilisateur** (comportement, préférences)
-- [ ] **Rapports de vente** détaillés
-- [ ] **Recommandations** basées sur les données
-
-#### 🛡️ **Sécurité Renforcée**
-- [ ] **2FA** (Two-Factor Authentication)
-- [ ] **Vérification d'identité** pour vendeurs
-- [ ] **Modération automatique** des contenus
-- [ ] **Protection anti-fraude**
-- [ ] **Audit trail** complet
-
-### Améliorations Techniques V1
-
-#### ⚡ **Performance**
-- [ ] **PWA** (Progressive Web App)
-- [ ] **Service Workers** pour offline
-- [ ] **Lazy loading** avancé
-- [ ] **CDN** global pour les médias
-- [ ] **Optimisation** des requêtes DB
-
-#### 🔧 **Architecture**
-- [ ] **Microservices** migration
-- [ ] **Event-driven** architecture
-- [ ] **Caching** Redis
-- [ ] **Queue system** pour les tâches lourdes
-- [ ] **Monitoring** et alerting
-
-## 🌟 Phase V2 (Q3-Q4 2024) 📋
-
-### Fonctionnalités Avancées
-
-#### 🤖 **Intelligence Artificielle**
-- [ ] **Recommandations IA** personnalisées
-- [ ] **Recherche visuelle** par image
-- [ ] **Chatbot** assistant shopping
-- [ ] **Analyse de sentiment** des avis
-- [ ] **Prédiction de tendances**
-- [ ] **Optimisation automatique** des prix
-
-#### 🌍 **Marketplace Global**
-- [ ] **Multi-langues** (EN, ES, DE, IT)
-- [ ] **Multi-devises** avec conversion automatique
-- [ ] **Shipping international** optimisé
-- [ ] **Compliance** GDPR/RGPD
-- [ ] **Marketplace** multi-vendeurs
-- [ ] **Système de commissions** automatique
-
-#### 📱 **Applications Natives**
-- [ ] **iOS App** (React Native)
-- [ ] **Android App** (React Native)
-- [ ] **Apple Watch** companion
-- [ ] **Widgets** pour les produits favoris
-- [ ] **Deep linking** avancé
-- [ ] **Push notifications** natives
-
-#### 🎮 **Gamification**
-- [ ] **Système de badges** et achievements
-- [ ] **Challenges** shopping mensuels
-- [ ] **Programme de parrainage**
-- [ ] **Points de fidélité** évolutifs
-- [ ] **Leaderboards** vendeurs/acheteurs
-- [ ] **Récompenses** exclusives
-
-#### 🎬 **Contenu Avancé**
-- [ ] **Stories** produits (24h)
-- [ ] **Reels** shopping courts
-- [ ] **AR Try-on** pour mode/beauté
-- [ ] **3D Product** visualization
-- [ ] **User-generated** content
-- [ ] **Influencer** partnerships
-
-### Innovations Techniques V2
-
-#### 🏗️ **Architecture Scalable**
-- [ ] **Kubernetes** orchestration
-- [ ] **Micro-frontends** architecture
-- [ ] **GraphQL** API unifiée
-- [ ] **Event sourcing** pour l'audit
-- [ ] **CQRS** pattern implementation
-- [ ] **Multi-tenant** architecture
-
-#### 🔮 **Technologies Émergentes**
-- [ ] **Web3** integration (NFTs, crypto)
-- [ ] **Blockchain** pour la traçabilité
-- [ ] **IoT** pour l'inventaire intelligent
-- [ ] **Edge computing** pour la performance
-- [ ] **5G** optimizations
-- [ ] **Metaverse** shopping experiences
-
-## 📅 Timeline Détaillée
-
-### Q1 2024 (MVP Completion)
-```
-Janvier 2024
-├── ✅ Feed vidéo optimisé
-├── ✅ Gestion produits complète
-├── ✅ Authentification robuste
-└── ✅ Design system finalisé
-
-Février 2024
-├── ✅ Tests utilisateurs
-├── ✅ Optimisations performance
-├── ✅ Documentation complète
-└── ✅ Déploiement production
-```
-
-### Q2 2024 (V1 Development)
-```
-Avril 2024
-├── 🚧 Live streaming MVP
-├── 🚧 Paiements Stripe
-├── 🚧 Notifications push
-└── 🚧 Analytics de base
-
-Mai 2024
-├── 🚧 Chat interactif
-├── 🚧 Dashboard vendeur
-├── 🚧 PWA implementation
-└── 🚧 Tests beta fermés
-
-Juin 2024
-├── 🚧 Optimisations IA
-├── 🚧 Sécurité renforcée
-├── 🚧 Performance tuning
-└── 🚧 Lancement V1
-```
-
-### Q3 2024 (V2 Planning)
-```
-Juillet 2024
-├── 📋 Architecture microservices
-├── 📋 Apps natives planning
-├── 📋 IA/ML integration
-└── 📋 Marketplace design
-
-Août 2024
-├── 📋 Multi-langues setup
-├── 📋 Gamification design
-├── 📋 AR/VR research
-└── 📋 Partnership strategy
-
-Septembre 2024
-├── 📋 V2 MVP development
-├── 📋 Beta testing program
-├── 📋 Performance optimization
-└── 📋 Security audit
-```
-
-### Q4 2024 (V2 Launch)
-```
-Octobre 2024
-├── 📋 Apps natives beta
-├── 📋 IA recommendations
-├── 📋 Global marketplace
-└── 📋 Advanced analytics
-
-Novembre 2024
-├── 📋 Gamification launch
-├── 📋 AR try-on features
-├── 📋 Influencer program
-└── 📋 Web3 integration
-
-Décembre 2024
-├── 📋 V2 full launch
-├── 📋 Global expansion
-├── 📋 Enterprise features
-└── 📋 2025 planning
-```
-
-## 🎯 Objectifs par Phase
-
-### MVP (Q1 2024)
-- **Utilisateurs** : 1,000 utilisateurs actifs
-- **Produits** : 500 produits actifs
-- **Performance** : < 2s temps de chargement
-- **Uptime** : 99.5% disponibilité
-
-### V1 (Q2 2024)
-- **Utilisateurs** : 10,000 utilisateurs actifs
-- **Vendeurs** : 500 vendeurs actifs
-- **Revenue** : €50,000 GMV mensuel
-- **Live Streams** : 100 streams/mois
-
-### V2 (Q4 2024)
-- **Utilisateurs** : 100,000 utilisateurs actifs
-- **Vendeurs** : 5,000 vendeurs actifs
-- **Revenue** : €500,000 GMV mensuel
-- **Global** : 5 pays actifs
-
-## 🚧 Défis et Risques
-
-### Défis Techniques
-- **Scalabilité** : Gestion de la croissance rapide
-- **Performance** : Optimisation des vidéos en streaming
-- **Sécurité** : Protection contre la fraude
-- **Intégration** : Complexité des paiements internationaux
-
-### Défis Business
-- **Adoption** : Acquisition d'utilisateurs vendeurs
-- **Monétisation** : Équilibre commissions/prix
-- **Concurrence** : Différenciation vs TikTok Shop
-- **Régulation** : Compliance multi-pays
-
-### Stratégies d'Atténuation
-- **Architecture** : Design scalable dès le départ
-- **Partnerships** : Alliances stratégiques
-- **Innovation** : Focus sur l'expérience unique
-- **Community** : Building d'une communauté forte
-
-## 🎉 Vision Long Terme (2025+)
-
-### Objectifs 2025
-- **Plateforme** : Leader européen du shopping vidéo
-- **Technologie** : Innovation IA/AR/VR
-- **Écosystème** : Marketplace complet
-- **Impact** : Révolutionner l'e-commerce social
-
-### Innovations Futures
-- **Metaverse** : Shopping en réalité virtuelle
-- **Blockchain** : Traçabilité complète des produits
-- **IoT** : Inventaire intelligent connecté
-- **Quantum** : Optimisation quantique des recommandations
+**SocialCart** vise à devenir la plateforme de référence pour le commerce social en Europe, combinant l'expérience immersive des réseaux sociaux avec la simplicité d'achat de l'e-commerce traditionnel.
 
 ---
 
-Cette roadmap guide l'évolution de Shopping Connect vers une plateforme de shopping vidéo social révolutionnaire, en équilibrant innovation technique et valeur utilisateur.
+## 📅 Phase 1 : MVP Stabilisé (Q1 2024)
+
+### ✅ Fonctionnalités actuelles
+- [x] **Feed vidéo social** avec navigation par swipe
+- [x] **Authentification complète** (inscription, connexion, profil)
+- [x] **Catalogue produits** avec images et vidéos
+- [x] **Panier d'achat** basique
+- [x] **Interactions sociales** (likes, commentaires, partages)
+- [x] **Interface mobile-first** avec design glassmorphism
+- [x] **PWA** avec installation native
+
+### 🔄 Améliorations en cours
+- [ ] **Optimisation des performances** vidéo
+- [ ] **Tests automatisés** (unitaires et E2E)
+- [ ] **Documentation API** complète
+- [ ] **Monitoring et analytics** de base
+
+### 🎯 Objectifs Q1
+- **Performance** : Core Web Vitals > 90
+- **Stabilité** : 99.5% uptime
+- **UX** : Temps de chargement < 2s
+- **Mobile** : Support iOS/Android optimal
+
+---
+
+## 🚀 Phase 2 : Fonctionnalités Avancées (Q2 2024)
+
+### 💳 Système de Paiement
+- [ ] **Intégration Stripe** complète
+- [ ] **Paiements sécurisés** avec 3D Secure
+- [ ] **Gestion des remboursements** automatique
+- [ ] **Suivi des commandes** en temps réel
+- [ ] **Factures PDF** automatiques
+
+### 📱 Améliorations Mobile
+- [ ] **Notifications push** natives
+- [ ] **Gestion offline** basique
+- [ ] **Géolocalisation** pour les livraisons
+- [ ] **Appareil photo** intégré pour les avis
+- [ ] **Reconnaissance d'images** pour la recherche
+
+### 🎥 Feed Vidéo Avancé
+- [ ] **Algorithmes de recommandation** personnalisés
+- [ ] **Filtres avancés** (prix, catégorie, localisation)
+- [ ] **Recherche vocale** intégrée
+- [ ] **Mode portrait/landscape** adaptatif
+- [ ] **Qualité vidéo adaptative**
+
+### 👥 Social Features
+- [ ] **Système de followers** avec feed personnalisé
+- [ ] **Chat en direct** avec les vendeurs
+- [ ] **Groupes d'achat** et réductions collectives
+- [ ] **Programme d'affiliation** pour les créateurs
+- [ ] **Badges et récompenses** utilisateur
+
+### 🎯 Objectifs Q2
+- **Monétisation** : 1000+ commandes/mois
+- **Engagement** : 70% de rétention utilisateur
+- **Social** : 50% des utilisateurs actifs socialement
+- **Performance** : 95% satisfaction utilisateur
+
+---
+
+## 🌟 Phase 3 : Plateforme Complète (Q3 2024)
+
+### 🏪 Marketplace Vendeurs
+- [ ] **Tableau de bord vendeur** complet
+- [ ] **Gestion d'inventaire** en temps réel
+- [ ] **Analytics vendeur** détaillées
+- [ ] **Programme de formation** vendeurs
+- [ ] **Support client** dédié
+
+### 🤖 Intelligence Artificielle
+- [ ] **Recommandations personnalisées** avec ML
+- [ ] **Détection de contenu** inapproprié
+- [ ] **Optimisation des prix** dynamique
+- [ ] **Chatbot** d'assistance client
+- [ ] **Analyse prédictive** des tendances
+
+### 🌍 Internationalisation
+- [ ] **Multi-langues** (EN, ES, DE, IT)
+- [ ] **Multi-devises** avec taux de change
+- [ ] **Livraison internationale** intégrée
+- [ ] **Conformité GDPR** renforcée
+- [ ] **Support client** multilingue
+
+### 📊 Analytics Avancées
+- [ ] **Dashboard analytics** complet
+- [ ] **A/B testing** intégré
+- [ ] **Heatmaps** de navigation
+- [ ] **Funnel d'achat** optimisé
+- [ ] **ROI tracking** pour les vendeurs
+
+### 🎯 Objectifs Q3
+- **Échelle** : 10,000+ utilisateurs actifs
+- **International** : 3+ pays européens
+- **IA** : 30% d'amélioration des conversions
+- **Vendeurs** : 500+ vendeurs actifs
+
+---
+
+## 🚀 Phase 4 : Innovation et Expansion (Q4 2024)
+
+### 🥽 Technologies Immersives
+- [ ] **AR/VR** pour visualiser les produits
+- [ ] **Essayage virtuel** avec IA
+- [ ] **Lives shopping** avec interaction temps réel
+- [ ] **Réalité augmentée** pour l'achat
+- [ ] **NFT marketplace** intégré
+
+### 🔗 Écosystème Partenaires
+- [ ] **API publique** pour développeurs tiers
+- [ ] **Intégrations** avec réseaux sociaux
+- [ ] **Plugins** pour sites e-commerce
+- [ ] **White-label** solutions
+- [ ] **Marketplace** d'applications
+
+### 💎 Premium Features
+- [ ] **Abonnement premium** utilisateurs
+- [ ] **Livraison express** gratuite
+- [ ] **Accès prioritaire** aux nouveautés
+- [ ] **Support premium** 24/7
+- [ ] **Fonctionnalités exclusives**
+
+### 🌐 Expansion Géographique
+- [ ] **Amérique du Nord** (US, Canada)
+- [ ] **Asie-Pacifique** (Singapour, Australie)
+- [ ] **Amérique Latine** (Brésil, Mexique)
+- [ ] **Partenariats locaux** stratégiques
+- [ ] **Conformité réglementaire** locale
+
+### 🎯 Objectifs Q4
+- **Global** : 100,000+ utilisateurs actifs
+- **Innovation** : 5+ fonctionnalités AR/VR
+- **Partenaires** : 50+ intégrations tierces
+- **Premium** : 10% de taux de conversion premium
+
+---
+
+## 🔮 Vision 2025+
+
+### 🤖 Intelligence Artificielle Avancée
+- **Assistant IA personnel** pour l'achat
+- **Prédiction des tendances** de mode
+- **Optimisation automatique** des prix
+- **Personnalisation** ultra-granulaire
+- **Détection de fraude** en temps réel
+
+### 🌐 Métaverse et Web3
+- **Boutiques virtuelles** dans le métaverse
+- **Tokens de fidélité** blockchain
+- **DAO communautaire** pour la gouvernance
+- **NFT collections** exclusives
+- **Réalité virtuelle** shopping
+
+### 🚀 Technologies Émergentes
+- **IA conversationnelle** avancée
+- **Blockchain** pour la traçabilité
+- **IoT** pour l'inventaire intelligent
+- **5G** pour l'expérience ultra-rapide
+- **Edge computing** pour la latence minimale
+
+---
+
+## 📊 Métriques de Succès
+
+### Métriques Techniques
+- **Performance** : Core Web Vitals > 95
+- **Disponibilité** : 99.9% uptime
+- **Sécurité** : 0 incident de sécurité majeur
+- **Scalabilité** : Support 1M+ utilisateurs
+
+### Métriques Business
+- **Croissance** : 20% MoM utilisateurs actifs
+- **Engagement** : 80% rétention mensuelle
+- **Conversion** : 15% taux de conversion
+- **Revenue** : 50% croissance trimestrielle
+
+### Métriques Sociales
+- **Interactions** : 5+ interactions/user/session
+- **Partage** : 25% des utilisateurs partagent
+- **Créateurs** : 1000+ créateurs actifs
+- **Communauté** : 90% satisfaction utilisateur
+
+---
+
+## 🛠️ Architecture Évolutive
+
+### Phase 1-2 : Monolithique Optimisé
+- **Supabase** comme backend principal
+- **React** frontend avec optimisations
+- **CDN** pour les assets statiques
+- **Monitoring** basique
+
+### Phase 3 : Microservices Hybrides
+- **API Gateway** pour router les requêtes
+- **Services spécialisés** (auth, payments, social)
+- **Base de données** distribuée
+- **Cache** Redis distribué
+
+### Phase 4+ : Cloud Native
+- **Kubernetes** pour l'orchestration
+- **Microservices** complets
+- **Event-driven** architecture
+- **Multi-cloud** deployment
+
+---
+
+## 🎯 Priorités Stratégiques
+
+### 🔥 Critique (Do First)
+1. **Stabilité** et performance de base
+2. **Sécurité** et conformité GDPR
+3. **Expérience utilisateur** mobile optimale
+4. **Monétisation** via les paiements
+
+### ⚡ Important (Do Soon)
+1. **Fonctionnalités sociales** avancées
+2. **Analytics** et insights business
+3. **Internationalisation** européenne
+4. **Partenariats** stratégiques
+
+### 💡 Nice to Have (Do Later)
+1. **Technologies immersives** (AR/VR)
+2. **Blockchain** et Web3
+3. **IA avancée** et prédictive
+4. **Expansion** géographique globale
+
+---
+
+## 🤝 Contribution et Feedback
+
+### Comment contribuer
+- **Issues GitHub** pour les bugs et features
+- **Discussions** pour les idées et feedback
+- **Pull Requests** pour les contributions code
+- **Documentation** pour les améliorations
+
+### Feedback utilisateur
+- **Surveys** régulières utilisateurs
+- **A/B testing** pour les nouvelles features
+- **Analytics** comportementales
+- **Support client** feedback
+
+---
+
+**SocialCart** - Construire l'avenir du commerce social, une fonctionnalité à la fois 🚀
+
+*Cette roadmap est un document vivant qui évolue selon les retours utilisateurs et les tendances technologiques.*

@@ -1,397 +1,545 @@
-# 🤝 Guide de Contribution - Shopping Connect
+# 🤝 Guide de Contribution - SocialCart
 
-## Bienvenue !
+## Bienvenue ! 👋
 
-Merci de votre intérêt pour contribuer à **Shopping Connect** ! Ce guide vous aidera à comprendre notre processus de développement et à contribuer efficacement au projet.
+Merci de votre intérêt pour contribuer à **SocialCart** ! Ce guide vous aidera à comprendre comment participer au développement de la plateforme.
 
-## 📋 Prérequis
+## 📋 Table des matières
 
-### Outils Requis
-- **Node.js** >= 18.0.0
-- **npm** >= 8.0.0 ou **yarn** >= 1.22.0
-- **Git** pour le versioning
-- **VS Code** (recommandé) avec extensions :
-  - ES7+ React/Redux/React-Native snippets
-  - Tailwind CSS IntelliSense
-  - TypeScript Importer
-  - Prettier - Code formatter
-  - ESLint
+- [Code de conduite](#code-de-conduite)
+- [Comment contribuer](#comment-contribuer)
+- [Setup de développement](#setup-de-développement)
+- [Standards de code](#standards-de-code)
+- [Processus de Pull Request](#processus-de-pull-request)
+- [Rapport de bugs](#rapport-de-bugs)
+- [Propositions de fonctionnalités](#propositions-de-fonctionnalités)
 
-### Comptes Nécessaires
-- **GitHub** pour le code
-- **Supabase** pour la base de données (compte gratuit)
-- **Vercel/Netlify** pour le déploiement (optionnel)
+## 📜 Code de conduite
 
-## 🚀 Configuration du Projet
+### Notre engagement
 
-### 1. Fork et Clone
+Nous nous engageons à offrir une expérience de contribution ouverte et accueillante pour tous, indépendamment de l'âge, de la taille, du handicap, de l'ethnicité, de l'identité et de l'expression de genre, du niveau d'expérience, de l'éducation, du statut socio-économique, de la nationalité, de l'apparence personnelle, de la race, de la religion ou de l'orientation sexuelle.
+
+### Comportements attendus
+
+- **Respect mutuel** et communication constructive
+- **Empathie** envers les autres points de vue
+- **Acceptation** des critiques constructives
+- **Focus** sur ce qui est le mieux pour la communauté
+- **Respect** des autres contributeurs
+
+### Comportements inacceptables
+
+- **Langage** ou images sexualisés ou violents
+- **Trolling**, commentaires insultants ou désobligeants
+- **Harcèlement** public ou privé
+- **Publishing** d'informations privées sans permission
+- **Comportement** non professionnel
+
+## 🚀 Comment contribuer
+
+### Types de contributions
+
+#### 🐛 Correction de bugs
+- Identifier et corriger des problèmes existants
+- Améliorer la gestion d'erreurs
+- Optimiser les performances
+
+#### ✨ Nouvelles fonctionnalités
+- Implémenter des features demandées
+- Améliorer l'expérience utilisateur
+- Ajouter de nouveaux composants
+
+#### 📚 Documentation
+- Améliorer la documentation existante
+- Ajouter des exemples de code
+- Traduire la documentation
+
+#### 🧪 Tests
+- Ajouter des tests unitaires
+- Implémenter des tests d'intégration
+- Améliorer la couverture de tests
+
+#### 🎨 Design
+- Améliorer l'interface utilisateur
+- Optimiser l'expérience mobile
+- Créer de nouveaux assets
+
+### Processus de contribution
+
+1. **Fork** le repository
+2. **Créer** une branche feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** vers la branche (`git push origin feature/AmazingFeature`)
+5. **Ouvrir** une Pull Request
+
+## 🛠️ Setup de développement
+
+### Prérequis
+
 ```bash
-# Fork le repository sur GitHub, puis :
-git clone https://github.com/VOTRE-USERNAME/shopping-connect.git
-cd shopping-connect
+# Node.js (version 18+)
+node --version  # v18.0.0+
 
-# Ajouter le repository upstream
-git remote add upstream https://github.com/ORIGINAL-OWNER/shopping-connect.git
+# npm ou yarn
+npm --version   # 8.0.0+
+# ou
+yarn --version  # 1.22.0+
+
+# Git
+git --version   # 2.30.0+
 ```
 
-### 2. Installation
+### Installation
+
 ```bash
-# Installer les dépendances
+# 1. Fork et cloner le repository
+git clone https://github.com/VOTRE-USERNAME/socialcart.git
+cd socialcart
+
+# 2. Installer les dépendances
 npm install
 # ou
 yarn install
 
-# Copier les variables d'environnement
+# 3. Configuration des variables d'environnement
 cp .env.example .env.local
-```
 
-### 3. Configuration Supabase
-1. Créer un projet Supabase
-2. Configurer `.env.local` :
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-3. Exécuter le schéma SQL dans Supabase SQL Editor
+# 4. Configurer Supabase (voir README.md)
+# - Créer un projet Supabase
+# - Configurer les variables d'environnement
+# - Initialiser la base de données
 
-### 4. Lancement en Développement
-```bash
+# 5. Lancer le serveur de développement
 npm run dev
 # ou
 yarn dev
 ```
 
-## 🎯 Types de Contributions
+### Structure du projet
 
-### 🐛 Bug Reports
-- **Problèmes existants** dans le code
-- **Erreurs de fonctionnement** des fonctionnalités
-- **Problèmes de performance** ou d'UX
-- **Bugs visuels** ou de responsive
-
-### ✨ Feature Requests
-- **Nouvelles fonctionnalités** pour améliorer l'app
-- **Améliorations UX/UI** existantes
-- **Optimisations** de performance
-- **Intégrations** avec des services externes
-
-### 📚 Documentation
-- **Amélioration** de la documentation existante
-- **Tutoriels** et guides d'utilisation
-- **Exemples** de code et cas d'usage
-- **Traductions** en d'autres langues
-
-### 🎨 Design & UX
-- **Améliorations** du design system
-- **Nouvelles animations** et micro-interactions
-- **Optimisations** mobile-first
-- **Accessibilité** et inclusivité
-
-## 🔄 Workflow de Contribution
-
-### 1. Créer une Issue
-Avant de commencer à coder :
-1. **Vérifier** si l'issue existe déjà
-2. **Créer une issue** détaillée avec :
-   - Description claire du problème/feature
-   - Étapes de reproduction (pour les bugs)
-   - Mockups/wireframes (pour les features)
-   - Labels appropriés
-
-### 2. Créer une Branch
-```bash
-# Synchroniser avec upstream
-git fetch upstream
-git checkout main
-git merge upstream/main
-
-# Créer une nouvelle branch
-git checkout -b feature/nom-de-la-feature
-# ou
-git checkout -b fix/nom-du-bug
-# ou
-git checkout -b docs/nom-de-la-doc
+```
+socialcart/
+├── 📁 src/
+│   ├── 📁 components/     # Composants réutilisables
+│   ├── 📁 hooks/         # Hooks personnalisés
+│   ├── 📁 lib/           # Services et utilitaires
+│   ├── 📁 pages/         # Pages de l'application
+│   └── 📁 types/         # Définitions TypeScript
+├── 📁 supabase/          # Scripts base de données
+├── 📁 docs/              # Documentation
+└── 📁 tests/             # Tests (à venir)
 ```
 
-### 3. Développement
+## 📏 Standards de code
 
-#### **Standards de Code**
+### TypeScript
+
 ```typescript
-// ✅ Bon exemple
+// ✅ Bon
 interface UserProps {
   id: string;
   username: string;
   avatarUrl?: string;
 }
 
-export function UserCard({ id, username, avatarUrl }: UserProps) {
+const UserProfile: React.FC<UserProps> = ({ id, username, avatarUrl }) => {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleClick = useCallback(() => {
-    // Logique métier
+    setIsLoading(true);
   }, []);
   
   return (
-    <div className="user-card">
+    <div className="user-profile">
       {/* JSX */}
     </div>
   );
-}
+};
 
-// ❌ Mauvais exemple
-export function UserCard(props: any) {
-  const [loading, setLoading] = useState(false);
-  
-  return <div>{/* JSX sans structure */}</div>;
-}
+// ❌ Éviter
+const UserProfile = ({ id, username, avatarUrl }) => {
+  // Pas de types, pas de useCallback, etc.
+};
 ```
 
-#### **Conventions de Nommage**
-- **Composants** : PascalCase (`UserCard`, `ProductList`)
-- **Fonctions** : camelCase (`getUserData`, `handleSubmit`)
-- **Variables** : camelCase (`userName`, `isLoading`)
-- **Constantes** : UPPER_SNAKE_CASE (`API_URL`, `MAX_ITEMS`)
-- **Fichiers** : PascalCase pour composants, camelCase pour utils
+### React
 
-#### **Structure des Composants**
 ```typescript
-// 1. Imports
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-
-// 2. Types/Interfaces
-interface ComponentProps {
-  prop1: string;
-  prop2?: number;
-}
-
-// 3. Composant principal
-export function Component({ prop1, prop2 }: ComponentProps) {
-  // 4. Hooks
+// ✅ Composants fonctionnels
+export function Component({ prop }: ComponentProps) {
+  // Hooks au début
   const [state, setState] = useState();
   
-  // 5. Effets
-  useEffect(() => {
+  // Handlers avec useCallback
+  const handleClick = useCallback(() => {
     // Logique
   }, []);
   
-  // 6. Handlers
-  const handleAction = () => {
-    // Logique
-  };
+  // Effets avec dépendances
+  useEffect(() => {
+    // Effet
+  }, [dependency]);
   
-  // 7. Rendu
-  return (
-    <div className="component">
-      {/* JSX */}
-    </div>
-  );
+  // Render
+  return <div>{/* JSX */}</div>;
+}
+
+// ✅ Props avec types explicites
+interface ComponentProps {
+  title: string;
+  isVisible?: boolean;
+  onAction?: () => void;
 }
 ```
 
-### 4. Tests et Validation
+### CSS / Tailwind
 
-#### **Tests Manuels**
-- [ ] **Fonctionnalité** testée sur mobile et desktop
-- [ ] **Responsive** vérifié sur différentes tailles
-- [ ] **Performance** acceptable (< 2s chargement)
-- [ ] **Accessibilité** de base respectée
-- [ ] **Cross-browser** testé (Chrome, Firefox, Safari)
+```tsx
+// ✅ Classes Tailwind organisées
+<div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+  <h2 className="text-lg font-semibold text-gray-900">
+    {title}
+  </h2>
+  <button className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">
+    Action
+  </button>
+</div>
 
-#### **Linting et Formatting**
-```bash
-# Vérifier le linting
-npm run lint
-# ou
-yarn lint
-
-# Auto-fix si possible
-npm run lint -- --fix
-# ou
-yarn lint --fix
+// ✅ Composants avec variants
+const Button: React.FC<ButtonProps> = ({ 
+  variant = 'primary', 
+  size = 'medium',
+  children,
+  ...props 
+}) => {
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+  
+  const variantClasses = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
+  };
+  
+  const sizeClasses = {
+    small: 'px-3 py-1.5 text-sm',
+    medium: 'px-4 py-2 text-sm',
+    large: 'px-6 py-3 text-base',
+  };
+  
+  return (
+    <button
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
 ```
 
-### 5. Commit et Push
-```bash
-# Ajouter les fichiers modifiés
-git add .
+### Nommage
 
-# Commit avec message descriptif
-git commit -m "feat: add user profile picture upload
+```typescript
+// ✅ Conventions de nommage
+// Variables et fonctions : camelCase
+const userName = 'john';
+const getUserData = () => {};
 
-- Add ProfileImageUploader component
-- Implement drag & drop functionality
-- Add image validation and preview
-- Update user avatar in database
-- Add error handling and loading states"
+// Composants : PascalCase
+const UserProfile = () => {};
+const ProductCard = () => {};
 
-# Push vers votre fork
-git push origin feature/nom-de-la-feature
+// Types et interfaces : PascalCase
+interface UserData {}
+type ProductStatus = 'active' | 'inactive';
+
+// Constantes : UPPER_SNAKE_CASE
+const API_BASE_URL = 'https://api.example.com';
+const MAX_RETRY_ATTEMPTS = 3;
+
+// Fichiers : kebab-case
+user-profile.tsx
+product-card.tsx
+api-client.ts
 ```
 
-#### **Convention de Commits**
-Utiliser le format **Conventional Commits** :
-- `feat:` nouvelle fonctionnalité
-- `fix:` correction de bug
-- `docs:` documentation
-- `style:` formatage, pas de changement de code
-- `refactor:` refactoring de code
-- `test:` ajout de tests
-- `chore:` tâches de maintenance
+### Imports
 
-### 6. Pull Request
+```typescript
+// ✅ Organisation des imports
+// 1. Imports externes (React, bibliothèques)
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
 
-#### **Créer la PR**
-1. Aller sur GitHub
-2. Cliquer "Compare & pull request"
-3. Remplir le template de PR
+// 2. Imports internes (composants, hooks, services)
+import { UserAvatar } from './UserAvatar';
+import { useAuth } from '../hooks/useAuth';
+import { ProductService } from '../lib/products';
 
-#### **Template de PR**
+// 3. Imports de types
+import type { User, Product } from '../types';
+
+// 4. Imports relatifs
+import './UserProfile.css';
+```
+
+## 🔄 Processus de Pull Request
+
+### Avant de soumettre
+
+- [ ] **Tests** : Vérifier que le code fonctionne
+- [ ] **Linting** : `npm run lint` sans erreurs
+- [ ] **Types** : TypeScript sans erreurs
+- [ ] **Documentation** : Mettre à jour si nécessaire
+- [ ] **Commits** : Messages clairs et descriptifs
+
+### Template de Pull Request
+
 ```markdown
-## 📝 Description
+## Description
 Brève description des changements apportés.
 
-## 🔗 Issue liée
-Fixes #123
+## Type de changement
+- [ ] Bug fix (changement non-breaking qui corrige un problème)
+- [ ] Nouvelle feature (changement non-breaking qui ajoute une fonctionnalité)
+- [ ] Breaking change (fix ou feature qui causerait un changement de comportement existant)
+- [ ] Documentation (changements uniquement dans la documentation)
+
+## Comment tester
+1. Étapes pour tester les changements
+2. Résultats attendus
+
+## Checklist
+- [ ] Mon code suit les standards du projet
+- [ ] J'ai effectué une auto-review de mon code
+- [ ] J'ai ajouté des commentaires si nécessaire
+- [ ] Ma modification ne génère pas de nouveaux warnings
+- [ ] J'ai ajouté des tests qui prouvent que ma correction est efficace
+- [ ] Les tests passent localement
+- [ ] J'ai mis à jour la documentation si nécessaire
+
+## Screenshots (si applicable)
+Ajouter des captures d'écran pour les changements UI.
+
+## Références
+Lier les issues GitHub concernées.
+```
+
+### Processus de review
+
+1. **Review automatique** : CI/CD vérifie le code
+2. **Review manuel** : Un mainteneur examine le code
+3. **Feedback** : Discussion et améliorations si nécessaire
+4. **Approval** : Approbation et merge dans main
+
+## 🐛 Rapport de bugs
+
+### Template de bug report
+
+```markdown
+## Description du bug
+Une description claire et concise du problème.
+
+## Étapes pour reproduire
+1. Aller à '...'
+2. Cliquer sur '...'
+3. Faire défiler vers '...'
+4. Voir l'erreur
+
+## Comportement attendu
+Une description claire et concise de ce qui devrait se passer.
+
+## Screenshots
+Si applicable, ajouter des captures d'écran.
+
+## Environnement
+- OS: [ex. iOS, Android, Windows, macOS]
+- Navigateur: [ex. Chrome, Safari, Firefox]
+- Version: [ex. 22]
+- Version de l'app: [ex. 1.0.0]
+
+## Informations additionnelles
+Toute autre information pertinente.
+```
+
+### Priorité des bugs
+
+- 🔴 **Critique** : App crash, perte de données
+- 🟡 **Majeur** : Fonctionnalité cassée, mauvaise UX
+- 🟢 **Mineur** : Problème cosmétique, amélioration
+
+## 💡 Propositions de fonctionnalités
+
+### Template de feature request
+
+```markdown
+## Résumé
+Une description claire et concise de la fonctionnalité souhaitée.
+
+## Motivation
+Pourquoi cette fonctionnalité serait-elle utile ? Quel problème résout-elle ?
+
+## Description détaillée
+Une description détaillée de la fonctionnalité et de son comportement attendu.
+
+## Alternatives considérées
+Décrire les solutions alternatives que vous avez considérées.
+
+## Implémentation (optionnel)
+Si vous avez des idées sur l'implémentation, les partager ici.
+
+## Impact utilisateur
+Comment cette fonctionnalité améliorerait l'expérience utilisateur ?
+
+## Priorité
+- [ ] Critique (bloque d'autres fonctionnalités)
+- [ ] Haute (améliore significativement l'UX)
+- [ ] Moyenne (amélioration nice-to-have)
+- [ ] Basse (bon à avoir)
+```
+
+### Processus d'évaluation
+
+1. **Discussion** : Évaluer la pertinence et la faisabilité
+2. **Priorisation** : Déterminer la priorité selon la roadmap
+3. **Planning** : Intégrer dans le planning de développement
+4. **Implémentation** : Assigner à un développeur
 
 ## 🧪 Tests
-- [ ] Tests manuels effectués
-- [ ] Fonctionnalité testée sur mobile/desktop
-- [ ] Performance vérifiée
-- [ ] Aucune régression détectée
 
-## 📸 Screenshots
-Ajouter des captures d'écran si applicable.
+### Tests unitaires (à venir)
 
-## 📋 Checklist
-- [ ] Code respecte les standards du projet
-- [ ] Documentation mise à jour si nécessaire
-- [ ] Tests passent
-- [ ] PR est à jour avec main
-```
-
-## 🎨 Guidelines de Design
-
-### Design System
-- **Couleurs** : Utiliser la palette définie dans `tailwind.config.js`
-- **Typographie** : Inter comme police principale
-- **Espacement** : Système de spacing cohérent
-- **Animations** : Framer Motion pour les transitions
-
-### Composants UI
 ```typescript
-// ✅ Utiliser les classes Tailwind cohérentes
-<button className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-colors">
-  Action
-</button>
+// Exemple de test avec Vitest
+import { render, screen } from '@testing-library/react';
+import { UserProfile } from './UserProfile';
 
-// ✅ Utiliser les composants existants
-<UserAvatar 
-  avatarUrl={user.avatarUrl} 
-  username={user.username} 
-  size="md" 
-/>
+describe('UserProfile', () => {
+  it('affiche le nom d\'utilisateur', () => {
+    render(<UserProfile username="john" />);
+    expect(screen.getByText('john')).toBeInTheDocument();
+  });
+});
 ```
 
-### Responsive Design
+### Tests d'intégration
+
 ```typescript
-// ✅ Mobile-first approach
-<div className="flex flex-col md:flex-row gap-4">
-  <div className="w-full md:w-1/2">
-    {/* Contenu */}
-  </div>
-</div>
+// Test d'intégration avec React Testing Library
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Cart } from './Cart';
+
+describe('Cart Integration', () => {
+  it('ajoute un produit au panier', async () => {
+    render(<Cart />);
+    
+    const addButton = screen.getByRole('button', { name: /ajouter/i });
+    fireEvent.click(addButton);
+    
+    expect(await screen.findByText('Produit ajouté')).toBeInTheDocument();
+  });
+});
 ```
 
-## 🧪 Tests et Qualité
+## 📝 Documentation
 
-### Tests Manuels
-1. **Fonctionnalité principale** : Vérifier que la feature fonctionne
-2. **Cas d'erreur** : Tester les cas d'échec
-3. **Performance** : Mesurer les temps de chargement
-4. **UX** : Vérifier l'expérience utilisateur
+### Documentation du code
 
-### Code Review Checklist
-- [ ] **Code lisible** et bien commenté
-- [ ] **Types TypeScript** corrects
-- [ ] **Gestion d'erreurs** appropriée
-- [ ] **Performance** optimisée
-- [ ] **Sécurité** respectée
-- [ ] **Accessibilité** de base
+```typescript
+/**
+ * Composant UserProfile - Affiche le profil d'un utilisateur
+ * 
+ * @param props - Props du composant
+ * @param props.user - Données de l'utilisateur
+ * @param props.showActions - Afficher les boutons d'action
+ * @param props.onEdit - Callback appelé lors de l'édition
+ * 
+ * @example
+ * ```tsx
+ * <UserProfile 
+ *   user={userData} 
+ *   showActions={true}
+ *   onEdit={() => console.log('Edit clicked')}
+ * />
+ * ```
+ */
+export function UserProfile({ user, showActions, onEdit }: UserProfileProps) {
+  // Implementation
+}
+```
 
-## 🚀 Déploiement et Release
+### Documentation des API
 
-### Branches
-- **`main`** : Code de production stable
-- **`develop`** : Intégration des features
-- **`feature/*`** : Nouvelles fonctionnalités
-- **`fix/*`** : Corrections de bugs
-- **`hotfix/*`** : Corrections urgentes
+```typescript
+/**
+ * Service pour la gestion des produits
+ */
+export class ProductService {
+  /**
+   * Récupère la liste des produits
+   * 
+   * @param filters - Filtres optionnels pour la recherche
+   * @returns Promise<Product[]> - Liste des produits
+   * 
+   * @throws {Error} Si la requête échoue
+   * 
+   * @example
+   * ```typescript
+   * const products = await ProductService.getProducts({
+   *   category: 'electronics',
+   *   priceRange: { min: 100, max: 500 }
+   * });
+   * ```
+   */
+  static async getProducts(filters?: ProductFilters): Promise<Product[]> {
+    // Implementation
+  }
+}
+```
 
-### Processus de Release
-1. **Merge** vers `main` après review
-2. **Tests** de régression
-3. **Déploiement** automatique via CI/CD
-4. **Monitoring** des métriques post-release
+## 🏷️ Versioning et Releases
 
-## 📞 Communication
+### Semantic Versioning
 
-### Channels de Communication
-- **GitHub Issues** : Bugs et features
-- **GitHub Discussions** : Questions générales
-- **Pull Requests** : Reviews et discussions techniques
+- **MAJOR** (1.0.0) : Breaking changes
+- **MINOR** (0.1.0) : Nouvelles fonctionnalités compatibles
+- **PATCH** (0.0.1) : Corrections de bugs
 
-### Code Review Guidelines
-- **Constructif** : Proposer des améliorations
-- **Respectueux** : Maintenir un ton professionnel
-- **Détaillé** : Expliquer les suggestions
-- **Apprendre** : Utiliser les reviews comme opportunité d'apprentissage
+### Processus de release
 
-## 🎓 Ressources d'Apprentissage
+1. **Feature freeze** : Arrêt des nouvelles fonctionnalités
+2. **Testing** : Tests intensifs
+3. **Documentation** : Mise à jour de la documentation
+4. **Release notes** : Préparation des notes de version
+5. **Deployment** : Déploiement en production
 
-### Documentation Technique
-- [React Documentation](https://react.dev/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Supabase Documentation](https://supabase.com/docs)
-- [Framer Motion](https://www.framer.com/motion/)
+## 🆘 Support et Aide
 
-### Outils de Développement
-- [VS Code Extensions](https://code.visualstudio.com/docs)
-- [Git Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows)
-- [Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools)
+### Obtenir de l'aide
 
-## 🏆 Reconnaissance
+- **GitHub Issues** : Pour les bugs et feature requests
+- **GitHub Discussions** : Pour les questions générales
+- **Discord** : Pour le chat en temps réel (à venir)
+- **Email** : support@socialcart.app
 
-### Types de Contributions Reconnues
-- **Code** : Nouvelles fonctionnalités et corrections
-- **Documentation** : Guides et tutoriels
-- **Design** : Améliorations UX/UI
-- **Tests** : Tests et qualité
-- **Community** : Aide aux autres contributeurs
+### Ressources utiles
 
-### Système de Reconnaissance
-- **Contributeurs** listés dans le README
-- **Badges** GitHub pour les contributions
-- **Mentions** dans les releases
-- **Accès** aux discussions privées pour les contributeurs actifs
+- [Documentation React](https://react.dev/)
+- [Documentation TypeScript](https://www.typescriptlang.org/docs/)
+- [Documentation Tailwind CSS](https://tailwindcss.com/docs)
+- [Documentation Supabase](https://supabase.com/docs)
 
-## ❓ Questions Fréquentes
+## 🙏 Remerciements
 
-### Q: Comment choisir une issue à travailler ?
-**R:** Commencer par les issues labellisées `good first issue` ou `help wanted`. Vérifier que personne d'autre ne travaille dessus.
+Merci à tous les contributeurs qui participent à faire de SocialCart une plateforme exceptionnelle !
 
-### Q: Que faire si je suis bloqué ?
-**R:** Créer une issue avec le label `question` ou demander de l'aide dans les discussions GitHub.
+### Contributeurs actifs
 
-### Q: Comment proposer une nouvelle fonctionnalité ?
-**R:** Créer une issue avec le label `enhancement` et fournir des détails, mockups si possible.
-
-### Q: Puis-je contribuer sans coder ?
-**R:** Oui ! Documentation, design, tests, et aide communautaire sont très appréciés.
+<!-- Liste des contributeurs sera mise à jour automatiquement -->
 
 ---
 
-Merci de contribuer à Shopping Connect ! Ensemble, nous créons l'avenir du shopping vidéo social. 🚀
+**Ensemble, construisons l'avenir du commerce social !** 🚀
 
-Pour toute question, n'hésitez pas à ouvrir une issue ou une discussion sur GitHub.
+*Ce guide est un document vivant qui évolue avec le projet. N'hésitez pas à proposer des améliorations !*

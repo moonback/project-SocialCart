@@ -1,40 +1,51 @@
-# 🗄️ Base de Données - Shopping Connect
+# 🗄️ Schéma de Base de Données - SocialCart
 
-## Vue d'Ensemble
+## Vue d'ensemble
 
-Shopping Connect utilise **PostgreSQL** via Supabase avec un schéma relationnel optimisé pour l'e-commerce social. La base de données est conçue pour supporter les fonctionnalités de shopping vidéo, gestion de produits, commandes et interactions sociales.
+SocialCart utilise **PostgreSQL** via Supabase avec une architecture relationnelle optimisée pour le commerce social. Ce document décrit la structure complète de la base de données.
 
-## 📊 Schéma de Base de Données
-
-### Diagramme Relationnel
+## 📊 Diagramme ERD
 
 ```mermaid
 erDiagram
-    USERS ||--o{ PRODUCTS : sells
-    USERS ||--o{ ORDERS : places
-    USERS ||--o{ CART : owns
-    USERS ||--o{ REVIEWS : writes
-    USERS ||--o{ FOLLOWS : follows
+    users ||--o{ products : "sells"
+    users ||--o{ cart_items : "has"
+    users ||--o{ orders : "places"
+    users ||--o{ follows : "follows"
+    users ||--o{ user_addresses : "has"
+    users ||--o{ user_social_profiles : "has"
     
-    PRODUCTS ||--o{ CART_ITEMS : contains
-    PRODUCTS ||--o{ ORDER_ITEMS : includes
-    PRODUCTS ||--o{ REVIEWS : receives
-    PRODUCTS }o--|| CATEGORIES : belongs_to
-    PRODUCTS }o--|| BRANDS : branded_by
+    products ||--o{ product_variants : "has"
+    products ||--o{ product_images : "contains"
+    products ||--o{ likes : "receives"
+    products ||--o{ comments : "has"
+    products ||--o{ cart_items : "referenced_by"
+    products ||--o{ order_items : "ordered_as"
+    products }o--|| categories : "belongs_to"
+    products }o--|| brands : "branded_by"
     
-    ORDERS ||--o{ ORDER_ITEMS : contains
-    ORDERS ||--o{ PAYMENTS : paid_by
+    categories ||--o{ products : "contains"
+    categories ||--o{ categories : "parent_of"
     
-    CART ||--o{ CART_ITEMS : contains
+    brands ||--o{ products : "manufactures"
     
-    CATEGORIES ||--o{ CATEGORIES : parent_of
+    orders ||--o{ order_items : "contains"
+    orders ||--o{ payments : "paid_with"
+    
+    follows }o--|| users : "follows"
+    follows }o--|| users : "followed_by"
+    
+    likes }o--|| users : "liked_by"
+    likes }o--|| products : "likes"
+    
+    comments }o--|| users : "commented_by"
+    comments }o--|| products : "comments_on"
+    comments ||--o{ comments : "replies_to"
 ```
 
-## 🏗️ Tables Principales
+## 👤 Tables Utilisateurs
 
-### 1. Table `users` - Utilisateurs
-
-**Description :** Stocke les informations des utilisateurs (acheteurs et vendeurs).
+### `users` - Profils utilisateurs
 
 ```sql
 CREATE TABLE users (
@@ -59,24 +70,105 @@ CREATE TABLE users (
 );
 ```
 
-**Champs Clés :**
-- `id` : Identifiant unique UUID
-- `email` : Email unique pour l'authentification
-- `username` : Nom d'utilisateur unique pour l'affichage
-- `avatar_url` : URL de l'image de profil
-- `is_seller` : Indique si l'utilisateur peut vendre
-- `loyalty_points` : Points de fidélité accumulés
+**Description :** Table principale des utilisateurs avec toutes les informations de profil.
 
-**Index :**
+**Champs clés :**
+- `id` : Identifiant unique UUID
+- `email` : Email unique (utilisé pour l'auth Supabase)
+- `username` : Nom d'utilisateur unique (affiché publiquement)
+- `is_seller` : Indique si l'utilisateur peut vendre des produits
+- `is_verified` : Badge de vérification pour les comptes importants
+- `loyalty_points` : Système de points de fidélité
+
+### `user_addresses` - Adresses utilisateurs
+
 ```sql
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_is_seller ON users(is_seller);
+CREATE TABLE user_addresses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(20) DEFAULT 'shipping' CHECK (type IN ('shipping', 'billing')),
+    is_default BOOLEAN DEFAULT FALSE,
+    full_name VARCHAR(100) NOT NULL,
+    company VARCHAR(100),
+    address_line_1 VARCHAR(255) NOT NULL,
+    address_line_2 VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100),
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 ```
 
-### 2. Table `products` - Produits
+**Description :** Gestion des adresses de livraison et de facturation.
 
-**Description :** Stocke les informations des produits avec support vidéo et images.
+**Relations :**
+- `user_id` → `users.id` (CASCADE DELETE)
+
+### `user_social_profiles` - Profils sociaux
+
+```sql
+CREATE TABLE user_social_profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    platform VARCHAR(20) NOT NULL CHECK (platform IN ('instagram', 'tiktok', 'youtube', 'twitter')),
+    handle VARCHAR(100) NOT NULL,
+    url TEXT,
+    followers_count INTEGER DEFAULT 0,
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, platform)
+);
+```
+
+**Description :** Liens vers les profils sociaux des utilisateurs.
+
+## 🛍️ Tables Produits
+
+### `categories` - Catégories produits
+
+```sql
+CREATE TABLE categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    parent_id UUID REFERENCES categories(id),
+    sort_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Description :** Hiérarchie des catégories avec support des sous-catégories.
+
+**Relations :**
+- `parent_id` → `categories.id` (auto-référence pour les sous-catégories)
+
+### `brands` - Marques
+
+```sql
+CREATE TABLE brands (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    logo_url TEXT,
+    website_url TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Description :** Catalogue des marques disponibles.
+
+### `products` - Produits
 
 ```sql
 CREATE TABLE products (
@@ -103,134 +195,97 @@ CREATE TABLE products (
     tags TEXT[],
     meta_title VARCHAR(255),
     meta_description TEXT,
-    video_url TEXT,
     primary_image_url TEXT,
-    images JSONB DEFAULT '[]', -- Array of image URLs
-    likes_count INTEGER DEFAULT 0,
-    views_count INTEGER DEFAULT 0,
-    sales_count INTEGER DEFAULT 0,
-    rating_average DECIMAL(3,2) DEFAULT 0,
-    rating_count INTEGER DEFAULT 0,
+    video_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-**Champs Clés :**
-- `seller_id` : Référence vers l'utilisateur vendeur
-- `video_url` : URL de la vidéo de présentation
-- `images` : Array JSON des URLs d'images
-- `status` : Statut du produit (draft, active, inactive, archived)
-- `inventory_quantity` : Quantité en stock
-- `likes_count`, `views_count`, `sales_count` : Métriques sociales
+**Description :** Table principale des produits avec toutes les informations e-commerce.
 
-**Index :**
+**Relations :**
+- `seller_id` → `users.id` (CASCADE DELETE)
+- `category_id` → `categories.id`
+- `brand_id` → `brands.id`
+
+**Champs spéciaux :**
+- `dimensions` : JSONB pour stocker les dimensions (longueur, largeur, hauteur, unité)
+- `tags` : Array de tags pour la recherche et le filtrage
+- `status` : État du produit (brouillon, actif, inactif, archivé)
+
+### `product_variants` - Variantes produits
+
 ```sql
-CREATE INDEX idx_products_seller_id ON products(seller_id);
-CREATE INDEX idx_products_category_id ON products(category_id);
-CREATE INDEX idx_products_status ON products(status);
-CREATE INDEX idx_products_created_at ON products(created_at);
-CREATE INDEX idx_products_price ON products(price);
+CREATE TABLE product_variants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL, -- ex: "Taille", "Couleur"
+    options TEXT[] NOT NULL, -- ex: ["S", "M", "L"], ["Rouge", "Bleu"]
+    required BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 ```
 
-### 3. Table `categories` - Catégories
+**Description :** Définition des variantes disponibles pour un produit (taille, couleur, etc.).
 
-**Description :** Hiérarchie des catégories de produits.
+**Relations :**
+- `product_id` → `products.id` (CASCADE DELETE)
+
+### `product_images` - Images produits
 
 ```sql
-CREATE TABLE categories (
+CREATE TABLE product_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
-    image_url TEXT,
-    parent_id UUID REFERENCES categories(id),
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    url TEXT NOT NULL,
+    alt_text VARCHAR(255),
     sort_order INTEGER DEFAULT 0,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    is_primary BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-**Données Initiales :**
-```sql
-INSERT INTO categories (name, slug, description) VALUES
-('Mode & Beauté', 'mode-beaute', 'Vêtements, accessoires et produits de beauté'),
-('Électronique', 'electronique', 'Smartphones, ordinateurs et gadgets'),
-('Maison & Jardin', 'maison-jardin', 'Décoration, mobilier et jardinage'),
-('Sport & Loisirs', 'sport-loisirs', 'Équipements sportifs et activités'),
-('Alimentation', 'alimentation', 'Produits alimentaires et boissons'),
-('Enfants & Bébés', 'enfants-bebes', 'Articles pour enfants et bébés'),
-('Automobile', 'automobile', 'Pièces et accessoires auto'),
-('Livres & Médias', 'livres-medias', 'Livres, films et musique');
-```
+**Description :** Gestion des images multiples par produit.
 
-### 4. Table `brands` - Marques
-
-**Description :** Marques des produits.
-
-```sql
-CREATE TABLE brands (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT,
-    logo_url TEXT,
-    website_url TEXT,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
+**Relations :**
+- `product_id` → `products.id` (CASCADE DELETE)
 
 ## 🛒 Tables E-commerce
 
-### 5. Table `cart` - Panier
-
-**Description :** Panier d'achat utilisateur.
-
-```sql
-CREATE TABLE cart (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    session_id VARCHAR(255), -- Pour utilisateurs non connectés
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id),
-    UNIQUE(session_id)
-);
-```
-
-### 6. Table `cart_items` - Articles du Panier
-
-**Description :** Articles dans le panier avec variantes.
+### `cart_items` - Panier utilisateur
 
 ```sql
 CREATE TABLE cart_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    cart_id UUID REFERENCES cart(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    variant_values JSONB DEFAULT '{}', -- Selected variant values
-    quantity INTEGER NOT NULL DEFAULT 1,
-    price DECIMAL(10,2) NOT NULL, -- Price at time of adding to cart
+    quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    selected_variants JSONB, -- {size: "L", color: "Blue"}
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(cart_id, product_id, variant_values)
+    UNIQUE(user_id, product_id, selected_variants)
 );
 ```
 
-### 7. Table `orders` - Commandes
+**Description :** Articles dans le panier utilisateur avec variantes sélectionnées.
 
-**Description :** Commandes utilisateur avec statuts.
+**Relations :**
+- `user_id` → `users.id` (CASCADE DELETE)
+- `product_id` → `products.id` (CASCADE DELETE)
+
+**Champs spéciaux :**
+- `selected_variants` : JSONB pour stocker les options sélectionnées
+- `UNIQUE` : Empêche les doublons avec les mêmes variantes
+
+### `orders` - Commandes
 
 ```sql
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     order_number VARCHAR(50) UNIQUE NOT NULL,
-    user_id UUID REFERENCES users(id),
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded')),
-    payment_status VARCHAR(20) DEFAULT 'pending' CHECK (payment_status IN ('pending', 'paid', 'failed', 'refunded', 'partially_refunded')),
-    shipping_status VARCHAR(20) DEFAULT 'pending' CHECK (shipping_status IN ('pending', 'shipped', 'delivered', 'returned')),
     subtotal DECIMAL(10,2) NOT NULL,
     tax_amount DECIMAL(10,2) DEFAULT 0,
     shipping_amount DECIMAL(10,2) DEFAULT 0,
@@ -240,61 +295,65 @@ CREATE TABLE orders (
     shipping_address JSONB NOT NULL,
     billing_address JSONB,
     notes TEXT,
-    tracking_number VARCHAR(100),
-    shipped_at TIMESTAMP WITH TIME ZONE,
-    delivered_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-### 8. Table `order_items` - Articles de Commande
+**Description :** Commandes utilisateur avec informations de livraison et facturation.
 
-**Description :** Détail des articles dans chaque commande.
+**Relations :**
+- `user_id` → `users.id` (CASCADE DELETE)
+
+### `order_items` - Articles commandés
 
 ```sql
 CREATE TABLE order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
     product_id UUID REFERENCES products(id),
-    product_name VARCHAR(255) NOT NULL,
+    product_name VARCHAR(255) NOT NULL, -- Snapshot du nom au moment de la commande
     product_sku VARCHAR(100),
-    variant_values JSONB DEFAULT '{}',
-    quantity INTEGER NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
     unit_price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
+    selected_variants JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-## 🎥 Tables Sociales
+**Description :** Articles individuels dans une commande (snapshot des données produit).
 
-### 9. Table `reviews` - Avis
+**Relations :**
+- `order_id` → `orders.id` (CASCADE DELETE)
+- `product_id` → `products.id` (référence, pas CASCADE)
 
-**Description :** Avis et notes sur les produits.
+### `payments` - Paiements
 
 ```sql
-CREATE TABLE reviews (
+CREATE TABLE payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    order_id UUID REFERENCES orders(id),
-    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-    title VARCHAR(255),
-    content TEXT,
-    images JSONB DEFAULT '[]',
-    is_verified_purchase BOOLEAN DEFAULT FALSE,
-    helpful_count INTEGER DEFAULT 0,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+    payment_method VARCHAR(50) NOT NULL, -- 'stripe', 'paypal', 'bank_transfer'
+    payment_intent_id VARCHAR(255), -- ID Stripe ou autre
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'EUR',
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'succeeded', 'failed', 'cancelled', 'refunded')),
+    failure_reason TEXT,
+    processed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, product_id, order_id)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-### 10. Table `follows` - Abonnements
+**Description :** Gestion des paiements avec intégration Stripe.
 
-**Description :** Système de suivi entre utilisateurs.
+**Relations :**
+- `order_id` → `orders.id` (CASCADE DELETE)
+
+## 👥 Tables Sociales
+
+### `follows` - Relations de suivi
 
 ```sql
 CREATE TABLE follows (
@@ -302,145 +361,211 @@ CREATE TABLE follows (
     follower_id UUID REFERENCES users(id) ON DELETE CASCADE,
     following_id UUID REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(follower_id, following_id)
+    UNIQUE(follower_id, following_id),
+    CHECK(follower_id != following_id)
 );
 ```
 
-### 11. Table `notifications` - Notifications
+**Description :** Relations de suivi entre utilisateurs.
 
-**Description :** Notifications utilisateur.
+**Relations :**
+- `follower_id` → `users.id` (CASCADE DELETE)
+- `following_id` → `users.id` (CASCADE DELETE)
+
+**Contraintes :**
+- `UNIQUE` : Un utilisateur ne peut suivre qu'une fois
+- `CHECK` : Un utilisateur ne peut pas se suivre lui-même
+
+### `likes` - Likes sur produits
 
 ```sql
-CREATE TABLE notifications (
+CREATE TABLE likes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    type VARCHAR(50) NOT NULL, -- 'order_update', 'new_product', 'live_stream', etc.
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    data JSONB DEFAULT '{}',
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, product_id)
 );
 ```
 
-## 🎬 Tables Live Streaming (Futur)
+**Description :** Likes des utilisateurs sur les produits.
 
-### 12. Table `live_streams` - Streams en Direct
+**Relations :**
+- `user_id` → `users.id` (CASCADE DELETE)
+- `product_id` → `products.id` (CASCADE DELETE)
 
-**Description :** Sessions de live shopping.
+### `comments` - Commentaires
 
 ```sql
-CREATE TABLE live_streams (
+CREATE TABLE comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    seller_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    thumbnail_url TEXT,
-    stream_url TEXT,
-    status VARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'live', 'ended', 'cancelled')),
-    scheduled_at TIMESTAMP WITH TIME ZONE,
-    started_at TIMESTAMP WITH TIME ZONE,
-    ended_at TIMESTAMP WITH TIME ZONE,
-    viewers_count INTEGER DEFAULT 0,
-    max_viewers INTEGER DEFAULT 0,
-    duration_minutes INTEGER,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    parent_id UUID REFERENCES comments(id) ON DELETE CASCADE, -- Pour les réponses
+    content TEXT NOT NULL CHECK (LENGTH(content) > 0 AND LENGTH(content) <= 1000),
+    is_edited BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-### 13. Table `live_stream_products` - Produits dans les Streams
+**Description :** Système de commentaires avec support des réponses.
 
-**Description :** Produits présentés pendant les streams.
+**Relations :**
+- `user_id` → `users.id` (CASCADE DELETE)
+- `product_id` → `products.id` (CASCADE DELETE)
+- `parent_id` → `comments.id` (CASCADE DELETE pour les réponses)
+
+### `shares` - Partages
 
 ```sql
-CREATE TABLE live_stream_products (
+CREATE TABLE shares (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    stream_id UUID REFERENCES live_streams(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    featured_at TIMESTAMP WITH TIME ZONE,
-    duration_seconds INTEGER,
-    sort_order INTEGER DEFAULT 0,
+    platform VARCHAR(20) CHECK (platform IN ('instagram', 'tiktok', 'twitter', 'facebook', 'whatsapp', 'copy_link')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
+
+**Description :** Tracking des partages de produits sur différentes plateformes.
+
+## 📊 Tables Analytics
+
+### `product_views` - Vues produits
+
+```sql
+CREATE TABLE product_views (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- Peut être NULL pour les visiteurs anonymes
+    ip_address INET,
+    user_agent TEXT,
+    referrer TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+**Description :** Tracking des vues de produits pour les analytics.
+
+### `user_sessions` - Sessions utilisateur
+
+```sql
+CREATE TABLE user_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    session_token VARCHAR(255) UNIQUE NOT NULL,
+    ip_address INET,
+    user_agent TEXT,
+    device_type VARCHAR(50), -- 'mobile', 'tablet', 'desktop'
+    started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    ended_at TIMESTAMP WITH TIME ZONE,
+    is_active BOOLEAN DEFAULT TRUE
+);
+```
+
+**Description :** Gestion des sessions utilisateur pour l'analytics.
 
 ## 🔒 Sécurité et Permissions
 
 ### Row Level Security (RLS)
 
-#### **Activation RLS**
 ```sql
+-- Activer RLS sur toutes les tables
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cart ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
-ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
+-- ... pour toutes les tables
+
+-- Exemple de politique pour les produits (lecture publique)
+CREATE POLICY "Products are viewable by everyone" ON products
+    FOR SELECT USING (true);
+
+-- Exemple de politique pour le panier (propriétaire uniquement)
+CREATE POLICY "Users can view own cart" ON cart_items
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own cart" ON cart_items
+    FOR ALL USING (auth.uid() = user_id);
 ```
 
-#### **Politiques Utilisateur**
+### Politiques RLS principales
+
 ```sql
--- Utilisateurs peuvent voir leur propre profil
-CREATE POLICY "Users can view own profile" ON users
-FOR SELECT USING (auth.uid() = id);
+-- Users : Lecture publique des profils, modification de son propre profil
+CREATE POLICY "Users can view profiles" ON users FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
 
--- Utilisateurs peuvent modifier leur propre profil
-CREATE POLICY "Users can update own profile" ON users
-FOR UPDATE USING (auth.uid() = id);
+-- Products : Lecture publique, modification par le vendeur
+CREATE POLICY "Products are viewable by everyone" ON products FOR SELECT USING (true);
+CREATE POLICY "Sellers can manage their products" ON products FOR ALL USING (auth.uid() = seller_id);
 
--- Lecture publique des profils utilisateur
-CREATE POLICY "Public can view user profiles" ON users
-FOR SELECT USING (true);
+-- Likes : Tout le monde peut liker
+CREATE POLICY "Users can like products" ON likes FOR ALL USING (auth.uid() = user_id);
+
+-- Comments : Lecture publique, écriture authentifiée
+CREATE POLICY "Comments are viewable by everyone" ON comments FOR SELECT USING (true);
+CREATE POLICY "Users can create comments" ON comments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own comments" ON comments FOR UPDATE USING (auth.uid() = user_id);
 ```
 
-#### **Politiques Produits**
-```sql
--- Lecture publique des produits actifs
-CREATE POLICY "Public can view active products" ON products
-FOR SELECT USING (status = 'active');
+## 📈 Index et Performance
 
--- Vendeurs peuvent gérer leurs produits
-CREATE POLICY "Sellers can manage own products" ON products
-FOR ALL USING (auth.uid() = seller_id);
+### Index recommandés
+
+```sql
+-- Index pour les recherches fréquentes
+CREATE INDEX idx_products_status ON products(status);
+CREATE INDEX idx_products_seller ON products(seller_id);
+CREATE INDEX idx_products_category ON products(category_id);
+CREATE INDEX idx_products_price ON products(price);
+CREATE INDEX idx_products_created_at ON products(created_at DESC);
+
+-- Index pour les relations sociales
+CREATE INDEX idx_follows_follower ON follows(follower_id);
+CREATE INDEX idx_follows_following ON follows(following_id);
+CREATE INDEX idx_likes_user ON likes(user_id);
+CREATE INDEX idx_likes_product ON likes(product_id);
+
+-- Index pour les commandes
+CREATE INDEX idx_orders_user ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
+
+-- Index pour les recherches textuelles
+CREATE INDEX idx_products_search ON products USING gin(to_tsvector('french', name || ' ' || description));
+CREATE INDEX idx_users_search ON users USING gin(to_tsvector('french', username || ' ' || full_name));
 ```
 
-#### **Politiques Panier**
-```sql
--- Utilisateurs peuvent gérer leur panier
-CREATE POLICY "Users can manage own cart" ON cart
-FOR ALL USING (auth.uid() = user_id);
+### Vues matérialisées pour les performances
 
--- Utilisateurs peuvent gérer leurs articles de panier
-CREATE POLICY "Users can manage own cart items" ON cart_items
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM cart 
-    WHERE cart.id = cart_items.cart_id 
-    AND cart.user_id = auth.uid()
-  )
-);
+```sql
+-- Vue pour les statistiques des produits
+CREATE MATERIALIZED VIEW product_stats AS
+SELECT 
+    p.id,
+    p.name,
+    COUNT(DISTINCT l.id) as likes_count,
+    COUNT(DISTINCT c.id) as comments_count,
+    COUNT(DISTINCT s.id) as shares_count,
+    COUNT(DISTINCT oi.id) as purchases_count
+FROM products p
+LEFT JOIN likes l ON p.id = l.product_id
+LEFT JOIN comments c ON p.id = c.product_id
+LEFT JOIN shares s ON p.id = s.product_id
+LEFT JOIN order_items oi ON p.id = oi.product_id
+GROUP BY p.id, p.name;
+
+-- Rafraîchir la vue matérialisée
+REFRESH MATERIALIZED VIEW product_stats;
 ```
 
-#### **Politiques Commandes**
-```sql
--- Utilisateurs peuvent voir leurs commandes
-CREATE POLICY "Users can view own orders" ON orders
-FOR SELECT USING (auth.uid() = user_id);
+## 🔄 Triggers et Fonctions
 
--- Utilisateurs peuvent créer leurs commandes
-CREATE POLICY "Users can create own orders" ON orders
-FOR INSERT WITH CHECK (auth.uid() = user_id);
-```
-
-## 🔧 Fonctions et Triggers
-
-### Trigger de Mise à Jour Automatique
+### Triggers automatiques
 
 ```sql
--- Fonction pour mettre à jour updated_at
+-- Trigger pour updated_at automatique
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -449,195 +574,173 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Triggers pour updated_at
-CREATE TRIGGER update_users_updated_at 
-  BEFORE UPDATE ON users 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Appliquer le trigger sur toutes les tables avec updated_at
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- ... pour toutes les autres tables
 
-CREATE TRIGGER update_products_updated_at 
-  BEFORE UPDATE ON products 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Trigger pour générer les numéros de commande
+CREATE OR REPLACE FUNCTION generate_order_number()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.order_number = 'SC-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(nextval('order_sequence')::text, 4, '0');
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
 
-CREATE TRIGGER update_orders_updated_at 
-  BEFORE UPDATE ON orders 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE SEQUENCE order_sequence START 1;
+CREATE TRIGGER generate_order_number_trigger BEFORE INSERT ON orders FOR EACH ROW EXECUTE FUNCTION generate_order_number();
 ```
 
-### Fonctions Métier
+### Fonctions utilitaires
 
-#### **Création de Produit**
 ```sql
-CREATE OR REPLACE FUNCTION create_product(
-  p_seller_id UUID,
-  p_name VARCHAR(255),
-  p_description TEXT,
-  p_price DECIMAL(10,2),
-  p_category_id UUID DEFAULT NULL,
-  p_brand_id UUID DEFAULT NULL,
-  p_short_description VARCHAR(500) DEFAULT NULL,
-  p_sku VARCHAR(100) DEFAULT NULL,
-  p_compare_price DECIMAL(10,2) DEFAULT NULL,
-  p_cost_price DECIMAL(10,2) DEFAULT NULL,
-  p_weight DECIMAL(8,2) DEFAULT NULL,
-  p_dimensions JSONB DEFAULT NULL,
-  p_status VARCHAR(20) DEFAULT 'active',
-  p_inventory_tracking BOOLEAN DEFAULT TRUE,
-  p_inventory_quantity INTEGER DEFAULT 0,
-  p_allow_backorder BOOLEAN DEFAULT FALSE,
-  p_requires_shipping BOOLEAN DEFAULT TRUE,
-  p_taxable BOOLEAN DEFAULT TRUE,
-  p_tags TEXT[] DEFAULT NULL,
-  p_meta_title VARCHAR(255) DEFAULT NULL,
-  p_meta_description TEXT DEFAULT NULL,
-  p_video_url TEXT DEFAULT NULL,
-  p_primary_image_url TEXT DEFAULT NULL,
-  p_images JSONB DEFAULT '[]'::JSONB
-)
-RETURNS UUID AS $$
+-- Fonction pour calculer le total du panier
+CREATE OR REPLACE FUNCTION calculate_cart_total(user_uuid UUID)
+RETURNS DECIMAL(10,2) AS $$
 DECLARE
-  product_id UUID;
+    total_amount DECIMAL(10,2) := 0;
 BEGIN
-  INSERT INTO products (
-    seller_id, name, description, price, category_id, brand_id,
-    short_description, sku, compare_price, cost_price, weight, dimensions,
-    status, inventory_tracking, inventory_quantity, allow_backorder,
-    requires_shipping, taxable, tags, meta_title, meta_description,
-    video_url, primary_image_url, images
-  ) VALUES (
-    p_seller_id, p_name, p_description, p_price, p_category_id, p_brand_id,
-    p_short_description, p_sku, p_compare_price, p_cost_price, p_weight, p_dimensions,
-    p_status, p_inventory_tracking, p_inventory_quantity, p_allow_backorder,
-    p_requires_shipping, p_taxable, p_tags, p_meta_title, p_meta_description,
-    p_video_url, p_primary_image_url, p_images
-  ) RETURNING id INTO product_id;
-  
-  RETURN product_id;
+    SELECT COALESCE(SUM(p.price * ci.quantity), 0)
+    INTO total_amount
+    FROM cart_items ci
+    JOIN products p ON ci.product_id = p.id
+    WHERE ci.user_id = user_uuid;
+    
+    RETURN total_amount;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-```
+$$ LANGUAGE plpgsql;
 
-#### **Statistiques Vendeur**
-```sql
-CREATE OR REPLACE FUNCTION get_seller_stats(seller_uuid UUID)
-RETURNS JSON AS $$
+-- Fonction pour obtenir les produits populaires
+CREATE OR REPLACE FUNCTION get_popular_products(limit_count INTEGER DEFAULT 10)
+RETURNS TABLE (
+    product_id UUID,
+    product_name VARCHAR(255),
+    likes_count BIGINT,
+    views_count BIGINT,
+    total_score BIGINT
+) AS $$
 BEGIN
-  RETURN (
-    SELECT json_build_object(
-      'total_products', COUNT(*),
-      'active_products', COUNT(*) FILTER (WHERE status = 'active'),
-      'total_sales', COALESCE(SUM(sales_count), 0),
-      'total_views', COALESCE(SUM(views_count), 0),
-      'total_likes', COALESCE(SUM(likes_count), 0),
-      'avg_rating', COALESCE(AVG(rating_average), 0),
-      'total_revenue', COALESCE(SUM(sales_count * price), 0)
-    )
-    FROM products
-    WHERE seller_id = seller_uuid
-  );
+    RETURN QUERY
+    SELECT 
+        p.id,
+        p.name,
+        COUNT(l.id) as likes_count,
+        COUNT(pv.id) as views_count,
+        (COUNT(l.id) * 2 + COUNT(pv.id)) as total_score
+    FROM products p
+    LEFT JOIN likes l ON p.id = l.product_id
+    LEFT JOIN product_views pv ON p.id = pv.product_id
+    WHERE p.status = 'active'
+    GROUP BY p.id, p.name
+    ORDER BY total_score DESC
+    LIMIT limit_count;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 ```
 
-## 📈 Optimisations et Index
+## 📊 Requêtes d'exemple
 
-### Index de Performance
+### Requêtes complexes fréquentes
 
 ```sql
--- Index pour les requêtes fréquentes
-CREATE INDEX idx_products_status_created ON products(status, created_at DESC);
-CREATE INDEX idx_products_seller_status ON products(seller_id, status);
-CREATE INDEX idx_products_category_status ON products(category_id, status);
-CREATE INDEX idx_products_price_range ON products(price) WHERE status = 'active';
-
--- Index pour les recherches textuelles
-CREATE INDEX idx_products_name_search ON products USING gin(to_tsvector('french', name));
-CREATE INDEX idx_products_description_search ON products USING gin(to_tsvector('french', description));
-
--- Index pour les métriques
-CREATE INDEX idx_products_likes ON products(likes_count DESC) WHERE status = 'active';
-CREATE INDEX idx_products_views ON products(views_count DESC) WHERE status = 'active';
-CREATE INDEX idx_products_sales ON products(sales_count DESC) WHERE status = 'active';
-```
-
-### Optimisations de Requêtes
-
-#### **Requête Optimisée pour le Feed**
-```sql
--- Feed principal avec jointures optimisées
+-- Feed vidéo avec informations sociales
 SELECT 
-  p.*,
-  u.username,
-  u.avatar_url,
-  c.name as category_name,
-  b.name as brand_name
+    p.*,
+    u.username,
+    u.avatar_url,
+    COUNT(DISTINCT l.id) as likes_count,
+    COUNT(DISTINCT c.id) as comments_count,
+    CASE WHEN user_likes.id IS NOT NULL THEN true ELSE false END as is_liked_by_user
 FROM products p
-LEFT JOIN users u ON p.seller_id = u.id
-LEFT JOIN categories c ON p.category_id = c.id
-LEFT JOIN brands b ON p.brand_id = b.id
+JOIN users u ON p.seller_id = u.id
+LEFT JOIN likes l ON p.id = l.product_id
+LEFT JOIN comments c ON p.id = c.product_id
+LEFT JOIN likes user_likes ON p.id = user_likes.product_id AND user_likes.user_id = $1
 WHERE p.status = 'active'
-ORDER BY p.created_at DESC
-LIMIT 20;
-```
+GROUP BY p.id, u.id, user_likes.id
+ORDER BY p.created_at DESC;
 
-#### **Requête de Recherche Optimisée**
-```sql
--- Recherche avec ranking
+-- Statistiques utilisateur
 SELECT 
-  p.*,
-  u.username,
-  u.avatar_url,
-  ts_rank(to_tsvector('french', p.name || ' ' || p.description), plainto_tsquery('french', $1)) as rank
-FROM products p
-LEFT JOIN users u ON p.seller_id = u.id
-WHERE p.status = 'active'
-  AND to_tsvector('french', p.name || ' ' || p.description) @@ plainto_tsquery('french', $1)
-ORDER BY rank DESC, p.created_at DESC
-LIMIT 20;
+    u.id,
+    u.username,
+    COUNT(DISTINCT p.id) as products_count,
+    COUNT(DISTINCT f1.id) as followers_count,
+    COUNT(DISTINCT f2.id) as following_count,
+    COUNT(DISTINCT o.id) as orders_count
+FROM users u
+LEFT JOIN products p ON u.id = p.seller_id AND p.status = 'active'
+LEFT JOIN follows f1 ON u.id = f1.following_id
+LEFT JOIN follows f2 ON u.id = f2.follower_id
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE u.id = $1
+GROUP BY u.id, u.username;
+
+-- Top vendeurs du mois
+SELECT 
+    u.id,
+    u.username,
+    u.avatar_url,
+    COUNT(DISTINCT o.id) as orders_count,
+    SUM(o.total) as total_revenue
+FROM users u
+JOIN products p ON u.id = p.seller_id
+JOIN order_items oi ON p.id = oi.product_id
+JOIN orders o ON oi.order_id = o.id
+WHERE o.created_at >= date_trunc('month', CURRENT_DATE)
+    AND o.status IN ('delivered', 'shipped')
+GROUP BY u.id, u.username, u.avatar_url
+ORDER BY total_revenue DESC
+LIMIT 10;
 ```
 
-## 🗃️ Gestion des Données
+## 🔧 Maintenance et Optimisation
 
-### Sauvegarde et Restauration
+### Nettoyage des données
 
-#### **Sauvegarde Complète**
-```bash
-# Sauvegarde via Supabase CLI
-supabase db dump --file backup.sql
-
-# Sauvegarde avec données seulement
-supabase db dump --data-only --file data_backup.sql
-```
-
-#### **Restauration**
-```bash
-# Restauration complète
-supabase db reset
-
-# Restauration depuis fichier
-psql -h db.supabase.co -U postgres -d postgres -f backup.sql
-```
-
-### Migration et Évolution
-
-#### **Script de Migration**
 ```sql
--- Exemple de migration pour ajouter un champ
-ALTER TABLE products ADD COLUMN featured BOOLEAN DEFAULT FALSE;
-CREATE INDEX idx_products_featured ON products(featured) WHERE featured = TRUE;
+-- Supprimer les sessions expirées (plus de 30 jours)
+DELETE FROM user_sessions 
+WHERE ended_at < NOW() - INTERVAL '30 days' 
+   OR (is_active = false AND started_at < NOW() - INTERVAL '7 days');
+
+-- Supprimer les vues de produits anciennes (plus de 1 an)
+DELETE FROM product_views 
+WHERE created_at < NOW() - INTERVAL '1 year';
+
+-- Archiver les commandes anciennes (plus de 2 ans)
+UPDATE orders 
+SET status = 'archived' 
+WHERE status = 'delivered' 
+  AND created_at < NOW() - INTERVAL '2 years';
 ```
 
-#### **Versioning du Schéma**
-```sql
--- Table de versioning
-CREATE TABLE schema_migrations (
-  version VARCHAR(255) PRIMARY KEY,
-  applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+### Monitoring et alertes
 
--- Enregistrer les migrations
-INSERT INTO schema_migrations (version) VALUES ('2024-01-01-add-featured-column');
+```sql
+-- Vérifier la taille des tables
+SELECT 
+    schemaname,
+    tablename,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
+FROM pg_tables 
+WHERE schemaname = 'public'
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+
+-- Vérifier les index non utilisés
+SELECT 
+    schemaname,
+    tablename,
+    indexname,
+    idx_tup_read,
+    idx_tup_fetch
+FROM pg_stat_user_indexes 
+WHERE idx_tup_read = 0 
+  AND idx_tup_fetch = 0
+ORDER BY schemaname, tablename;
 ```
 
 ---
 
-Ce schéma de base de données est conçu pour supporter toutes les fonctionnalités actuelles et futures de Shopping Connect, avec une attention particulière à la performance, la sécurité et l'évolutivité.
+Ce schéma de base de données est conçu pour supporter les fonctionnalités actuelles de SocialCart tout en permettant une évolution future vers des fonctionnalités plus avancées comme l'analytics en temps réel, la recommandation de produits, et l'intégration avec des services tiers.
