@@ -366,12 +366,12 @@ export function VideoFeed({ products }: VideoFeedProps) {
               />
             )}
             
-            {/* Enhanced gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            {/* Enhanced gradient overlay for better text visibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           </div>
 
           {/* Right sidebar with actions - Compact Design */}
-          <div className="absolute right-2 sm:right-3 bottom-20 flex flex-col space-y-2 z-10">
+          <div className="absolute right-1 bottom-28 flex flex-col space-y-1.5 z-10 pb-4">
             {/* AutoPlay Toggle - Compact */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -381,7 +381,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
               title={autoPlay ? 'Désactiver la lecture automatique' : 'Activer la lecture automatique'}
             >
               <motion.div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
                   autoPlay 
                     ? 'bg-green-500 shadow-lg shadow-green-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -389,9 +389,9 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 animate={autoPlay ? { scale: [1, 1.05, 1] } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <Play className="w-5 h-5 text-white" />
+                <Play className="w-4 h-4 text-white" />
               </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 {autoPlay ? 'Auto' : 'Manuel'}
               </span>
             </motion.button>
@@ -403,7 +403,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
               className="flex flex-col items-center space-y-1"
             >
               <motion.div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
                   likedProducts.has(product.id) 
                     ? 'bg-red-500 shadow-lg shadow-red-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -412,14 +412,14 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 transition={{ duration: 0.3 }}
               >
                 <Heart 
-                  className={`w-5 h-5 transition-all duration-300 ${
+                  className={`w-4 h-4 transition-all duration-300 ${
                     likedProducts.has(product.id) 
                       ? 'text-white fill-white' 
                       : 'text-white hover:text-red-300'
                   }`} 
                 />
               </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 {product.likes_count + (likedProducts.has(product.id) ? 1 : 0)}
               </span>
             </motion.button>
@@ -430,10 +430,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
               whileTap={{ scale: 0.95 }}
               className="flex flex-col items-center space-y-1"
             >
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <MessageCircle className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                <MessageCircle className="w-4 h-4 text-white" />
               </div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 42
               </span>
             </motion.button>
@@ -445,10 +445,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
               onClick={() => handleShare(product)}
               className="flex flex-col items-center space-y-1"
             >
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <Share className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                <Share className="w-4 h-4 text-white" />
               </div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 Partager
               </span>
             </motion.button>
@@ -461,7 +461,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
               className="flex flex-col items-center space-y-1"
             >
               <motion.div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
                   bookmarkedProducts.has(product.id) 
                     ? 'bg-yellow-500 shadow-lg shadow-yellow-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -470,14 +470,14 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 transition={{ duration: 0.3 }}
               >
                 <Bookmark 
-                  className={`w-5 h-5 transition-all duration-300 ${
+                  className={`w-4 h-4 transition-all duration-300 ${
                     bookmarkedProducts.has(product.id) 
                       ? 'text-white fill-white' 
                       : 'text-white hover:text-yellow-300'
                   }`} 
                 />
               </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 {bookmarkedProducts.has(product.id) ? 'Sauvé' : 'Sauver'}
               </span>
             </motion.button>
@@ -490,7 +490,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
               className="flex flex-col items-center space-y-1"
             >
               <motion.div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
                   followingUsers.has(product.seller_id) 
                     ? 'bg-blue-500 shadow-lg shadow-blue-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -499,14 +499,14 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 transition={{ duration: 0.3 }}
               >
                 <UserPlus 
-                  className={`w-5 h-5 transition-all duration-300 ${
+                  className={`w-4 h-4 transition-all duration-300 ${
                     followingUsers.has(product.seller_id) 
                       ? 'text-white' 
                       : 'text-white hover:text-blue-300'
                   }`} 
                 />
               </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 {followingUsers.has(product.seller_id) ? 'Suivi' : 'Suivre'}
               </span>
             </motion.button>
@@ -518,10 +518,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
               onClick={() => setShowInfo(prev => ({ ...prev, [product.id]: !prev[product.id] }))}
               className="flex flex-col items-center space-y-1"
             >
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <MoreVertical className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                <MoreVertical className="w-4 h-4 text-white" />
               </div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
                 Plus
               </span>
             </motion.button>
@@ -531,7 +531,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/profile')}
-              className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg"
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-lg"
             >
               <UserAvatar 
                 avatarUrl={product.user?.avatar_url} 
@@ -543,57 +543,65 @@ export function VideoFeed({ products }: VideoFeedProps) {
           </div>
 
           {/* Bottom content - Compact Design */}
-          <div className="absolute bottom-16 left-3 sm:left-4 right-20 z-10">
+          <div className="absolute bottom-40 left-2 right-16 z-10 pb-4"> {/* Décalé de 10px vers le haut (bottom-32 -> bottom-40) */}
             <motion.div 
               className="space-y-3"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.15 }}
             >
-              {/* User info - Compact */}
-              <div className="flex items-center space-x-2">
-                <h3 className="text-white font-bold text-base">@{product.user?.username}</h3>
+              {/* Infos utilisateur - Amélioré */}
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 bg-black/30 rounded-full px-2 py-1">
+                  <UserAvatar 
+                    avatarUrl={product.user?.avatar_url} 
+                    username={product.user?.username} 
+                    size="sm"
+                    className="w-6 h-6"
+                  />
+                  <h3 className="text-white font-bold text-base drop-shadow-lg">@{product.user?.username}</h3>
+                </div>
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-2 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full text-xs font-medium hover:bg-white/30 transition-all"
+                  className="px-3 py-1 bg-gradient-to-r from-blue-500/60 to-blue-400/60 backdrop-blur-sm text-white rounded-full text-xs font-semibold hover:bg-blue-500/80 transition-all border border-white/20 shadow"
                 >
                   Suivre
                 </motion.button>
               </div>
               
-              {/* Description - Compact */}
-              <p className="text-white/90 text-sm leading-relaxed max-w-sm line-clamp-2">
+              {/* Description - Améliorée */}
+              <p className="text-white text-sm leading-relaxed max-w-md line-clamp-3 drop-shadow-md bg-black/20 rounded-lg px-3 py-2">
                 {product.description}
               </p>
 
-              {/* Product card - Compact */}
+              {/* Carte produit - Améliorée */}
               <motion.div 
-                className="surface-glass rounded-xl p-3 space-y-2"
+                className="bg-black/50 backdrop-blur-lg rounded-2xl p-3 space-y-2 border border-white/10 shadow-lg"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.3 }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-white font-bold text-sm truncate">{product.name}</h4>
-                    <p className="text-white/90 text-lg font-bold">€{product.price}</p>
+                    <h4 className="text-white font-bold text-base truncate drop-shadow-lg">{product.name}</h4>
+                    <p className="text-white text-xl font-bold drop-shadow-lg">€{product.price}</p>
                   </div>
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate(`/product/${product.id}`)}
-                    className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/30 transition-all text-xs ml-2"
+                    className="px-4 py-2 bg-white/30 backdrop-blur-sm text-blue-700 rounded-lg font-semibold hover:bg-white/50 transition-all text-sm ml-2 shadow"
                   >
                     Voir
                   </motion.button>
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleBuyNow(product)}
-                  className="w-full bg-gradient-primary text-white py-2.5 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   <span>Acheter maintenant</span>
