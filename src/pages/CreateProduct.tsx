@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { MediaUploader } from '../components/MediaUploader';
 import { ProductVariants } from '../components/ProductVariants';
+import { ProductService, CreateProductData } from '../lib/products';
+import toast from 'react-hot-toast';
 
 interface ProductVariant {
   id: string;
@@ -88,25 +90,56 @@ export function CreateProduct() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    if (!validateForm() || !user) return;
 
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
-      // Simuler l'upload
-      for (let i = 0; i <= 100; i += 10) {
-        setUploadProgress(i);
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
+      // Étape 1: Upload des médias
+      setUploadProgress(20);
+      toast.loading('Upload des médias...', { id: 'upload-media' });
+      
+      const mediaResult = await ProductService.uploadMedia(
+        formData.mediaFiles,
+        formData.videoFile
+      );
+      
+      setUploadProgress(50);
+      toast.success('Médias uploadés avec succès!', { id: 'upload-media' });
 
-      // Ici vous ajouteriez la logique pour envoyer les données au serveur
-      console.log('Product data:', formData);
+      // Étape 2: Préparer les données du produit
+      setUploadProgress(70);
+      toast.loading('Création du produit...', { id: 'create-product' });
+
+      const productData: CreateProductData = {
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        short_description: formData.description.substring(0, 500),
+        images: mediaResult.images,
+        primary_image_url: mediaResult.primaryImageUrl,
+        video_url: mediaResult.videoUrl,
+        variants: formData.variants,
+        inventory_quantity: 1,
+        tags: [`#${formData.category}`]
+      };
+
+      // Étape 3: Créer le produit
+      setUploadProgress(90);
+      const createdProduct = await ProductService.createProduct(productData, user.id);
+      
+      setUploadProgress(100);
+      toast.success('Produit créé avec succès!', { id: 'create-product' });
       
       // Rediriger vers la page d'accueil après succès
-      navigate('/');
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+
     } catch (error) {
-      console.error('Error uploading product:', error);
+      console.error('Error creating product:', error);
+      toast.error('Erreur lors de la création du produit', { id: 'create-product' });
       setErrors({ submit: 'Erreur lors de la création du produit' });
     } finally {
       setIsUploading(false);
