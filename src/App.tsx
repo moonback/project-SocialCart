@@ -14,6 +14,7 @@ import { Payment } from './pages/Payment';
 import { Auth } from './pages/Auth';
 import { LiveShopping } from './pages/LiveShopping';
 import { CreateProduct } from './pages/CreateProduct';
+import { Settings } from './pages/Settings';
 
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
@@ -124,6 +125,11 @@ function AppRoutes() {
           </ProtectedRoute>
         } />
         <Route path="live" element={<LiveShopping />} />
+        <Route path="settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
       </Route>
     </Routes>
   );

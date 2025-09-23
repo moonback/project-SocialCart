@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Heart, MessageCircle, Share, ShoppingCart, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Heart, MessageCircle, Share, ShoppingCart, Play, Pause, Volume2, VolumeX, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface VideoFeedProps {
   products: Product[];
@@ -14,10 +15,27 @@ export function VideoFeed({ products }: VideoFeedProps) {
   const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
   const [isPlaying, setIsPlaying] = useState<{ [key: string]: boolean }>({});
   const [isMuted, setIsMuted] = useState<{ [key: string]: boolean }>({});
+  const [autoPlay, setAutoPlay] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Charger le paramètre autoPlay depuis le localStorage
+  useEffect(() => {
+    const savedAutoPlay = localStorage.getItem('video-autoplay');
+    if (savedAutoPlay !== null) {
+      setAutoPlay(savedAutoPlay === 'true');
+    }
+  }, []);
+
+  // Sauvegarder le paramètre autoPlay dans le localStorage
+  const toggleAutoPlay = () => {
+    const newAutoPlay = !autoPlay;
+    setAutoPlay(newAutoPlay);
+    localStorage.setItem('video-autoplay', newAutoPlay.toString());
+  };
 
   const handleScroll = useCallback(() => {
     if (containerRef.current) {
@@ -25,8 +43,26 @@ export function VideoFeed({ products }: VideoFeedProps) {
       const itemHeight = containerRef.current.clientHeight;
       const newIndex = Math.round(scrollTop / itemHeight);
       setCurrentIndex(newIndex);
+      
+      // Gérer la lecture automatique des vidéos
+      if (autoPlay) {
+        products.forEach((product, index) => {
+          const video = videoRefs.current[product.id];
+          if (video) {
+            if (index === newIndex) {
+              // Jouer la vidéo actuellement visible
+              video.play().catch(console.error);
+              setIsPlaying(prev => ({ ...prev, [product.id]: true }));
+            } else {
+              // Pause les autres vidéos
+              video.pause();
+              setIsPlaying(prev => ({ ...prev, [product.id]: false }));
+            }
+          }
+        });
+      }
     }
-  }, []);
+  }, [autoPlay, products]);
 
   const toggleLike = (productId: string) => {
     setLikedProducts(prev => {
@@ -96,7 +132,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   ref={(el) => (videoRefs.current[product.id] = el)}
                   src={product.video_url}
                   className="w-full h-full object-cover"
-                  autoPlay={index === currentIndex}
+                  autoPlay={autoPlay && index === currentIndex}
                   muted={isMuted[product.id] !== false}
                   loop
                   playsInline
@@ -149,6 +185,29 @@ export function VideoFeed({ products }: VideoFeedProps) {
 
           {/* Right sidebar with actions */}
           <div className="absolute right-4 bottom-24 flex flex-col space-y-6 z-10">
+            {/* AutoPlay Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={toggleAutoPlay}
+              className="flex flex-col items-center space-y-2"
+              title={autoPlay ? 'Désactiver la lecture automatique' : 'Activer la lecture automatique'}
+            >
+              <motion.div 
+                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  autoPlay 
+                    ? 'bg-green-500 shadow-lg shadow-green-500/30' 
+                    : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
+                }`}
+                animate={autoPlay ? { scale: [1, 1.05, 1] } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Play className={`w-7 h-7 ${autoPlay ? 'text-white' : 'text-white'}`} />
+              </motion.div>
+              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+                {autoPlay ? 'Auto' : 'Manuel'}
+              </span>
+            </motion.button>
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.8 }}
