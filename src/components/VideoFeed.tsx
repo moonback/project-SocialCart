@@ -44,16 +44,17 @@ interface VideoFeedProps {
 
 export function VideoFeed({ products }: VideoFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState<{ [key: string]: boolean }>({});
-  const [isMuted, setIsMuted] = useState<{ [key: string]: boolean }>({});
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [autoPlay, setAutoPlay] = useState(true);
-  const [showControls, setShowControls] = useState<{ [key: string]: boolean }>({});
-  const [showInfo, setShowInfo] = useState<{ [key: string]: boolean }>({});
-  const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
-  const [showShare, setShowShare] = useState<{ [key: string]: boolean }>({});
+  const [showControls, setShowControls] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { addToCart } = useCart();
   const { 
     toggleLike, 
@@ -66,6 +67,9 @@ export function VideoFeed({ products }: VideoFeedProps) {
   } = useSocial();
   const navigate = useNavigate();
 
+  // Variable pour le produit actuel
+  const currentProduct = products[currentIndex];
+
   // Charger le paramètre autoPlay depuis le localStorage
   useEffect(() => {
     const savedAutoPlay = localStorage.getItem('video-autoplay');
@@ -75,17 +79,35 @@ export function VideoFeed({ products }: VideoFeedProps) {
   }, []);
 
 
-  // Enregistrer une vue quand un produit devient visible
+  // Logique de lecture centralisée - s'exécute à chaque changement de currentIndex
   useEffect(() => {
-    if (products.length > 0 && currentIndex < products.length) {
-      const currentProduct = products[currentIndex];
-      recordView(currentProduct.id);
+    if (!currentProduct) return;
+
+    // Enregistrer une vue
+    recordView(currentProduct.id);
+
+    // Mettre en pause toutes les vidéos
+    Object.values(videoRefs.current).forEach(video => {
+      if (video) {
+        video.pause();
+      }
+    });
+
+    // Lancer la lecture de la vidéo actuelle si autoPlay est activé
+    if (autoPlay && currentProduct.video_url) {
+      const currentVideo = videoRefs.current[currentProduct.id];
+      if (currentVideo) {
+        currentVideo.play().catch(console.error);
+        setIsPlaying(true);
+      }
+    } else {
+      setIsPlaying(false);
     }
-  }, [currentIndex, products, recordView]);
+  }, [currentIndex, currentProduct, autoPlay, recordView]);
 
   // Nouvelles fonctions pour les fonctionnalités avancées
-  const handleShare = async (product: VideoFeedProduct) => {
-    setShowShare(prev => ({ ...prev, [product.id]: true }));
+  const handleShare = async () => {
+    setShowShare(true);
   };
 
   const handleReport = () => {
@@ -125,50 +147,42 @@ export function VideoFeed({ products }: VideoFeedProps) {
   };
 
   const handleScroll = useCallback(() => {
-    if (containerRef.current) {
-      const scrollTop = containerRef.current.scrollTop;
-      const itemHeight = containerRef.current.clientHeight;
-      const newIndex = Math.round(scrollTop / itemHeight);
-      setCurrentIndex(newIndex);
-      
-      // Gérer la lecture automatique des vidéos
-      if (autoPlay) {
-        products.forEach((product, index) => {
-          const video = videoRefs.current[product.id];
-          if (video) {
-            if (index === newIndex) {
-              // Jouer la vidéo actuellement visible
-              video.play().catch(console.error);
-              setIsPlaying(prev => ({ ...prev, [product.id]: true }));
-            } else {
-              // Pause les autres vidéos
-              video.pause();
-              setIsPlaying(prev => ({ ...prev, [product.id]: false }));
-            }
-          }
-        });
-      }
+    // Throttling pour éviter les re-renders excessifs
+    if (throttleTimeoutRef.current) {
+      return;
     }
-  }, [autoPlay, products]);
 
-  const togglePlayPause = (productId: string) => {
-    const video = videoRefs.current[productId];
+    throttleTimeoutRef.current = setTimeout(() => {
+      if (containerRef.current) {
+        const scrollTop = containerRef.current.scrollTop;
+        const itemHeight = containerRef.current.clientHeight;
+        const newIndex = Math.round(scrollTop / itemHeight);
+        setCurrentIndex(newIndex);
+      }
+      throttleTimeoutRef.current = null;
+    }, 200); // Throttle de 200ms
+  }, []);
+
+  const togglePlayPause = () => {
+    if (!currentProduct) return;
+    const video = videoRefs.current[currentProduct.id];
     if (video) {
       if (video.paused) {
         video.play();
-        setIsPlaying(prev => ({ ...prev, [productId]: true }));
+        setIsPlaying(true);
       } else {
         video.pause();
-        setIsPlaying(prev => ({ ...prev, [productId]: false }));
+        setIsPlaying(false);
       }
     }
   };
 
-  const toggleMute = (productId: string) => {
-    const video = videoRefs.current[productId];
+  const toggleMute = () => {
+    if (!currentProduct) return;
+    const video = videoRefs.current[currentProduct.id];
     if (video) {
       video.muted = !video.muted;
-      setIsMuted(prev => ({ ...prev, [productId]: video.muted }));
+      setIsMuted(video.muted);
     }
   };
 
@@ -205,7 +219,13 @@ export function VideoFeed({ products }: VideoFeedProps) {
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
+      return () => {
+        container.removeEventListener('scroll', handleScroll);
+        // Cleanup du throttling
+        if (throttleTimeoutRef.current) {
+          clearTimeout(throttleTimeoutRef.current);
+        }
+      };
     }
   }, [handleScroll]);
 
@@ -222,10 +242,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onTouchStart={() => setShowControls(prev => ({ ...prev, [product.id]: true }))}
+          onTouchStart={() => setShowControls(true)}
           onTouchEnd={() => {
             setTimeout(() => {
-              setShowControls(prev => ({ ...prev, [product.id]: false }));
+              setShowControls(false);
             }, 3000);
           }}
         >
@@ -238,16 +258,16 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   src={product.video_url}
                   className="w-full h-full object-cover"
                   autoPlay={autoPlay && index === currentIndex}
-                  muted={isMuted[product.id] !== false}
+                  muted={isMuted}
                   loop
                   playsInline
-                  onPlay={() => setIsPlaying(prev => ({ ...prev, [product.id]: true }))}
-                  onPause={() => setIsPlaying(prev => ({ ...prev, [product.id]: false }))}
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
                 />
                 
                 {/* Compact Video Controls Overlay */}
                 <AnimatePresence>
-                  {(showControls[product.id] || !autoPlay) && (
+                  {(showControls || !autoPlay) && (
                     <motion.div 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -259,10 +279,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => togglePlayPause(product.id)}
+                          onClick={togglePlayPause}
                           className="w-16 h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl"
                         >
-                          {isPlaying[product.id] ? (
+                          {isPlaying ? (
                             <Pause className="w-8 h-8 text-white" />
                           ) : (
                             <Play className="w-8 h-8 text-white ml-1" />
@@ -274,10 +294,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => toggleMute(product.id)}
+                            onClick={toggleMute}
                             className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center"
                           >
-                            {isMuted[product.id] ? (
+                            {isMuted ? (
                               <VolumeX className="w-5 h-5 text-white" />
                             ) : (
                               <Volume2 className="w-5 h-5 text-white" />
@@ -369,7 +389,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowComments(prev => ({ ...prev, [product.id]: !prev[product.id] }))}
+              onClick={() => setShowComments(!showComments)}
               className="flex flex-col items-center space-y-1"
             >
               <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
@@ -384,7 +404,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => handleShare(product)}
+              onClick={handleShare}
               className="flex flex-col items-center space-y-1"
             >
               <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
@@ -457,7 +477,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowInfo(prev => ({ ...prev, [product.id]: !prev[product.id] }))}
+              onClick={() => setShowInfo(!showInfo)}
               className="flex flex-col items-center space-y-1"
             >
               <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
@@ -554,13 +574,13 @@ export function VideoFeed({ products }: VideoFeedProps) {
 
           {/* Detailed Info Panel */}
           <AnimatePresence>
-            {showInfo[product.id] && (
+            {showInfo && index === currentIndex && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex items-center justify-center p-4"
-                onClick={() => setShowInfo(prev => ({ ...prev, [product.id]: false }))}
+                onClick={() => setShowInfo(false)}
               >
                 <motion.div
                   initial={{ scale: 0.9 }}
@@ -574,7 +594,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => setShowInfo(prev => ({ ...prev, [product.id]: false }))}
+                      onClick={() => setShowInfo(false)}
                       className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
                     >
                       <X className="w-5 h-5 text-white" />
@@ -653,16 +673,16 @@ export function VideoFeed({ products }: VideoFeedProps) {
 
       {/* Comments Modal */}
       <CommentsModal
-        productId={products[currentIndex]?.id || ''}
-        isOpen={showComments[products[currentIndex]?.id] || false}
-        onClose={() => setShowComments(prev => ({ ...prev, [products[currentIndex]?.id]: false }))}
+        productId={currentProduct?.id || ''}
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
       />
 
       {/* Share Modal */}
       <ShareModal
-        product={products[currentIndex] || { id: '', name: '', description: '', price: 0 }}
-        isOpen={showShare[products[currentIndex]?.id] || false}
-        onClose={() => setShowShare(prev => ({ ...prev, [products[currentIndex]?.id]: false }))}
+        product={currentProduct || { id: '', name: '', description: '', price: 0 }}
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
       />
     </div>
   );
