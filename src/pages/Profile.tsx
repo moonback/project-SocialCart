@@ -6,7 +6,6 @@ import {
   Star, 
   LogOut, 
   Edit, 
-  Camera,
   Award,
   TrendingUp,
   Clock,
@@ -16,22 +15,13 @@ import {
   Share2,
   MoreVertical,
   Check,
-  X,
-  Plus,
-  ShoppingCart,
-  Eye,
-  MessageCircle,
-  ThumbsUp,
-  Bookmark,
-  ExternalLink
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ProfileImageUploader } from '../components/ProfileImageUploader';
-import { UserAvatar } from '../components/UserAvatar';
-import toast from 'react-hot-toast';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -43,9 +33,7 @@ export default function Profile() {
     achievements, 
     favoriteCategories,
     loading,
-    error,
-    updateProfile,
-    refreshProfile
+    updateProfile
   } = useProfile();
   const navigate = useNavigate();
   const location = useLocation();
@@ -201,9 +189,9 @@ export default function Profile() {
               >
                 <div className="relative">
                   <ProfileImageUploader
-                    currentImageUrl={profile?.avatar_url || user?.avatar_url}
+                    currentImageUrl={profile?.avatar_url || user?.avatar_url || undefined}
                     onImageChange={(url) => {
-                      if (profile) {
+                      if (profile && url) {
                         updateProfile({ avatar_url: url });
                       }
                     }}
@@ -296,32 +284,32 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-surface-200">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex overflow-x-auto scrollbar-hide">
-          {tabs.map(({ id, label, icon: Icon }) => (
+      {/* Tabs - Design glassmorphism amélioré */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex overflow-x-auto scrollbar-hide py-2">
+            {tabs.map(({ id, label, icon: Icon }) => (
               <motion.button
-              key={id}
-              onClick={() => setActiveTab(id)}
-                className={`flex-shrink-0 px-6 py-4 flex items-center space-x-2 relative transition-colors ${
-                activeTab === id
-                    ? 'text-primary-600'
-                    : 'text-surface-600 hover:text-surface-900'
-              }`}
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className="flex-shrink-0 px-4 py-3 mx-1 flex items-center space-x-2 relative transition-all duration-200 rounded-2xl"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium">{label}</span>
+              >
                 {activeTab === id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-primary rounded-t-full"
+                    className="absolute inset-0 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-sm"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
+                <span className={`relative z-10 flex items-center space-x-2 ${
+                  activeTab === id ? 'text-blue-700' : 'text-surface-600'
+                }`}>
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium text-sm whitespace-nowrap">{label}</span>
+                </span>
               </motion.button>
             ))}
           </div>
@@ -329,7 +317,7 @@ export default function Profile() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto px-4 py-6 pb-24 relative z-10 mobile-safe-area">
         <AnimatePresence mode="wait">
         {activeTab === 'profile' && (
             <motion.div
@@ -345,7 +333,7 @@ export default function Profile() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="card p-6"
+                className="card-glass p-6"
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-surface-900">Informations du compte</h2>
@@ -516,38 +504,38 @@ export default function Profile() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-2 lg:grid-cols-4 gap-4"
               >
-                <div className="card p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Package className="w-8 h-8 text-white" />
+                <div className="card-glass p-4 text-center">
+                  <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <Package className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-surface-900 mb-2">{stats.totalOrders}</div>
-                  <div className="text-surface-600">Commandes</div>
+                  <div className="text-2xl font-bold text-surface-900 mb-1">{stats.totalOrders}</div>
+                  <div className="text-sm text-surface-600">Commandes</div>
                 </div>
 
-                <div className="card p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <TrendingUp className="w-8 h-8 text-white" />
+                <div className="card-glass p-4 text-center">
+                  <div className="w-12 h-12 bg-gradient-secondary rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <TrendingUp className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-surface-900 mb-2">{formatCurrency(stats.totalSpent)}</div>
-                  <div className="text-surface-600">Total dépensé</div>
+                  <div className="text-lg font-bold text-surface-900 mb-1">{formatCurrency(stats.totalSpent)}</div>
+                  <div className="text-sm text-surface-600">Total dépensé</div>
                 </div>
 
-                <div className="card p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Award className="w-8 h-8 text-white" />
+                <div className="card-glass p-4 text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <Award className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-surface-900 mb-2">{stats.reviews}</div>
-                  <div className="text-surface-600">Avis laissés</div>
+                  <div className="text-2xl font-bold text-surface-900 mb-1">{stats.reviews}</div>
+                  <div className="text-sm text-surface-600">Avis laissés</div>
                 </div>
 
-                <div className="card p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Heart className="w-8 h-8 text-white" />
+                <div className="card-glass p-4 text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <Heart className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-surface-900 mb-2">{stats.productsLiked}</div>
-                  <div className="text-surface-600">Produits likés</div>
+                  <div className="text-2xl font-bold text-surface-900 mb-1">{stats.productsLiked}</div>
+                  <div className="text-sm text-surface-600">Produits likés</div>
                 </div>
               </motion.div>
 
@@ -556,18 +544,18 @@ export default function Profile() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="card p-6"
+                className="card-glass p-6"
               >
                 <h3 className="text-lg font-bold text-surface-900 mb-4">Catégories préférées</h3>
                 {favoriteCategories.length > 0 ? (
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {favoriteCategories.map((category, index) => (
                       <motion.span
                         key={category}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.4 + index * 0.1 }}
-                        className="px-4 py-2 bg-gradient-primary text-white rounded-full text-sm font-medium"
+                        className="px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium shadow-sm"
                       >
                         {category}
                       </motion.span>
@@ -583,22 +571,22 @@ export default function Profile() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-col gap-3"
               >
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate('/settings')}
-                  className="btn-primary flex-1 flex items-center justify-center space-x-2"
+                  className="btn-primary w-full flex items-center justify-center space-x-2 py-4"
                 >
                   <Settings className="w-5 h-5" />
-                  <span>Paramètres</span>
+                  <span>Paramètres du compte</span>
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={signOut}
-                  className="btn-secondary flex-1 flex items-center justify-center space-x-2 border-red-200 text-red-600 hover:bg-red-50"
+                  className="btn-secondary w-full flex items-center justify-center space-x-2 py-4 border-red-200 text-red-600 hover:bg-red-50"
                 >
                   <LogOut className="w-5 h-5" />
                   <span>Se déconnecter</span>
@@ -630,8 +618,11 @@ export default function Profile() {
 
               <div className="space-y-4">
                 {loading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                  <div className="flex items-center justify-center py-12">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-500"></div>
+                      <p className="text-surface-500 text-sm">Chargement...</p>
+                    </div>
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="text-center py-8">
@@ -654,7 +645,7 @@ export default function Profile() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="card p-6 hover:shadow-large transition-shadow"
+                    className="card-glass p-6 hover:shadow-glass transition-all duration-300"
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
                       <div>
@@ -763,8 +754,11 @@ export default function Profile() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                  <div className="col-span-full flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                  <div className="col-span-full flex items-center justify-center py-12">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-500"></div>
+                      <p className="text-surface-500 text-sm">Chargement...</p>
+                    </div>
                   </div>
                 ) : favorites.length === 0 ? (
                   <div className="col-span-full text-center py-8">
@@ -787,7 +781,7 @@ export default function Profile() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="card overflow-hidden hover:shadow-large transition-all duration-300 group"
+                    className="card-glass overflow-hidden hover:shadow-glass transition-all duration-300 group"
                   >
                     <div className="relative overflow-hidden">
                       <img
@@ -848,7 +842,7 @@ export default function Profile() {
               </div>
 
               {/* Résumé des succès */}
-              <div className="card p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200">
+              <div className="card-glass p-6 bg-gradient-to-r from-yellow-50/80 to-orange-50/80 border border-yellow-200/50">
                 <div className="flex items-center space-x-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center">
                     <Award className="w-8 h-8 text-white" />
@@ -881,8 +875,11 @@ export default function Profile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {loading ? (
-                  <div className="col-span-full flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                  <div className="col-span-full flex items-center justify-center py-12">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-500"></div>
+                      <p className="text-surface-500 text-sm">Chargement...</p>
+                    </div>
                   </div>
                 ) : achievements.length === 0 ? (
                   <div className="col-span-full text-center py-8">
@@ -905,10 +902,10 @@ export default function Profile() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`card p-6 relative overflow-hidden ${
+                    className={`card-glass p-6 relative overflow-hidden ${
                       achievement.earned 
-                        ? 'border-2 border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50' 
-                        : 'border-2 border-surface-200'
+                        ? 'border-2 border-yellow-200/50 bg-gradient-to-br from-yellow-50/80 to-orange-50/80' 
+                        : 'border-2 border-surface-200/50'
                     }`}
                   >
                     {achievement.earned && (
@@ -993,7 +990,7 @@ export default function Profile() {
               {/* Succès récents et prochains objectifs */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Succès récents */}
-                <div className="card p-6">
+                <div className="card-glass p-6">
                   <h3 className="text-lg font-bold text-surface-900 mb-4 flex items-center space-x-2">
                     <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                       <Check className="w-4 h-4 text-white" />
@@ -1001,7 +998,7 @@ export default function Profile() {
                     <span>Succès récents</span>
                   </h3>
                   <div className="space-y-3">
-                    {achievements.filter(a => a.earned).slice(0, 3).map((achievement, index) => (
+                    {achievements.filter(a => a.earned).slice(0, 3).map((achievement) => (
                       <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-green-50 rounded-xl">
                         <div className="text-2xl">{achievement.icon}</div>
                         <div className="flex-1">
@@ -1020,7 +1017,7 @@ export default function Profile() {
                 </div>
 
                 {/* Prochains objectifs */}
-                <div className="card p-6">
+                <div className="card-glass p-6">
                   <h3 className="text-lg font-bold text-surface-900 mb-4 flex items-center space-x-2">
                     <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
                       <TrendingUp className="w-4 h-4 text-white" />
@@ -1028,7 +1025,7 @@ export default function Profile() {
                     <span>Prochains objectifs</span>
                   </h3>
                   <div className="space-y-3">
-                    {achievements.filter(a => !a.earned).slice(0, 3).map((achievement, index) => (
+                    {achievements.filter(a => !a.earned).slice(0, 3).map((achievement) => (
                       <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-surface-50 rounded-xl">
                         <div className="text-2xl grayscale opacity-50">{achievement.icon}</div>
                         <div className="flex-1">
