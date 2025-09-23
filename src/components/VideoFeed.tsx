@@ -572,10 +572,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 </div>
               
               {/* Description - Améliorée */}
-              <p className="text-white text-sm leading-relaxed max-w-md drop-shadow-md bg-black/20 rounded-lg px-3 py-2">
+              <p className="text-white text-sm leading-relaxed max-w-md drop-shadow-md bg-black/20 rounded-lg px-3 py-2 whitespace-pre-wrap break-words overflow-hidden">
                 {product.description
-                  ? product.description.length > 150
-                    ? product.description.slice(0, 150) + '...'
+                  ? product.description.length > 200
+                    ? product.description.slice(0, 200) + '...'
                     : product.description
                   : "Aucune description disponible."}
               </p>
