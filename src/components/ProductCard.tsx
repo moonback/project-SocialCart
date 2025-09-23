@@ -56,7 +56,7 @@ export function ProductCard({
         )}
         
         <img
-          src={product.image_url}
+          src={product.primary_image_url || product.image_url || 'https://via.placeholder.com/300x300?text=No+Image'}
           alt={product.name}
           className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -129,12 +129,12 @@ export function ProductCard({
           <div className="flex items-center space-x-2">
             <div className="w-6 h-6 rounded-full overflow-hidden border border-surface-200">
               <img
-                src={product.user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=24&h=24&fit=crop&crop=face`}
-                alt={product.user?.username}
+                src={`https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=24&h=24&fit=crop&crop=face`}
+                alt="Vendeur"
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="text-sm text-surface-500">@{product.user?.username}</span>
+            <span className="text-sm text-surface-500">@vendeur</span>
           </div>
         </div>
 
