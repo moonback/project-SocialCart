@@ -48,7 +48,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/auth" />;
+    return <Navigate to="/auth" replace />;
   }
 
   return <>{children}</>;
@@ -85,22 +85,41 @@ function AppRoutes() {
   );
 }
 
+function AppInner() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-gray-600">Chargement de votre session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Router>
+      <div className="font-inter">
+        <AppRoutes />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            className: 'bg-white text-gray-900 shadow-lg rounded-xl',
+            duration: 3000,
+          }}
+        />
+      </div>
+    </Router>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Router>
-          <div className="font-inter">
-            <AppRoutes />
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                className: 'bg-white text-gray-900 shadow-lg rounded-xl',
-                duration: 3000,
-              }}
-            />
-          </div>
-        </Router>
+        <AppInner />
       </CartProvider>
     </AuthProvider>
   );

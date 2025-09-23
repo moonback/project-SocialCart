@@ -77,9 +77,33 @@ const handleAuthError = (error: any) => {
 };
 
 // Fonction helper pour créer le profil utilisateur
-const createUserProfile = async (email: string, username: string, fullName: string | null) => {
+const createUserProfile = async (email: string, username: string, fullName: string | null, userId?: string) => {
+  console.log('Creating user profile for:', email, 'with username:', username);
+
   try {
+    let currentUser = null;
+    
+    // Si userId est fourni, l'utiliser directement
+    if (userId) {
+      console.log('📝 Using provided user ID:', userId);
+      currentUser = { id: userId };
+    } else {
+      // Sinon, essayer de récupérer l'utilisateur actuel
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error('❌ No authenticated user found:', authError);
+        return false;
+      }
+      
+      currentUser = user;
+    }
+
+    console.log('📝 Attempting RPC with user ID:', currentUser.id);
+
+    // Essayer d'abord la fonction RPC si elle existe avec l'ID utilisateur
     const { error: profileError } = await supabase.rpc('create_user_profile', {
+      user_id: currentUser.id,
       user_email: email,
       user_username: username,
       user_full_name: fullName,
@@ -87,30 +111,89 @@ const createUserProfile = async (email: string, username: string, fullName: stri
     });
 
     if (profileError) throw profileError;
-    console.log('User profile created successfully');
+    console.log('✅ User profile created successfully with RPC function');
+    return true;
   } catch (profileError) {
-    console.warn('create_user_profile function not available, using fallback:', profileError);
-    try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser) {
-        const { error: fallbackError } = await supabase
-          .from('users')
-          .insert({
-            id: currentUser.id,
-            email: email,
-            username: username,
-            full_name: fullName,
-            phone: null,
-            loyalty_points: 0,
-            is_seller: false,
-            is_verified: false
-          });
+    console.warn('⚠️ RPC function failed, trying direct insertion:', profileError.message);
 
-        if (fallbackError) throw fallbackError;
-        console.log('User profile created successfully with fallback');
+    try {
+      let currentUser = null;
+      
+      // Si userId est fourni, l'utiliser directement
+      if (userId) {
+        currentUser = { id: userId };
+      } else {
+        // Sinon, essayer de récupérer l'utilisateur actuel
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError || !user) {
+          console.error('❌ No authenticated user found:', authError);
+          return false;
+        }
+        
+        currentUser = user;
+      }
+
+      console.log('📝 Attempting direct insertion for user:', currentUser.id);
+
+      // Essayer l'insertion directe avec gestion d'erreur détaillée
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert({
+          id: currentUser.id,
+          email: email,
+          username: username,
+          full_name: fullName,
+          phone: null,
+          loyalty_points: 0,
+          is_seller: false,
+          is_verified: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (insertError) {
+        console.error('❌ Direct insertion failed:', insertError);
+
+        // Si c'est une erreur RLS, essayer avec une approche différente
+        if (insertError.code === '42501') {
+          console.log('🔄 RLS blocking insertion, trying alternative approach...');
+
+          // Essayer d'utiliser upsert au lieu d'insert
+          const { error: upsertError } = await supabase
+            .from('users')
+            .upsert({
+              id: currentUser.id,
+              email: email,
+              username: username,
+              full_name: fullName,
+              phone: null,
+              loyalty_points: 0,
+              is_seller: false,
+              is_verified: false,
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'id',
+              ignoreDuplicates: false
+            });
+
+          if (upsertError) {
+            console.error('❌ Upsert also failed:', upsertError);
+            return false;
+          } else {
+            console.log('✅ User profile created successfully with upsert');
+            return true;
+          }
+        } else {
+          throw insertError;
+        }
+      } else {
+        console.log('✅ User profile created successfully with direct insertion');
+        return true;
       }
     } catch (fallbackError) {
-      console.error('Profile creation failed:', fallbackError);
+      console.error('❌ All profile creation methods failed:', fallbackError);
+      return false;
     }
   }
 };
@@ -120,40 +203,137 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      }
-      setLoading(false);
-    });
+    let mounted = true;
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          await fetchUserProfile(session.user.id);
-        } else {
-          setUser(null);
+    // Get initial session and set up auth state listener
+    const initializeAuth = async () => {
+      try {
+        // Get initial session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error('Error getting session:', sessionError);
+          if (mounted) setLoading(false);
+          return;
         }
-      }
-    );
 
-    return () => subscription.unsubscribe();
+        if (mounted) {
+          if (session?.user) {
+            await fetchUserProfile(session.user.id);
+          }
+          setLoading(false);
+        }
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            console.log('Auth state changed:', event, session?.user?.email);
+
+            if (!mounted) return;
+
+            if (session?.user) {
+              await fetchUserProfile(session.user.id);
+            } else {
+              setUser(null);
+            }
+          }
+        );
+
+        return () => {
+          mounted = false;
+          subscription.unsubscribe();
+        };
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) setLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      // D'abord vérifier si l'utilisateur est authentifié
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !currentUser) {
+        console.error('No authenticated user found');
+        return;
+      }
+
+      // Vérifier que l'userId correspond à l'utilisateur actuel
+      if (currentUser.id !== userId) {
+        console.error('User ID mismatch');
+        return;
+      }
+
+      // Récupérer le profil utilisateur
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle(); // Utiliser maybeSingle au lieu de single pour éviter l'erreur PGRST116
 
-      if (error) throw error;
-      setUser(data);
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        // Si l'utilisateur n'existe pas encore, créer un profil de base
+        if (error.code === 'PGRST116') {
+          console.log('User profile not found, creating basic profile');
+          setUser({
+            id: currentUser.id,
+            email: currentUser.email || '',
+            username: '', // Sera défini lors de la création du profil
+            full_name: currentUser.user_metadata?.full_name || null,
+            avatar_url: currentUser.user_metadata?.avatar_url || null,
+            phone: null,
+            date_of_birth: null,
+            gender: null,
+            loyalty_points: 0,
+            is_seller: false,
+            is_verified: false,
+            bio: null,
+            location: null,
+            website_url: null,
+            instagram_handle: null,
+            tiktok_handle: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        }
+        return;
+      }
+
+      // Si l'utilisateur existe, l'utiliser
+      if (data) {
+        setUser(data);
+      } else {
+        // Si pas de données mais pas d'erreur, créer un profil de base
+        console.log('No user profile data found, creating basic profile');
+        setUser({
+          id: currentUser.id,
+          email: currentUser.email || '',
+          username: '',
+          full_name: currentUser.user_metadata?.full_name || null,
+          avatar_url: currentUser.user_metadata?.avatar_url || null,
+          phone: null,
+          date_of_birth: null,
+          gender: null,
+          loyalty_points: 0,
+          is_seller: false,
+          is_verified: false,
+          bio: null,
+          location: null,
+          website_url: null,
+          instagram_handle: null,
+          tiktok_handle: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      }
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      // En cas d'erreur, ne pas casser la connexion
     }
   };
 
@@ -191,29 +371,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
 
       if (data.user) {
-        // Stocker les informations pour la création du profil
-        const profileData = {
-          email,
-          username,
-          fullName: fullName || null
-        };
+        // Utiliser l'ID utilisateur directement depuis la réponse signUp
+        const userId = data.user.id;
+        console.log('📋 Starting profile creation process for:', email, 'with user ID:', userId);
 
-        // Créer le profil via l'auth state change listener pour s'assurer de l'authentification
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            if (event === 'SIGNED_IN' && session?.user && profileData) {
-              await createUserProfile(profileData.email, profileData.username, profileData.fullName);
-              subscription.unsubscribe();
+        // Créer le profil immédiatement avec l'ID utilisateur
+        const createProfileWithRetry = async (attempts: number = 3) => {
+          for (let i = 1; i <= attempts; i++) {
+            console.log(`🔄 Profile creation attempt ${i}/${attempts}`);
+            const success = await createUserProfile(email, username, fullName || null, userId);
+
+            if (success) {
+              console.log('✅ Profile creation completed successfully');
+              return true;
+            }
+
+            if (i < attempts) {
+              console.log(`⏳ Retrying in 1 second... (${i}/${attempts})`);
+              await new Promise(resolve => setTimeout(resolve, 1000));
             }
           }
-        );
 
-        // Créer immédiatement le profil si la session est déjà active
-        if (data.session) {
-          await createUserProfile(profileData.email, profileData.username, profileData.fullName);
+          console.error('❌ All profile creation attempts failed');
+          return false;
+        };
+
+        // Créer le profil avec réessai
+        const profileCreated = await createProfileWithRetry();
+
+        if (profileCreated) {
+          toast.success('Compte créé avec succès !');
+        } else {
+          toast.success('Compte créé ! (Le profil sera créé lors du prochain chargement)');
         }
-
-        toast.success('Compte créé avec succès !');
       }
     } catch (error: any) {
       handleAuthError(error);

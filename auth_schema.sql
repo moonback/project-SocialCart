@@ -60,6 +60,7 @@ FOR SELECT USING (true);
 
 -- Fonction pour créer un profil utilisateur lors de l'inscription
 CREATE OR REPLACE FUNCTION create_user_profile(
+    user_id UUID,
     user_email TEXT,
     user_username TEXT,
     user_full_name TEXT DEFAULT NULL,
@@ -69,7 +70,7 @@ RETURNS UUID AS $$
 DECLARE
     new_user_id UUID;
 BEGIN
-    -- Insérer le nouvel utilisateur
+    -- Insérer le nouvel utilisateur avec l'ID fourni
     INSERT INTO users (
         id,
         email,
@@ -80,7 +81,7 @@ BEGIN
         is_seller,
         is_verified
     ) VALUES (
-        auth.uid(),
+        user_id,
         user_email,
         user_username,
         user_full_name,
@@ -89,7 +90,7 @@ BEGIN
         FALSE,
         FALSE
     ) RETURNING id INTO new_user_id;
-    
+
     RETURN new_user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -155,7 +156,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- SELECT is_email_available('mon@email.com');
 
 -- Créer un profil utilisateur (appelé après l'inscription Supabase Auth)
--- SELECT create_user_profile('user@example.com', 'username123', 'John Doe', '+33123456789');
+-- SELECT create_user_profile(auth.uid(), 'user@example.com', 'username123', 'John Doe', '+33123456789');
 
 -- 5. REQUÊTES POUR LA CONNEXION
 -- =============================================
@@ -239,10 +240,13 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Supprimer le trigger existant s'il existe
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+
 -- Trigger pour la table users
-CREATE TRIGGER update_users_updated_at 
-BEFORE UPDATE ON users 
-FOR EACH ROW 
+CREATE TRIGGER update_users_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
 -- 10. INDEX POUR LES PERFORMANCES
