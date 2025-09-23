@@ -168,11 +168,18 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-blue-50 to-surface-50 relative overflow-hidden">
+      {/* Background decoration - Design minimaliste */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" />
+      </div>
+
       {/* Header Hero */}
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-secondary-600 to-primary-800">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-blue-600 to-primary-800">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute inset-0" style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -182,9 +189,9 @@ export default function Profile() {
         </div>
         
         {/* Content */}
-        <div className="relative z-10 px-4 py-8">
+        <div className="relative z-10 px-4 py-6 mobile-safe-area-top">
           <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center md:items-end space-y-6 md:space-y-0 md:space-x-8">
+            <div className="flex flex-col items-center space-y-6">
               {/* Profile Image */}
               <motion.div
                 initial={{ scale: 0 }}
@@ -192,15 +199,23 @@ export default function Profile() {
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 className="relative"
               >
-                <ProfileImageUploader
-                  currentImageUrl={profile?.avatar_url || user?.avatar_url}
-                  onImageChange={(url) => {
-                    if (profile) {
-                      updateProfile({ avatar_url: url });
-                    }
-                  }}
-                  userId={user.id}
-                />
+                <div className="relative">
+                  <ProfileImageUploader
+                    currentImageUrl={profile?.avatar_url || user?.avatar_url}
+                    onImageChange={(url) => {
+                      if (profile) {
+                        updateProfile({ avatar_url: url });
+                      }
+                    }}
+                    userId={user.id}
+                  />
+                  {/* Badge de vérification */}
+                  {profile?.is_verified && (
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                </div>
               </motion.div>
 
               {/* Profile Info */}
@@ -208,29 +223,31 @@ export default function Profile() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="flex-1 text-center md:text-left text-white"
+                className="text-center text-white w-full"
               >
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div className="space-y-4">
                   <div>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                    <h1 className="text-2xl md:text-3xl font-bold mb-1 text-display text-gradient">
                       {profile?.full_name || `@${user.username}`}
                     </h1>
-                    <p className="text-white/80 text-lg mb-2">{user.email}</p>
+                    <p className="text-white/80 text-base mb-2">@{user.username}</p>
                     {profile?.bio && (
-                      <p className="text-white/90 text-sm mb-4 max-w-md">{profile.bio}</p>
+                      <p className="text-white/90 text-sm mb-4 max-w-sm mx-auto leading-relaxed">{profile.bio}</p>
                     )}
-                    <div className="flex items-center justify-center md:justify-start space-x-6">
-                      <div className="flex items-center space-x-2">
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">{profile?.loyalty_points || 0} points</span>
+                    
+                    {/* Infos rapides */}
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-medium">{profile?.loyalty_points || 0} pts</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-5 h-5" />
-                        <span className="text-white/80">Membre depuis {formatDate(profile?.created_at || user.created_at)}</span>
+                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-white/80">Depuis {new Date(profile?.created_at || user.created_at).getFullYear()}</span>
                       </div>
                       {profile?.location && (
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-5 h-5" />
+                        <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+                          <MapPin className="w-4 h-4" />
                           <span className="text-white/80">{profile.location}</span>
                         </div>
                       )}
@@ -238,39 +255,39 @@ export default function Profile() {
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="flex items-center space-x-3 mt-4 md:mt-0">
+                  <div className="flex items-center justify-center space-x-3">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/settings')}
-                      className="px-6 py-3 bg-white/20 backdrop-blur-sm rounded-2xl text-white font-semibold hover:bg-white/30 transition-colors flex items-center space-x-2"
-          >
-            <Settings className="w-5 h-5" />
+                      onClick={() => navigate('/settings')}
+                      className="btn-floating px-6 py-3 flex items-center space-x-2"
+                    >
+                      <Settings className="w-4 h-4" />
                       <span>Paramètres</span>
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl text-white hover:bg-white/30 transition-colors"
+                      className="btn-floating p-3"
                     >
-                      <Share2 className="w-5 h-5" />
+                      <Share2 className="w-4 h-4" />
                     </motion.button>
                   </div>
                 </div>
 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-3 gap-4 max-w-md mx-auto md:mx-0">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold">{stats.followers}</div>
-                    <div className="text-sm text-white/80">Abonnés</div>
+                {/* Quick Stats - Design mobile optimisé */}
+                <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto mt-6">
+                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20">
+                    <div className="text-xl font-bold">{stats.followers}</div>
+                    <div className="text-xs text-white/80">Abonnés</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold">{stats.following}</div>
-                    <div className="text-sm text-white/80">Abonnements</div>
+                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20">
+                    <div className="text-xl font-bold">{stats.following}</div>
+                    <div className="text-xs text-white/80">Abonnements</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold">{stats.reviews}</div>
-                    <div className="text-sm text-white/80">Avis</div>
+                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20">
+                    <div className="text-xl font-bold">{stats.reviews}</div>
+                    <div className="text-xs text-white/80">Avis</div>
                   </div>
                 </div>
               </motion.div>
