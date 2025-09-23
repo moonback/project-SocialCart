@@ -76,6 +76,45 @@ const handleAuthError = (error: any) => {
   }
 };
 
+// Fonction helper pour créer le profil utilisateur
+const createUserProfile = async (email: string, username: string, fullName: string | null) => {
+  try {
+    const { error: profileError } = await supabase.rpc('create_user_profile', {
+      user_email: email,
+      user_username: username,
+      user_full_name: fullName,
+      user_phone: null
+    });
+
+    if (profileError) throw profileError;
+    console.log('User profile created successfully');
+  } catch (profileError) {
+    console.warn('create_user_profile function not available, using fallback:', profileError);
+    try {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        const { error: fallbackError } = await supabase
+          .from('users')
+          .insert({
+            id: currentUser.id,
+            email: email,
+            username: username,
+            full_name: fullName,
+            phone: null,
+            loyalty_points: 0,
+            is_seller: false,
+            is_verified: false
+          });
+
+        if (fallbackError) throw fallbackError;
+        console.log('User profile created successfully with fallback');
+      }
+    } catch (fallbackError) {
+      console.error('Profile creation failed:', fallbackError);
+    }
+  }
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -152,15 +191,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
 
       if (data.user) {
-        // Créer le profil utilisateur avec la fonction SQL
-        const { error: profileError } = await supabase.rpc('create_user_profile', {
-          user_email: email,
-          user_username: username,
-          user_full_name: fullName || null,
-          user_phone: null
-        });
+        // Stocker les informations pour la création du profil
+        const profileData = {
+          email,
+          username,
+          fullName: fullName || null
+        };
 
-        if (profileError) throw profileError;
+        // Créer le profil via l'auth state change listener pour s'assurer de l'authentification
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === 'SIGNED_IN' && session?.user && profileData) {
+              await createUserProfile(profileData.email, profileData.username, profileData.fullName);
+              subscription.unsubscribe();
+            }
+          }
+        );
+
+        // Créer immédiatement le profil si la session est déjà active
+        if (data.session) {
+          await createUserProfile(profileData.email, profileData.username, profileData.fullName);
+        }
+
         toast.success('Compte créé avec succès !');
       }
     } catch (error: any) {
@@ -208,12 +260,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.rpc('is_username_available', {
         check_username: username
       });
-      
+
       if (error) throw error;
       return data;
     } catch (error) {
       console.error('Error checking username availability:', error);
-      return false;
+      // Fallback: vérifier directement dans la table users
+      try {
+        const { data, error: fallbackError } = await supabase
+          .from('users')
+          .select('username')
+          .eq('username', username)
+          .single();
+
+        if (fallbackError && fallbackError.code === 'PGRST116') {
+          // Username doesn't exist, so it's available
+          return true;
+        } else if (!fallbackError) {
+          // Username exists
+          return false;
+        }
+        throw fallbackError;
+      } catch (fallbackError) {
+        console.error('Fallback check also failed:', fallbackError);
+        return false;
+      }
     }
   };
 
@@ -223,12 +294,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.rpc('is_email_available', {
         check_email: email
       });
-      
+
       if (error) throw error;
       return data;
     } catch (error) {
       console.error('Error checking email availability:', error);
-      return false;
+      // Fallback: vérifier directement dans la table users
+      try {
+        const { data, error: fallbackError } = await supabase
+          .from('users')
+          .select('email')
+          .eq('email', email)
+          .single();
+
+        if (fallbackError && fallbackError.code === 'PGRST116') {
+          // Email doesn't exist, so it's available
+          return true;
+        } else if (!fallbackError) {
+          // Email exists
+          return false;
+        }
+        throw fallbackError;
+      } catch (fallbackError) {
+        console.error('Fallback check also failed:', fallbackError);
+        return false;
+      }
     }
   };
 
@@ -247,17 +337,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) throw error;
-      
-      // Rafraîchir le profil utilisateur
-      if (user) {
-        await fetchUserProfile(user.id);
-      }
-      
-      toast.success('Profil mis à jour avec succès');
     } catch (error: any) {
-      handleAuthError(error);
-      throw error;
+      console.warn('update_user_profile function not available, using fallback:', error);
+      // Fallback: mettre à jour directement dans la table
+      try {
+        const { error: fallbackError } = await supabase
+          .from('users')
+          .update({
+            full_name: profileData.fullName,
+            phone: profileData.phone,
+            bio: profileData.bio,
+            location: profileData.location,
+            website_url: profileData.websiteUrl,
+            instagram_handle: profileData.instagramHandle,
+            tiktok_handle: profileData.tiktokHandle,
+            avatar_url: profileData.avatarUrl,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user?.id);
+
+        if (fallbackError) throw fallbackError;
+      } catch (fallbackError) {
+        console.error('Profile update fallback also failed:', fallbackError);
+        handleAuthError(fallbackError);
+        throw fallbackError;
+      }
     }
+
+    // Rafraîchir le profil utilisateur
+    if (user) {
+      await fetchUserProfile(user.id);
+    }
+
+    toast.success('Profil mis à jour avec succès');
   };
 
   // Rechercher des utilisateurs

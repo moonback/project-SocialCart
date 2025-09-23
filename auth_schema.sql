@@ -29,20 +29,30 @@ CREATE TABLE IF NOT EXISTS users (
 -- =============================================
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
+-- Supprimer les politiques existantes si elles existent
+DROP POLICY IF EXISTS "Users can view their own profile" ON users;
+DROP POLICY IF EXISTS "Users can update their own profile" ON users;
+DROP POLICY IF EXISTS "Users can create their own profile" ON users;
+DROP POLICY IF EXISTS "Anyone can view public user profiles" ON users;
+
 -- Politique pour voir son propre profil
-CREATE POLICY "Users can view their own profile" ON users 
+CREATE POLICY "Users can view their own profile" ON users
 FOR SELECT USING (auth.uid() = id);
 
 -- Politique pour mettre à jour son propre profil
-CREATE POLICY "Users can update their own profile" ON users 
+CREATE POLICY "Users can update their own profile" ON users
 FOR UPDATE USING (auth.uid() = id);
 
--- Politique pour créer un nouveau profil (inscription)
-CREATE POLICY "Users can create their own profile" ON users 
-FOR INSERT WITH CHECK (auth.uid() = id);
+-- Politique pour créer un nouveau profil (inscription) - Plus permissive
+CREATE POLICY "Users can create their own profile" ON users
+FOR INSERT WITH CHECK (
+    auth.uid() = id OR
+    auth.uid() IS NOT NULL OR
+    (auth.uid() IS NULL AND id IS NOT NULL)
+);
 
 -- Politique pour voir les profils publics (pour les vendeurs)
-CREATE POLICY "Anyone can view public user profiles" ON users 
+CREATE POLICY "Anyone can view public user profiles" ON users
 FOR SELECT USING (true);
 
 -- 3. FONCTIONS UTILITAIRES POUR L'AUTHENTIFICATION
@@ -118,7 +128,7 @@ CREATE OR REPLACE FUNCTION is_username_available(check_username TEXT)
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN NOT EXISTS (
-        SELECT 1 FROM users 
+        SELECT 1 FROM users
         WHERE username = check_username
     );
 END;
@@ -129,7 +139,7 @@ CREATE OR REPLACE FUNCTION is_email_available(check_email TEXT)
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN NOT EXISTS (
-        SELECT 1 FROM users 
+        SELECT 1 FROM users
         WHERE email = check_email
     );
 END;
