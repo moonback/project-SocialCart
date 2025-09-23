@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Upload, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
 
 interface ProfileImageUploaderProps {
   currentImageUrl?: string;
@@ -16,6 +17,7 @@ export function ProfileImageUploader({
   userId,
   className = ''
 }: ProfileImageUploaderProps) {
+  const { updateProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -63,14 +65,7 @@ export function ProfileImageUploader({
   };
 
   const updateUserProfile = async (imageUrl: string) => {
-    const { error } = await supabase
-      .from('users')
-      .update({ avatar_url: imageUrl })
-      .eq('id', userId);
-
-    if (error) {
-      throw new Error(`Erreur de mise à jour: ${error.message}`);
-    }
+    await updateProfile({ avatarUrl: imageUrl });
   };
 
   const handleFileSelect = useCallback(async (file: File | null) => {

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { useNavigate } from 'react-router-dom';
+import { ProductUserAvatar } from './UserAvatar';
 
 interface ProductCardProps {
   product: Product;
@@ -127,14 +128,12 @@ export function ProductCard({
             {product.name}
           </h3>
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden border border-surface-200">
-              <img
-                src={`https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=24&h=24&fit=crop&crop=face`}
-                alt="Vendeur"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="text-sm text-surface-500">@vendeur</span>
+            <ProductUserAvatar 
+              avatarUrl={product.user?.avatar_url} 
+              username={product.user?.username} 
+              size="sm"
+            />
+            <span className="text-sm text-surface-500">@{product.user?.username || 'vendeur'}</span>
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { HeaderUserAvatar, UserAvatar } from './UserAvatar';
 
 export function TopBar() {
   const { itemCount } = useCart();
@@ -142,10 +143,11 @@ export function TopBar() {
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
               className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-primary-200 hover:border-primary-400 transition-colors"
             >
-              <img
-                src={user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face`}
-                alt="Profile"
-                className="w-full h-full object-cover"
+              <HeaderUserAvatar 
+                avatarUrl={user?.avatar_url} 
+                username={user?.username} 
+                size="md"
+                className="w-full h-full"
               />
             </motion.button>
 
@@ -161,10 +163,11 @@ export function TopBar() {
                 >
                   <div className="p-3 border-b border-surface-100">
                     <div className="flex items-center space-x-3">
-                      <img
-                        src={user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face`}
-                        alt="Profile"
-                        className="w-10 h-10 rounded-xl object-cover"
+                      <UserAvatar 
+                        avatarUrl={user?.avatar_url} 
+                        username={user?.username} 
+                        size="lg"
+                        className="rounded-xl"
                       />
                       <div>
                         <p className="font-semibold text-surface-900">{user?.username}</p>

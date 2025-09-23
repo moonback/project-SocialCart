@@ -18,6 +18,7 @@ import {
   X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { UserAvatar } from './UserAvatar';
 import { Product as ProductFromProducts, ProductVariant } from '../lib/products';
 import { Product as ProductFromSupabase } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
@@ -528,10 +529,11 @@ export function VideoFeed({ products }: VideoFeedProps) {
               onClick={() => navigate('/profile')}
               className="w-16 h-16 rounded-full overflow-hidden border-3 border-white shadow-lg"
             >
-              <img
-                src={product.user?.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face`}
-                alt={product.user?.username}
-                className="w-full h-full object-cover"
+              <UserAvatar 
+                avatarUrl={product.user?.avatar_url} 
+                username={product.user?.username} 
+                size="xl"
+                className="w-full h-full"
               />
             </motion.button>
           </div>

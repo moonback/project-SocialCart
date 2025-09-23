@@ -21,6 +21,7 @@ import { useAuth } from '../hooks/useAuth';
 import { MediaUploader } from '../components/MediaUploader';
 import { ProductVariants } from '../components/ProductVariants';
 import { ProductService, CreateProductData } from '../lib/products';
+import { getCategoryId, getBrandId } from '../lib/categories';
 import toast from 'react-hot-toast';
 
 interface ProductVariant {
@@ -86,14 +87,30 @@ export function CreateProduct() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const categories = [
-    { value: 'tech', label: 'Technologie' },
-    { value: 'fashion', label: 'Mode' },
-    { value: 'home', label: 'Maison' },
-    { value: 'beauty', label: 'Beauté' },
-    { value: 'sports', label: 'Sport' },
+    { value: 'electronics', label: 'Électronique' },
+    { value: 'fashion', label: 'Mode & Accessoires' },
+    { value: 'home', label: 'Maison & Jardin' },
+    { value: 'sports', label: 'Sports & Loisirs' },
+    { value: 'beauty', label: 'Beauté & Santé' },
     { value: 'food', label: 'Alimentation' },
-    { value: 'books', label: 'Livres' },
-    { value: 'toys', label: 'Jouets' }
+    { value: 'books', label: 'Livres & Médias' },
+    { value: 'automotive', label: 'Automobile' },
+    { value: 'toys', label: 'Jouets & Enfants' },
+    { value: 'other', label: 'Autres' }
+  ];
+
+  const brands = [
+    { value: '', label: 'Aucune marque' },
+    { value: 'apple', label: 'Apple' },
+    { value: 'samsung', label: 'Samsung' },
+    { value: 'nike', label: 'Nike' },
+    { value: 'adidas', label: 'Adidas' },
+    { value: 'sony', label: 'Sony' },
+    { value: 'lg', label: 'LG' },
+    { value: 'dell', label: 'Dell' },
+    { value: 'hp', label: 'HP' },
+    { value: 'canon', label: 'Canon' },
+    { value: 'other', label: 'Autre' }
   ];
 
   const handleMediaFilesChange = (files: File[]) => {
@@ -156,8 +173,9 @@ export function CreateProduct() {
         cost_price: formData.costPrice ? parseFloat(formData.costPrice) : undefined,
         sku: formData.sku || undefined,
         weight: formData.weight ? parseFloat(formData.weight) : undefined,
-        category_id: formData.category,
-        brand_id: formData.brand || undefined,
+        // Utiliser les utilitaires pour convertir les noms en UUIDs
+        category_id: getCategoryId(formData.category),
+        brand_id: getBrandId(formData.brand),
         status: formData.status,
         inventory_tracking: formData.inventoryTracking,
         inventory_quantity: formData.inventoryQuantity,
@@ -305,22 +323,41 @@ export function CreateProduct() {
                 </div>
               </div>
 
-              {/* Category */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-surface-700">
-                  Catégorie
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                  className="input"
-                >
-                  {categories.map(category => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
+              {/* Category and Brand */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Catégorie
+                  </label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                    className="input"
+                  >
+                    {categories.map(category => (
+                      <option key={category.value} value={category.value}>
+                        {category.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Marque
+                  </label>
+                  <select
+                    value={formData.brand}
+                    onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
+                    className="input"
+                  >
+                    {brands.map(brand => (
+                      <option key={brand.value} value={brand.value}>
+                        {brand.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Short Description */}
@@ -431,6 +468,55 @@ export function CreateProduct() {
                 </div>
               </div>
 
+              {/* Dimensions Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-surface-900 flex items-center space-x-2">
+                  <Target className="w-5 h-5" />
+                  <span>Dimensions (optionnel)</span>
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-surface-700">
+                      Longueur (cm)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      className="input"
+                      placeholder="0.0"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-surface-700">
+                      Largeur (cm)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      className="input"
+                      placeholder="0.0"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-surface-700">
+                      Hauteur (cm)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      className="input"
+                      placeholder="0.0"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Inventory */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -476,6 +562,51 @@ export function CreateProduct() {
                 variants={formData.variants}
                 onVariantsChange={handleVariantsChange}
               />
+            </motion.div>
+
+            {/* Shipping Information */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="card p-8"
+            >
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center">
+                  <Truck className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-surface-900">Informations de livraison</h2>
+                  <p className="text-surface-600 text-sm">Détails sur l'expédition et la livraison</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Délai de livraison (jours)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="input"
+                    placeholder="3-5"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Frais de port (€)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className="input"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
             </motion.div>
 
             {/* Advanced Settings */}
@@ -550,6 +681,26 @@ export function CreateProduct() {
                     <span className="text-sm font-semibold text-surface-700">Assujetti aux taxes</span>
                   </label>
                   <p className="text-xs text-surface-500">Produit soumis à la TVA</p>
+                </div>
+              </div>
+
+              {/* Tags Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-surface-900 flex items-center space-x-2">
+                  <Tag className="w-5 h-5" />
+                  <span>Tags et Mots-clés</span>
+                </h3>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Tags personnalisés (séparés par des virgules)
+                  </label>
+                  <input
+                    type="text"
+                    className="input"
+                    placeholder="premium, qualité, nouveau, tendance..."
+                  />
+                  <p className="text-xs text-surface-500">Ajoutez des tags pour améliorer la visibilité de votre produit</p>
                 </div>
               </div>
 
