@@ -14,6 +14,8 @@ import { Payment } from './pages/Payment';
 import { Auth } from './pages/Auth';
 import { LiveShopping } from './pages/LiveShopping';
 import { CreateProduct } from './pages/CreateProduct';
+import { ProductManagement } from './pages/ProductManagement';
+import { EditProduct } from './pages/EditProduct';
 import { Settings } from './pages/Settings';
 
 // Loading Component
@@ -109,6 +111,21 @@ function AppRoutes() {
         <Route path="create" element={
           <ProtectedRoute>
             <CreateProduct />
+          </ProtectedRoute>
+        } />
+        <Route path="create-product" element={
+          <ProtectedRoute>
+            <CreateProduct />
+          </ProtectedRoute>
+        } />
+        <Route path="products" element={
+          <ProtectedRoute>
+            <ProductManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="edit-product/:id" element={
+          <ProtectedRoute>
+            <EditProduct />
           </ProtectedRoute>
         } />
         <Route path="notifications" element={

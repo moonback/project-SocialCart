@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ShoppingCart, Bell, Menu, X, Settings, User, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, Bell, Menu, X, Settings, User, LogOut, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -187,6 +187,18 @@ export function TopBar() {
                     >
                       <User className="w-5 h-5 text-surface-600" />
                       <span className="text-surface-900">Profil</span>
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                      onClick={() => {
+                        navigate('/products');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-surface-50 transition-colors"
+                    >
+                      <Package className="w-5 h-5 text-surface-600" />
+                      <span className="text-surface-900">Mes Produits</span>
                     </motion.button>
                     
                     <motion.button
