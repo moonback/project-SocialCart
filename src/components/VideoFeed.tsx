@@ -51,6 +51,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
   const [showInfo, setShowInfo] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
@@ -77,6 +78,23 @@ export function VideoFeed({ products }: VideoFeedProps) {
       setAutoPlay(savedAutoPlay === 'true');
     }
   }, []);
+
+  // Fermer le menu d'actions quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showActionsMenu) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.actions-menu-container')) {
+          setShowActionsMenu(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showActionsMenu]);
 
 
   // Logique de lecture centralisée - s'exécute à chaque changement de currentIndex
@@ -110,10 +128,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
     }
   }, [currentIndex, currentProduct, autoPlay, recordView]);
 
-  // Nouvelles fonctions pour les fonctionnalités avancées
-  const handleShare = async () => {
-    setShowShare(true);
-  };
+ 
 
   const handleReport = () => {
     toast.success('Signalement envoyé');
@@ -158,11 +173,11 @@ export function VideoFeed({ products }: VideoFeedProps) {
     }
 
     throttleTimeoutRef.current = setTimeout(() => {
-      if (containerRef.current) {
-        const scrollTop = containerRef.current.scrollTop;
-        const itemHeight = containerRef.current.clientHeight;
-        const newIndex = Math.round(scrollTop / itemHeight);
-        setCurrentIndex(newIndex);
+    if (containerRef.current) {
+      const scrollTop = containerRef.current.scrollTop;
+      const itemHeight = containerRef.current.clientHeight;
+      const newIndex = Math.round(scrollTop / itemHeight);
+      setCurrentIndex(newIndex);
       }
       throttleTimeoutRef.current = null;
     }, 200); // Throttle de 200ms
@@ -277,7 +292,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+                      className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm pointer-events-auto z-20"
                     >
                       {/* Compact Play/Pause Button */}
                       <div className="flex flex-col items-center space-y-3">
@@ -285,7 +300,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={togglePlayPause}
-                          className="w-16 h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl"
+                          className="w-16 h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl pointer-events-auto z-30"
                         >
                           {isPlaying ? (
                             <Pause className="w-8 h-8 text-white" />
@@ -300,7 +315,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={toggleMute}
-                            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center"
+                            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto z-30"
                           >
                             {isMuted ? (
                               <VolumeX className="w-5 h-5 text-white" />
@@ -313,7 +328,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={changePlaybackSpeed}
-                            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-xs"
+                            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-xs pointer-events-auto z-30"
                           >
                             {playbackSpeed}x
                           </motion.button>
@@ -324,12 +339,12 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 </AnimatePresence>
 
                 {/* Compact Skip Buttons */}
-                <div className="absolute left-3 right-3 top-1/2 transform -translate-y-1/2 flex justify-between pointer-events-none">
+                <div className="absolute left-3 right-3 top-1/2 transform -translate-y-1/2 flex justify-between pointer-events-auto z-20">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => skipVideo('prev')}
-                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto ${currentIndex === 0 ? 'opacity-30' : ''}`}
+                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto z-30 ${currentIndex === 0 ? 'opacity-30' : ''}`}
                     disabled={currentIndex === 0}
                   >
                     <SkipBack className="w-5 h-5 text-white" />
@@ -339,7 +354,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => skipVideo('next')}
-                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto ${currentIndex === products.length - 1 ? 'opacity-30' : ''}`}
+                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto z-30 ${currentIndex === products.length - 1 ? 'opacity-30' : ''}`}
                     disabled={currentIndex === products.length - 1}
                   >
                     <SkipForward className="w-5 h-5 text-white" />
@@ -359,14 +374,14 @@ export function VideoFeed({ products }: VideoFeedProps) {
           </div>
 
           {/* Right sidebar with actions - Compact Design */}
-          <div className="absolute right-1 bottom-28 flex flex-col space-y-1.5 z-10 pb-4">
+          <div className="absolute right-1 bottom-48 flex flex-col space-y-1.5 z-30 pb-4 pointer-events-auto actions-menu-container"> {/* Augmenté pour éviter le bottom nav */}
             
             {/* Like Button - Compact */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleLike(product.id)}
-              className="flex flex-col items-center space-y-1"
+              className="flex flex-col items-center space-y-1 pointer-events-auto z-40"
             >
               <motion.div 
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
@@ -390,100 +405,12 @@ export function VideoFeed({ products }: VideoFeedProps) {
               </span>
             </motion.button>
 
-            {/* Comments Button - Compact */}
+            {/* Menu Button - Opens actions menu */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowComments(!showComments)}
-              className="flex flex-col items-center space-y-1"
-            >
-              <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <MessageCircle className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                Commentaires
-              </span>
-            </motion.button>
-
-            {/* Share Button - Compact */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleShare}
-              className="flex flex-col items-center space-y-1"
-            >
-              <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <Share className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                Partager
-              </span>
-            </motion.button>
-
-            {/* Bookmark Button - Compact */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => toggleBookmark(product.id)}
-              className="flex flex-col items-center space-y-1"
-            >
-              <motion.div 
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isBookmarked(product.id) 
-                    ? 'bg-yellow-500 shadow-lg shadow-yellow-500/30' 
-                    : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
-                }`}
-                animate={isBookmarked(product.id) ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ duration: 0.3 }}
-              >
-                <Bookmark 
-                  className={`w-4 h-4 transition-all duration-300 ${
-                    isBookmarked(product.id) 
-                      ? 'text-white fill-white' 
-                      : 'text-white hover:text-yellow-300'
-                  }`} 
-                />
-              </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                {isBookmarked(product.id) ? 'Sauvé' : 'Sauver'}
-              </span>
-            </motion.button>
-
-            {/* Follow Button - Compact */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => toggleFollow(product.seller_id)}
-              className="flex flex-col items-center space-y-1"
-            >
-              <motion.div 
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isFollowing(product.seller_id) 
-                    ? 'bg-blue-500 shadow-lg shadow-blue-500/30' 
-                    : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
-                }`}
-                animate={isFollowing(product.seller_id) ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ duration: 0.3 }}
-              >
-                <UserPlus 
-                  className={`w-4 h-4 transition-all duration-300 ${
-                    isFollowing(product.seller_id) 
-                      ? 'text-white' 
-                      : 'text-white hover:text-blue-300'
-                  }`} 
-                />
-              </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                {isFollowing(product.seller_id) ? 'Suivi' : 'Suivre'}
-              </span>
-            </motion.button>
-
-            {/* More Options Button - Compact */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowInfo(!showInfo)}
-              className="flex flex-col items-center space-y-1"
+              onClick={() => setShowActionsMenu(!showActionsMenu)}
+              className="flex flex-col items-center space-y-1 pointer-events-auto z-40"
             >
               <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
                 <MoreVertical className="w-4 h-4 text-white" />
@@ -492,6 +419,144 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 Plus
               </span>
             </motion.button>
+
+            {/* Actions Menu - Modal centrée à l'écran */}
+            <AnimatePresence>
+              {showActionsMenu && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100]"
+                  onClick={() => setShowActionsMenu(false)}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                    transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
+                    className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-col space-y-4">
+                      {/* Header */}
+                      <div className="text-center pb-2">
+                        <h3 className="text-lg font-bold text-gray-900">Actions</h3>
+                        <p className="text-sm text-gray-500">Que souhaitez-vous faire ?</p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="space-y-3">
+                        {/* Comment Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            setShowComments(true);
+                            setShowActionsMenu(false);
+                          }}
+                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                        >
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <MessageCircle className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="text-gray-900 font-medium">Commentaires</span>
+                            <p className="text-sm text-gray-500">Voir et ajouter des commentaires</p>
+                          </div>
+                        </motion.button>
+
+                        {/* Share Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            setShowShare(true);
+                            setShowActionsMenu(false);
+                          }}
+                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                        >
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <Share className="w-5 h-5 text-green-600" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="text-gray-900 font-medium">Partager</span>
+                            <p className="text-sm text-gray-500">Partager ce produit</p>
+                          </div>
+                        </motion.button>
+
+                        {/* Bookmark Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            toggleBookmark(product.id);
+                            setShowActionsMenu(false);
+                          }}
+                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                        >
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            isBookmarked(product.id) ? 'bg-yellow-100' : 'bg-gray-100'
+                          }`}>
+                            <Bookmark 
+                              className={`w-5 h-5 ${
+                                isBookmarked(product.id) ? 'text-yellow-600 fill-yellow-600' : 'text-gray-600'
+                              }`} 
+                            />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="text-gray-900 font-medium">
+                              {isBookmarked(product.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                            </span>
+                            <p className="text-sm text-gray-500">
+                              {isBookmarked(product.id) ? 'Retirer de votre liste' : 'Sauvegarder pour plus tard'}
+                            </p>
+                          </div>
+                        </motion.button>
+
+                        {/* Follow Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            toggleFollow(product.seller_id);
+                            setShowActionsMenu(false);
+                          }}
+                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                        >
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            isFollowing(product.seller_id) ? 'bg-purple-100' : 'bg-gray-100'
+                          }`}>
+                            <UserPlus className={`w-5 h-5 ${
+                              isFollowing(product.seller_id) ? 'text-purple-600' : 'text-gray-600'
+                            }`} />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="text-gray-900 font-medium">
+                              {isFollowing(product.seller_id) ? 'Ne plus suivre' : 'Suivre'}
+                            </span>
+                            <p className="text-sm text-gray-500">
+                              {isFollowing(product.seller_id) ? 'Arrêter de suivre ce vendeur' : 'Suivre ce vendeur'}
+                            </p>
+                          </div>
+                        </motion.button>
+                      </div>
+
+                      {/* Close Button */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setShowActionsMenu(false)}
+                        className="w-full py-3 bg-gray-100 text-gray-600 rounded-2xl font-medium hover:bg-gray-200 transition-all duration-200"
+                      >
+                        Annuler
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* User Avatar - Compact */}
             <motion.button
@@ -510,7 +575,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
           </div>
 
           {/* Bottom content - Compact Design */}
-          <div className="absolute bottom-40 left-2 right-16 z-10 pb-4"> {/* Décalé de 10px vers le haut (bottom-32 -> bottom-40) */}
+          <div className="absolute bottom-48 left-2 right-16 z-30 pb-4 pointer-events-auto"> {/* Augmenté pour éviter le bottom nav */}
             <motion.div 
               className="space-y-3"
               initial={{ y: 20, opacity: 0 }}
@@ -528,19 +593,19 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   />
                   <h3 className="text-white font-bold text-base drop-shadow-lg">@{product.user?.username}</h3>
                 </div>
-                <motion.button
+                  <motion.button
                   whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.95 }}
                   className="px-3 py-1 bg-gradient-to-r from-blue-500/60 to-blue-400/60 backdrop-blur-sm text-white rounded-full text-xs font-semibold hover:bg-blue-500/80 transition-all border border-white/20 shadow"
-                >
-                  Suivre
-                </motion.button>
-              </div>
+                  >
+                    Suivre
+                  </motion.button>
+                </div>
               
               {/* Description - Améliorée */}
               <p className="text-white text-sm leading-relaxed max-w-md line-clamp-3 drop-shadow-md bg-black/20 rounded-lg px-3 py-2">
-                {product.description}
-              </p>
+                  {product.description}
+                </p>
 
               {/* Carte produit - Améliorée */}
               <motion.div 
@@ -558,7 +623,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                     whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate(`/product/${product.id}`)}
-                    className="px-4 py-2 bg-white/30 backdrop-blur-sm text-blue-700 rounded-lg font-semibold hover:bg-white/50 transition-all text-sm ml-2 shadow"
+                    className="px-4 py-2 bg-white/30 backdrop-blur-sm text-blue-700 rounded-lg font-semibold hover:bg-white/50 transition-all text-sm ml-2 shadow pointer-events-auto z-40"
                   >
                     Voir
                   </motion.button>
@@ -568,7 +633,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleBuyNow(product)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all pointer-events-auto z-40"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   <span>Acheter maintenant</span>
