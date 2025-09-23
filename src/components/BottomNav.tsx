@@ -20,7 +20,7 @@ export function BottomNav() {
       animate={{ y: 0, opacity: 1 }}
       className="fixed bottom-0 left-0 right-0 z-50 mobile-safe-area"
     >
-      <div className="bg-white/95 backdrop-blur-2xl border-t border-surface-200 shadow-2xl rounded-t-2xl ">
+      <div className="bg-white/80 backdrop-blur-2xl border-t border-white/20 shadow-glass rounded-t-3xl">
         <div className="flex relative justify-between items-end">
           {tabs.map(({ icon: Icon, label, path, special }) => {
             const isActive = location.pathname === path;
@@ -50,16 +50,20 @@ export function BottomNav() {
                 {/* Conteneur d'icône amélioré */}
                 <div className={`relative flex items-center justify-center ${special && !isActive ? 'mb-1' : ''}`}>
                   {special && !isActive ? (
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500 via-primary-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-glow border-4 border-white group-hover:scale-105 transition-transform duration-200">
+                    <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow border border-white/30 backdrop-blur-sm group-hover:scale-105 transition-all duration-300 hover:shadow-glass">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                   ) : (
                     <motion.div
                       animate={isActive ? { scale: 1.18 } : { scale: 1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      className={`flex items-center justify-center rounded-xl ${isActive ? 'bg-primary-50 shadow-md' : ''} w-10 h-10`}
+                      className={`flex items-center justify-center rounded-xl backdrop-blur-sm transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-white/80 shadow-glass border border-white/30' 
+                          : 'bg-white/40 hover:bg-white/60 border border-white/20'
+                      } w-10 h-10`}
                     >
-                      <Icon className={`w-6 h-6 ${isActive ? 'text-primary-700' : 'text-surface-400 group-hover:text-primary-500'}`} />
+                      <Icon className={`w-6 h-6 ${isActive ? 'text-primary-700' : 'text-surface-500 group-hover:text-primary-600'}`} />
                     </motion.div>
                   )}
                   {/* Pastille de notification pour Bell */}

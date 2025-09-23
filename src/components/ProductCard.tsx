@@ -34,9 +34,9 @@ export function ProductCard({
   };
 
   const cardVariants = {
-    default: 'card-hover',
-    compact: 'card',
-    featured: 'card-hover border-2 border-primary-200 shadow-glow'
+    default: 'card-glass-hover',
+    compact: 'card-glass',
+    featured: 'card-glass-hover border-2 border-primary-300/50 shadow-glow'
   };
 
   const aspectRatio = variant === 'compact' ? 'aspect-[4/3]' : 'aspect-square';

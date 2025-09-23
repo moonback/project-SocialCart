@@ -52,7 +52,7 @@ export function TopBar() {
     <motion.div 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="sticky top-0 z-50 surface-glass mobile-header"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-header"
     >
       <div className="flex items-center justify-between px-4 py-4">
         {/* Logo */}
@@ -62,7 +62,7 @@ export function TopBar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow">
+          <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow border border-white/30 backdrop-blur-sm">
             <span className="text-white font-bold text-lg">SC</span>
           </div>
           <div className="hidden sm:block">
@@ -82,7 +82,7 @@ export function TopBar() {
                 name="search"
                 type="text"
                 placeholder="Rechercher des produits..."
-                className="input pl-12 pr-4 py-3 w-full"
+                className="input-glass pl-12 pr-4 py-3 w-full"
                 onFocus={() => navigate('/search')}
               />
             </div>
@@ -159,9 +159,9 @@ export function TopBar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 top-12 w-56 bg-white rounded-2xl shadow-large border border-surface-200 overflow-hidden z-50"
+                  className="absolute right-0 top-12 w-56 bg-white/90 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 overflow-hidden z-50"
                 >
-                  <div className="p-3 border-b border-surface-100">
+                  <div className="p-3 border-b border-white/20">
                     <div className="flex items-center space-x-3">
                       <UserAvatar 
                         avatarUrl={user?.avatar_url} 
@@ -183,7 +183,7 @@ export function TopBar() {
                         navigate('/profile');
                         setIsProfileMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-surface-50 transition-colors"
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
                     >
                       <User className="w-5 h-5 text-surface-600" />
                       <span className="text-surface-900">Profil</span>
@@ -195,7 +195,7 @@ export function TopBar() {
                         navigate('/products');
                         setIsProfileMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-surface-50 transition-colors"
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
                     >
                       <Package className="w-5 h-5 text-surface-600" />
                       <span className="text-surface-900">Mes Produits</span>
@@ -207,13 +207,13 @@ export function TopBar() {
                         navigate('/settings');
                         setIsProfileMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-surface-50 transition-colors"
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
                     >
                       <Settings className="w-5 h-5 text-surface-600" />
                       <span className="text-surface-900">Paramètres</span>
                     </motion.button>
                     
-                    <div className="border-t border-surface-100 my-2" />
+                    <div className="border-t border-white/20 my-2" />
                     
                     <motion.button
                       whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.05)' }}

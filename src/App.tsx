@@ -23,7 +23,7 @@ const Settings = lazy(() => import('./pages/Settings'));
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-600 via-secondary-600 to-primary-800 flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary-600 via-blue-600 to-primary-800 flex items-center justify-center relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float" />
@@ -37,7 +37,7 @@ function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
         className="text-center space-y-6 relative z-10"
       >
         <motion.div
-          className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto shadow-large"
+          className="w-20 h-20 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center mx-auto shadow-glass border border-white/30"
           animate={{ 
             rotate: [0, 360],
             scale: [1, 1.1, 1]
@@ -71,13 +71,13 @@ function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
 
 function Notifications() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-50 to-surface-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-blue-50 to-surface-50 flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center space-y-6 p-8"
       >
-        <div className="w-24 h-24 bg-gradient-secondary rounded-3xl flex items-center justify-center mx-auto shadow-glow">
+        <div className="w-24 h-24 bg-gradient-secondary rounded-3xl flex items-center justify-center mx-auto shadow-glow border border-white/30 backdrop-blur-sm">
           <span className="text-white font-bold text-3xl">🔔</span>
         </div>
         <div className="space-y-2">

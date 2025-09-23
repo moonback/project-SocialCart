@@ -397,7 +397,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100]"
+                   className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[99999]"
                   onClick={() => setShowActionsMenu(false)}
                 >
                   <motion.div
@@ -405,7 +405,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.8, y: 20 }}
                     transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
-                    className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4"
+                     className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 relative z-[100000]"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex flex-col space-y-4">
@@ -543,8 +543,8 @@ export function VideoFeed({ products }: VideoFeedProps) {
             </motion.button>
           </div>
 
-          {/* Bottom content - Compact Design */}
-          <div className="absolute bottom-48 left-2 right-16 z-30 pb-4 pointer-events-auto"> {/* Augmenté pour éviter le bottom nav */}
+           {/* Bottom content - Compact Design */}
+           <div className="absolute bottom-48 left-2 right-16 z-20 pb-4 pointer-events-auto"> {/* Augmenté pour éviter le bottom nav */}
             <motion.div 
               className="space-y-3"
               initial={{ y: 20, opacity: 0 }}
@@ -572,10 +572,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 </div>
               
               {/* Description - Améliorée */}
-              <p className="text-white text-sm leading-relaxed max-w-md drop-shadow-md bg-black/20 rounded-lg px-3 py-2">
+              <p className="text-white text-sm leading-relaxed max-w-md drop-shadow-md bg-black/20 rounded-lg px-3 py-2 whitespace-pre-wrap break-words overflow-hidden">
                 {product.description
-                  ? product.description.length > 150
-                    ? product.description.slice(0, 150) + '...'
+                  ? product.description.length > 200
+                    ? product.description.slice(0, 200) + '...'
                     : product.description
                   : "Aucune description disponible."}
               </p>
@@ -596,7 +596,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                     whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate(`/product/${product.id}`)}
-                    className="px-4 py-2 bg-white/30 backdrop-blur-sm text-blue-700 rounded-lg font-semibold hover:bg-white/50 transition-all text-sm ml-2 shadow pointer-events-auto z-40"
+                    className="px-4 py-2 bg-white/30 backdrop-blur-sm text-blue-700 rounded-lg font-semibold hover:bg-white/50 transition-all text-sm ml-2 shadow pointer-events-auto z-30"
                   >
                     Voir
                   </motion.button>
@@ -606,7 +606,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleBuyNow(product)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all pointer-events-auto z-40"
+                   className="w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all pointer-events-auto z-30"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   <span>Acheter maintenant</span>

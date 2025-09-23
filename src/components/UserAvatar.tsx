@@ -35,12 +35,14 @@ export function UserAvatar({
   const displayUrl = avatarUrl || (showFallback ? fallbackImage : '');
 
   return (
-    <img
-      src={displayUrl}
-      alt={username ? `Photo de profil de ${username}` : 'Photo de profil'}
-      className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
-      onError={handleImageError}
-    />
+    <div className={`${sizeClasses[size]} rounded-full overflow-hidden border border-white/30 backdrop-blur-sm ${className}`}>
+      <img
+        src={displayUrl}
+        alt={username ? `Photo de profil de ${username}` : 'Photo de profil'}
+        className="w-full h-full object-cover"
+        onError={handleImageError}
+      />
+    </div>
   );
 }
 
