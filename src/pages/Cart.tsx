@@ -114,21 +114,28 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-blue-50 to-surface-50 flex flex-col relative overflow-hidden">
+        {/* Background decoration - Design minimaliste */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl -translate-y-48 translate-x-48 animate-float" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl translate-y-48 -translate-x-48 animate-float" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-gradient-primary/5 rounded-full blur-3xl animate-pulse" />
+        </div>
+
         {/* Header Amélioré */}
-        <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
-          <div className="flex items-center justify-between px-4 py-3">
+        <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-safe-area-top">
+          <div className="flex items-center justify-between px-4 py-4">
             <div className="flex items-center space-x-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate(-1)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="btn-floating"
               >
-                <ArrowLeft className="w-6 h-6 text-gray-700" />
+                <ArrowLeft className="w-5 h-5 text-surface-600" />
               </motion.button>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">Panier</h1>
-                <p className="text-sm text-gray-500">Vos articles sélectionnés</p>
+                <h1 className="text-display text-xl text-gradient">Panier</h1>
+                <p className="text-sm text-surface-500 -mt-1">Vos articles sélectionnés</p>
               </div>
             </div>
             
@@ -136,28 +143,28 @@ export default function Cart() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => toast.success('Support client à venir')}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+                className="btn-floating"
               >
-                <HelpCircle className="w-5 h-5" />
+                <HelpCircle className="w-5 h-5 text-surface-600" />
               </motion.button>
             </div>
           </div>
         </div>
 
         {/* État Vide Amélioré */}
-        <div className="flex-1 flex items-center justify-center px-4">
+        <div className="flex-1 flex items-center justify-center px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center space-y-6 max-w-md"
           >
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center mx-auto shadow-lg">
-              <ShoppingCart className="w-16 h-16 text-purple-500" />
+            <div className="w-32 h-32 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto shadow-glow border border-white/30 backdrop-blur-sm">
+              <ShoppingCart className="w-16 h-16 text-white" />
             </div>
             
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">Votre panier est vide</h2>
-              <p className="text-gray-600 leading-relaxed">
+              <h2 className="text-2xl font-bold text-surface-900">Votre panier est vide</h2>
+              <p className="text-surface-600 leading-relaxed">
                 Découvrez nos produits et ajoutez vos favoris à votre panier pour commencer vos achats
               </p>
             </div>
@@ -166,7 +173,7 @@ export default function Cart() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/')}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+                className="btn-primary w-full"
               >
                 Commencer mes achats
               </motion.button>
@@ -174,7 +181,7 @@ export default function Cart() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => toast.success('Recommandations à venir')}
-                className="w-full bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all"
+                className="btn-secondary w-full"
               >
                 Voir les recommandations
               </motion.button>
@@ -187,21 +194,28 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-blue-50 to-surface-50 relative overflow-hidden">
+      {/* Background decoration - Design minimaliste */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl -translate-y-48 translate-x-48 animate-float" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl translate-y-48 -translate-x-48 animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-gradient-primary/5 rounded-full blur-3xl animate-pulse" />
+      </div>
+
       {/* Header Amélioré */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3">
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-safe-area-top">
+        <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-3">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="btn-floating"
             >
-              <ArrowLeft className="w-6 h-6 text-gray-700" />
+              <ArrowLeft className="w-5 h-5 text-surface-600" />
             </motion.button>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">Panier ({items.length})</h1>
-              <p className="text-sm text-gray-500">Total: {formatPrice(calculateTotal())}</p>
+              <h1 className="text-display text-xl text-gradient">Panier ({items.length})</h1>
+              <p className="text-sm text-surface-500 -mt-1">Total: {formatPrice(calculateTotal())}</p>
             </div>
           </div>
           
@@ -209,21 +223,21 @@ export default function Cart() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => toast.success('Fonctionnalité à venir')}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+              className="btn-floating"
             >
-              <Gift className="w-5 h-5" />
+              <Gift className="w-5 h-5 text-surface-600" />
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => toast.success('Support client à venir')}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+              className="btn-floating"
             >
-              <HelpCircle className="w-5 h-5" />
+              <HelpCircle className="w-5 h-5 text-surface-600" />
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={clearCart}
-              className="px-3 py-1 text-red-600 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors"
+              className="px-3 py-2 text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors backdrop-blur-sm border border-red-200/50"
             >
               Vider
             </motion.button>
@@ -231,7 +245,7 @@ export default function Cart() {
         </div>
       </div>
 
-      <div className="p-4 pb-40">
+      <div className="p-4 pb-40 relative z-10">
         <div className="space-y-4">
           {items.map((item, index) => (
             <motion.div
@@ -240,7 +254,7 @@ export default function Cart() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -300, scale: 0.8 }}
               transition={{ delay: index * 0.1 }}
-              className={`bg-white rounded-2xl p-4 shadow-sm border transition-all ${
+              className={`card-glass-hover p-4 transition-all ${
                 removingItems.includes(item.id) ? 'opacity-50 scale-95' : ''
               }`}
             >
@@ -250,11 +264,11 @@ export default function Cart() {
                   <img
                     src={item.product.image_url}
                     alt={item.product.name}
-                    className="w-20 h-20 object-cover rounded-xl shadow-sm"
+                    className="w-20 h-20 object-cover rounded-2xl shadow-glass border border-white/30 backdrop-blur-sm"
                   />
                   {updatingItems.includes(item.id) && (
-                    <div className="absolute inset-0 bg-white/80 rounded-xl flex items-center justify-center">
-                      <RefreshCw className="w-6 h-6 text-purple-600 animate-spin" />
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
+                      <RefreshCw className="w-6 h-6 text-primary-600 animate-spin" />
                     </div>
                   )}
                 </div>
@@ -263,8 +277,8 @@ export default function Cart() {
                 <div className="flex-1 space-y-3">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-sm leading-tight">{item.product.name}</h3>
-                      <p className="text-xs text-gray-500 mt-1">par @{item.product.user.username}</p>
+                      <h3 className="font-semibold text-surface-900 text-sm leading-tight">{item.product.name}</h3>
+                      <p className="text-xs text-surface-500 mt-1">par @{item.product.user.username}</p>
                     </div>
                     
                     {/* Actions Rapides */}
@@ -272,10 +286,10 @@ export default function Cart() {
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleAddToWishlist(item.product.id)}
-                        className={`p-2 rounded-full transition-all ${
+                        className={`p-2 rounded-full transition-all backdrop-blur-sm border border-white/20 ${
                           isBookmarked(item.product.id)
-                            ? 'bg-purple-100 text-purple-600'
-                            : 'hover:bg-gray-100 text-gray-400'
+                            ? 'bg-primary-100 text-primary-600 shadow-glass'
+                            : 'hover:bg-white/50 text-surface-400 hover:text-primary-500'
                         }`}
                       >
                         <Bookmark className={`w-4 h-4 ${isBookmarked(item.product.id) ? 'fill-current' : ''}`} />
@@ -284,7 +298,7 @@ export default function Cart() {
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={handleShareItem}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                        className="p-2 hover:bg-white/50 rounded-full transition-colors text-surface-400 hover:text-primary-500 backdrop-blur-sm border border-white/20"
                       >
                         <Share className="w-4 h-4" />
                       </motion.button>
@@ -292,7 +306,7 @@ export default function Cart() {
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleRemoveItem(item.id)}
-                        className="p-2 hover:bg-red-100 rounded-full transition-colors text-gray-400 hover:text-red-600"
+                        className="p-2 hover:bg-red-100 rounded-full transition-colors text-surface-400 hover:text-red-600 backdrop-blur-sm border border-white/20"
                       >
                         <Trash2 className="w-4 h-4" />
                       </motion.button>
@@ -305,7 +319,7 @@ export default function Cart() {
                       {Object.entries(item.selected_variants).map(([key, value]) => (
                         <span
                           key={key}
-                          className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs"
+                          className="px-2 py-1 bg-white/60 backdrop-blur-sm text-surface-600 rounded-full text-xs border border-white/30"
                         >
                           {key}: {value}
                         </span>
@@ -320,29 +334,29 @@ export default function Cart() {
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleQuantityUpdate(item.id, item.quantity - 1)}
                         disabled={item.quantity <= 1}
-                        className="w-8 h-8 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="w-8 h-8 rounded-full border-2 border-white/30 bg-white/40 backdrop-blur-sm flex items-center justify-center hover:bg-white/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-glass"
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus className="w-4 h-4 text-surface-600" />
                       </motion.button>
                       
-                      <span className="font-semibold text-gray-900 min-w-[2rem] text-center">
+                      <span className="font-semibold text-surface-900 min-w-[2rem] text-center">
                         {item.quantity}
                       </span>
                       
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleQuantityUpdate(item.id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all"
+                        className="w-8 h-8 rounded-full border-2 border-white/30 bg-white/40 backdrop-blur-sm flex items-center justify-center hover:bg-white/60 transition-all shadow-glass"
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 text-surface-600" />
                       </motion.button>
                     </div>
                     
                     <div className="text-right">
-                      <span className="font-bold text-lg text-purple-600">
+                      <span className="font-bold text-lg text-primary-600">
                         {formatPrice(item.product.price * item.quantity)}
                       </span>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-surface-500">
                         {formatPrice(item.product.price)} × {item.quantity}
                       </p>
                     </div>
@@ -355,25 +369,25 @@ export default function Cart() {
       </div>
 
       {/* Section Checkout Améliorée */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-2xl border-t border-white/20 shadow-glass z-50 mobile-safe-area">
         <div className="p-4 space-y-4">
           {/* Résumé de Commande */}
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Sous-total</span>
-              <span className="font-medium">{formatPrice(calculateSubtotal())}</span>
+              <span className="text-surface-600">Sous-total</span>
+              <span className="font-medium text-surface-900">{formatPrice(calculateSubtotal())}</span>
             </div>
             
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Livraison</span>
-              <span className={calculateShipping() === 0 ? 'text-green-600 font-semibold' : ''}>
+              <span className="text-surface-600">Livraison</span>
+              <span className={calculateShipping() === 0 ? 'text-green-600 font-semibold' : 'text-surface-900'}>
                 {calculateShipping() === 0 ? 'Gratuite' : formatPrice(calculateShipping())}
               </span>
             </div>
             
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">TVA (20%)</span>
-              <span className="font-medium">{formatPrice(calculateTax())}</span>
+              <span className="text-surface-600">TVA (20%)</span>
+              <span className="font-medium text-surface-900">{formatPrice(calculateTax())}</span>
             </div>
             
             {promoDiscount > 0 && (
@@ -383,9 +397,9 @@ export default function Cart() {
               </div>
             )}
             
-            <div className="border-t pt-3 flex justify-between font-bold text-lg">
-              <span>Total</span>
-              <span className="text-purple-600">{formatPrice(calculateTotal())}</span>
+            <div className="border-t border-white/20 pt-3 flex justify-between font-bold text-lg">
+              <span className="text-surface-900">Total</span>
+              <span className="text-primary-600">{formatPrice(calculateTotal())}</span>
             </div>
           </div>
 
@@ -394,10 +408,10 @@ export default function Cart() {
             whileTap={{ scale: 0.98 }}
             onClick={handleCheckout}
             disabled={isProcessing || items.length === 0}
-            className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 shadow-lg transition-all ${
+            className={`w-full py-4 rounded-2xl font-semibold flex items-center justify-center space-x-2 transition-all backdrop-blur-sm border border-white/20 ${
               isProcessing || items.length === 0
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:shadow-xl'
+                ? 'bg-surface-200 text-surface-500 cursor-not-allowed'
+                : 'btn-primary shadow-glow'
             }`}
           >
             {isProcessing ? (
@@ -418,7 +432,7 @@ export default function Cart() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => toast.success('Options de livraison à venir')}
-              className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-gray-200 transition-all"
+              className="btn-secondary flex-1 py-3 flex items-center justify-center space-x-2"
             >
               <Truck className="w-4 h-4" />
               <span>Livraison</span>
@@ -427,7 +441,7 @@ export default function Cart() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => toast.success('Options cadeau à venir')}
-              className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-gray-200 transition-all"
+              className="btn-secondary flex-1 py-3 flex items-center justify-center space-x-2"
             >
               <Gift className="w-4 h-4" />
               <span>Cadeau</span>
@@ -435,7 +449,7 @@ export default function Cart() {
           </div>
           
           {/* Indicateurs de Sécurité */}
-          <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+          <div className="flex items-center justify-center space-x-4 text-xs text-surface-500">
             <div className="flex items-center space-x-1">
               <Shield className="w-3 h-3" />
               <span>Paiement sécurisé</span>
