@@ -282,7 +282,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   onPause={() => setIsPlaying(prev => ({ ...prev, [product.id]: false }))}
                 />
                 
-                {/* Advanced Video Controls Overlay */}
+                {/* Compact Video Controls Overlay */}
                 <AnimatePresence>
                   {(showControls[product.id] || !autoPlay) && (
                     <motion.div 
@@ -291,41 +291,41 @@ export function VideoFeed({ products }: VideoFeedProps) {
                       exit={{ opacity: 0 }}
                       className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm"
                     >
-                      {/* Main Play/Pause Button */}
-                      <div className="flex flex-col items-center space-y-4">
+                      {/* Compact Play/Pause Button */}
+                      <div className="flex flex-col items-center space-y-3">
                         <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => togglePlayPause(product.id)}
-                          className="w-20 h-20 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-2xl"
+                          className="w-16 h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl"
                         >
                           {isPlaying[product.id] ? (
-                            <Pause className="w-10 h-10 text-white" />
+                            <Pause className="w-8 h-8 text-white" />
                           ) : (
-                            <Play className="w-10 h-10 text-white ml-1" />
+                            <Play className="w-8 h-8 text-white ml-1" />
                           )}
                         </motion.button>
                         
-                        {/* Secondary Controls */}
-                        <div className="flex space-x-4">
+                        {/* Compact Secondary Controls */}
+                        <div className="flex space-x-3">
                           <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => toggleMute(product.id)}
-                            className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center"
+                            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center"
                           >
                             {isMuted[product.id] ? (
-                              <VolumeX className="w-6 h-6 text-white" />
+                              <VolumeX className="w-5 h-5 text-white" />
                             ) : (
-                              <Volume2 className="w-6 h-6 text-white" />
+                              <Volume2 className="w-5 h-5 text-white" />
                             )}
                           </motion.button>
                           
                           <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={changePlaybackSpeed}
-                            className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-sm"
+                            className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-xs"
                           >
                             {playbackSpeed}x
                           </motion.button>
@@ -335,26 +335,26 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   )}
                 </AnimatePresence>
 
-                {/* Skip Buttons for Mobile */}
-                <div className="absolute left-4 right-4 top-1/2 transform -translate-y-1/2 flex justify-between pointer-events-none">
+                {/* Compact Skip Buttons */}
+                <div className="absolute left-3 right-3 top-1/2 transform -translate-y-1/2 flex justify-between pointer-events-none">
                   <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => skipVideo('prev')}
-                    className={`w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto ${currentIndex === 0 ? 'opacity-30' : ''}`}
+                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto ${currentIndex === 0 ? 'opacity-30' : ''}`}
                     disabled={currentIndex === 0}
                   >
-                    <SkipBack className="w-6 h-6 text-white" />
+                    <SkipBack className="w-5 h-5 text-white" />
                   </motion.button>
                   
                   <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => skipVideo('next')}
-                    className={`w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto ${currentIndex === products.length - 1 ? 'opacity-30' : ''}`}
+                    className={`w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center pointer-events-auto ${currentIndex === products.length - 1 ? 'opacity-30' : ''}`}
                     disabled={currentIndex === products.length - 1}
                   >
-                    <SkipForward className="w-6 h-6 text-white" />
+                    <SkipForward className="w-5 h-5 text-white" />
                   </motion.button>
                 </div>
               </div>
@@ -370,18 +370,18 @@ export function VideoFeed({ products }: VideoFeedProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           </div>
 
-          {/* Right sidebar with actions - Mobile Optimized */}
-          <div className="absolute right-2 sm:right-4 bottom-24 flex flex-col space-y-3 sm:space-y-6 z-10">
-            {/* AutoPlay Toggle */}
+          {/* Right sidebar with actions - Compact Design */}
+          <div className="absolute right-2 sm:right-3 bottom-20 flex flex-col space-y-2 z-10">
+            {/* AutoPlay Toggle - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={toggleAutoPlay}
-              className="flex flex-col items-center space-y-2"
+              className="flex flex-col items-center space-y-1"
               title={autoPlay ? 'Désactiver la lecture automatique' : 'Activer la lecture automatique'}
             >
               <motion.div 
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   autoPlay 
                     ? 'bg-green-500 shadow-lg shadow-green-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -389,20 +389,21 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 animate={autoPlay ? { scale: [1, 1.05, 1] } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <Play className={`w-7 h-7 ${autoPlay ? 'text-white' : 'text-white'}`} />
+                <Play className="w-5 h-5 text-white" />
               </motion.div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 {autoPlay ? 'Auto' : 'Manuel'}
               </span>
             </motion.button>
+            {/* Like Button - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => toggleLike(product.id)}
-              className="flex flex-col items-center space-y-2"
+              className="flex flex-col items-center space-y-1"
             >
               <motion.div 
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   likedProducts.has(product.id) 
                     ? 'bg-red-500 shadow-lg shadow-red-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -411,54 +412,56 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 transition={{ duration: 0.3 }}
               >
                 <Heart 
-                  className={`w-7 h-7 transition-all duration-300 ${
+                  className={`w-5 h-5 transition-all duration-300 ${
                     likedProducts.has(product.id) 
                       ? 'text-white fill-white' 
                       : 'text-white hover:text-red-300'
                   }`} 
                 />
               </motion.div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 {product.likes_count + (likedProducts.has(product.id) ? 1 : 0)}
               </span>
             </motion.button>
 
+            {/* Comments Button - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
-              className="flex flex-col items-center space-y-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex flex-col items-center space-y-1"
             >
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <MessageCircle className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                <MessageCircle className="w-5 h-5 text-white" />
               </div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 42
               </span>
             </motion.button>
 
+            {/* Share Button - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => handleShare(product)}
-              className="flex flex-col items-center space-y-2"
+              className="flex flex-col items-center space-y-1"
             >
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <Share className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                <Share className="w-5 h-5 text-white" />
               </div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 Partager
               </span>
             </motion.button>
 
-            {/* Bookmark Button */}
+            {/* Bookmark Button - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => toggleBookmark(product.id)}
-              className="flex flex-col items-center space-y-2"
+              className="flex flex-col items-center space-y-1"
             >
               <motion.div 
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   bookmarkedProducts.has(product.id) 
                     ? 'bg-yellow-500 shadow-lg shadow-yellow-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -467,27 +470,27 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 transition={{ duration: 0.3 }}
               >
                 <Bookmark 
-                  className={`w-7 h-7 transition-all duration-300 ${
+                  className={`w-5 h-5 transition-all duration-300 ${
                     bookmarkedProducts.has(product.id) 
                       ? 'text-white fill-white' 
                       : 'text-white hover:text-yellow-300'
                   }`} 
                 />
               </motion.div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 {bookmarkedProducts.has(product.id) ? 'Sauvé' : 'Sauver'}
               </span>
             </motion.button>
 
-            {/* Follow Button */}
+            {/* Follow Button - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => toggleFollow(product.seller_id)}
-              className="flex flex-col items-center space-y-2"
+              className="flex flex-col items-center space-y-1"
             >
               <motion.div 
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   followingUsers.has(product.seller_id) 
                     ? 'bg-blue-500 shadow-lg shadow-blue-500/30' 
                     : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
@@ -496,38 +499,39 @@ export function VideoFeed({ products }: VideoFeedProps) {
                 transition={{ duration: 0.3 }}
               >
                 <UserPlus 
-                  className={`w-7 h-7 transition-all duration-300 ${
+                  className={`w-5 h-5 transition-all duration-300 ${
                     followingUsers.has(product.seller_id) 
                       ? 'text-white' 
                       : 'text-white hover:text-blue-300'
                   }`} 
                 />
               </motion.div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 {followingUsers.has(product.seller_id) ? 'Suivi' : 'Suivre'}
               </span>
             </motion.button>
 
-            {/* More Options Button */}
+            {/* More Options Button - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowInfo(prev => ({ ...prev, [product.id]: !prev[product.id] }))}
-              className="flex flex-col items-center space-y-2"
+              className="flex flex-col items-center space-y-1"
             >
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
-                <MoreVertical className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                <MoreVertical className="w-5 h-5 text-white" />
               </div>
-              <span className="text-white text-sm font-semibold bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                 Plus
               </span>
             </motion.button>
 
+            {/* User Avatar - Compact */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/profile')}
-              className="w-16 h-16 rounded-full overflow-hidden border-3 border-white shadow-lg"
+              className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg"
             >
               <UserAvatar 
                 avatarUrl={product.user?.avatar_url} 
@@ -538,46 +542,48 @@ export function VideoFeed({ products }: VideoFeedProps) {
             </motion.button>
           </div>
 
-          {/* Bottom content - Mobile Optimized */}
-          <div className="absolute bottom-32 sm:bottom-48 left-3 sm:left-4 right-24 sm:right-20 z-10">
+          {/* Bottom content - Compact Design */}
+          <div className="absolute bottom-16 left-3 sm:left-4 right-20 z-10">
             <motion.div 
-              className="space-y-4"
+              className="space-y-3"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <h3 className="text-white font-bold text-lg sm:text-xl">@{product.user?.username}</h3>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-3 sm:px-4 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full text-xs sm:text-sm font-medium hover:bg-white/30 transition-all"
-                  >
-                    Suivre
-                  </motion.button>
-                </div>
-                <p className="text-white/90 text-sm sm:text-base leading-relaxed max-w-md">
-                  {product.description}
-                </p>
+              {/* User info - Compact */}
+              <div className="flex items-center space-x-2">
+                <h3 className="text-white font-bold text-base">@{product.user?.username}</h3>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-2 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full text-xs font-medium hover:bg-white/30 transition-all"
+                >
+                  Suivre
+                </motion.button>
               </div>
+              
+              {/* Description - Compact */}
+              <p className="text-white/90 text-sm leading-relaxed max-w-sm line-clamp-2">
+                {product.description}
+              </p>
 
+              {/* Product card - Compact */}
               <motion.div 
-                className="surface-glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4"
+                className="surface-glass rounded-xl p-3 space-y-2"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
                 <div className="flex items-center justify-between">
-                  <div className="space-y-1 flex-1">
-                    <h4 className="text-white font-bold text-base sm:text-lg truncate">{product.name}</h4>
-                    <p className="text-white/90 text-xl sm:text-2xl font-bold">€{product.price}</p>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-white font-bold text-sm truncate">{product.name}</h4>
+                    <p className="text-white/90 text-lg font-bold">€{product.price}</p>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate(`/product/${product.id}`)}
-                    className="px-3 sm:px-6 py-2 sm:py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl sm:rounded-2xl font-semibold hover:bg-white/30 transition-all text-xs sm:text-sm ml-2"
+                    className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/30 transition-all text-xs ml-2"
                   >
                     Voir
                   </motion.button>
@@ -587,9 +593,9 @@ export function VideoFeed({ products }: VideoFeedProps) {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleBuyNow(product)}
-                  className="w-full bg-gradient-primary text-white py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3 shadow-glow hover:shadow-glow-lg transition-all"
+                  className="w-full bg-gradient-primary text-white py-2.5 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-glow hover:shadow-glow-lg transition-all"
                 >
-                  <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <ShoppingCart className="w-4 h-4" />
                   <span>Acheter maintenant</span>
                 </motion.button>
               </motion.div>
