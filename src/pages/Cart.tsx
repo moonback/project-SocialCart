@@ -123,7 +123,7 @@ export default function Cart() {
         </div>
 
         {/* Header Amélioré */}
-        <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-safe-area-top">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-header">
           <div className="flex items-center justify-between px-4 py-4">
             <div className="flex items-center space-x-3">
               <motion.button
@@ -152,7 +152,7 @@ export default function Cart() {
         </div>
 
         {/* État Vide Amélioré */}
-        <div className="flex-1 flex items-center justify-center px-4 relative z-10">
+        <div className="flex-1 flex items-center justify-center px-4 relative z-10 main-content-fixed">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -203,7 +203,7 @@ export default function Cart() {
       </div>
 
       {/* Header Amélioré */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-safe-area-top">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-header">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-3">
             <motion.button
@@ -245,7 +245,7 @@ export default function Cart() {
         </div>
       </div>
 
-      <div className="p-4 pb-40 relative z-10">
+      <div className="p-4 relative z-10 main-content-fixed">
         <div className="space-y-4">
           {items.map((item, index) => (
             <motion.div

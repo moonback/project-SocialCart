@@ -210,6 +210,18 @@
     padding-top: max(1rem, env(safe-area-inset-top));
   }
 
+  /* Main content padding for fixed header and bottom nav */
+  .main-content-fixed {
+    padding-top: calc(5rem + env(safe-area-inset-top));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+
+  /* Video feed specific padding for fixed bars */
+  .video-feed {
+    padding-top: calc(5rem + env(safe-area-inset-top));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+
   /* Touch targets optimisés */
   .touch-target {
     min-height: 44px;

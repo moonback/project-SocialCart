@@ -18,7 +18,7 @@ export function Layout() {
       <TopBar />
       
       <motion.main 
-        className="flex-1 pb-20 relative z-10"
+        className="flex-1 main-content-fixed relative z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
