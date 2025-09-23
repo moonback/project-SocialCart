@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Heart, MessageCircle, Share, ShoppingCart, Play, Pause, Volume2, VolumeX, Settings } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Heart, MessageCircle, Share, ShoppingCart, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Product } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 
 interface VideoFeedProps {
   products: Product[];
@@ -20,7 +19,6 @@ export function VideoFeed({ products }: VideoFeedProps) {
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   // Charger le paramètre autoPlay depuis le localStorage
   useEffect(() => {
@@ -277,7 +275,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
           </div>
 
           {/* Bottom content */}
-          <div className="absolute bottom-24 left-4 right-20 z-10">
+          <div className="absolute bottom-48 left-4 right-20 z-10">
             <motion.div 
               className="space-y-4"
               initial={{ y: 20, opacity: 0 }}
