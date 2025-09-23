@@ -7,10 +7,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Script pour copier le bon service worker selon l'environnement
-const isProduction = process.env.NODE_ENV === 'production';
-
-const sourceFile = isProduction ? 'public/sw-production.js' : 'public/sw.js';
+// Script pour copier le service worker de production
+// Pour le déploiement, nous utilisons toujours le service worker de production
+const sourceFile = 'public/sw-production.js';
 const targetFile = 'dist/sw.js';
 
 console.log(`🔧 Copie du service worker: ${sourceFile} -> ${targetFile}`);
