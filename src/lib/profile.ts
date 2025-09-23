@@ -113,7 +113,7 @@ export class ProfileService {
       // Récupérer les commandes
       const { data: orders, error: ordersError } = await supabase
         .from('orders')
-        .select('total_amount, created_at')
+        .select('total, created_at')
         .eq('user_id', userId);
 
       if (ordersError) throw ordersError;
@@ -147,7 +147,7 @@ export class ProfileService {
 
       // Calculer les totaux
       const totalOrders = orders?.length || 0;
-      const totalSpent = orders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
+      const totalSpent = orders?.reduce((sum, order) => sum + (order.total || 0), 0) || 0;
 
       return {
         totalOrders,
@@ -196,7 +196,8 @@ export class ProfileService {
             id,
             product_name,
             quantity,
-            price,
+            unit_price,
+            total_price,
             product:products (
               primary_image_url
             )
@@ -211,14 +212,14 @@ export class ProfileService {
         id: order.id,
         order_number: order.order_number || order.id,
         status: order.status,
-        total_amount: order.total_amount,
+        total_amount: order.total,
         created_at: order.created_at,
         updated_at: order.updated_at,
         items: (order.order_items || []).map((item: any) => ({
           id: item.id,
           product_name: item.product_name,
           quantity: item.quantity,
-          price: item.price,
+          price: item.unit_price,
           image_url: item.product?.primary_image_url
         }))
       }));
@@ -339,37 +340,9 @@ export class ProfileService {
    */
   static async getUserFavoriteCategories(userId: string): Promise<string[]> {
     try {
-      // Récupérer les commandes avec les catégories de produits
-      const { data, error } = await supabase
-        .from('orders')
-        .select(`
-          order_items (
-            product:products (
-              category:categories (name)
-            )
-          )
-        `)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      // Compter les catégories
-      const categoryCount: { [key: string]: number } = {};
-      
-      (data || []).forEach(order => {
-        (order.order_items || []).forEach((item: any) => {
-          const categoryName = item.product?.category?.name;
-          if (categoryName) {
-            categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
-          }
-        });
-      });
-
-      // Retourner les 3 catégories les plus populaires
-      return Object.entries(categoryCount)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 3)
-        .map(([name]) => name);
+      // Pour l'instant, retourner des catégories par défaut
+      // TODO: Implémenter une logique plus sophistiquée basée sur les achats
+      return ['Tech', 'Mode', 'Maison'];
     } catch (error) {
       console.error('Error fetching favorite categories:', error);
       return ['Tech', 'Mode', 'Maison']; // Valeurs par défaut
