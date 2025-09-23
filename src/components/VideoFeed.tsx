@@ -74,12 +74,6 @@ export function VideoFeed({ products }: VideoFeedProps) {
     }
   }, []);
 
-  // Sauvegarder le paramètre autoPlay dans le localStorage
-  const toggleAutoPlay = () => {
-    const newAutoPlay = !autoPlay;
-    setAutoPlay(newAutoPlay);
-    localStorage.setItem('video-autoplay', newAutoPlay.toString());
-  };
 
   // Enregistrer une vue quand un produit devient visible
   useEffect(() => {
@@ -341,29 +335,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
 
           {/* Right sidebar with actions - Compact Design */}
           <div className="absolute right-1 bottom-28 flex flex-col space-y-1.5 z-10 pb-4">
-            {/* AutoPlay Toggle - Compact */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleAutoPlay}
-              className="flex flex-col items-center space-y-1"
-              title={autoPlay ? 'Désactiver la lecture automatique' : 'Activer la lecture automatique'}
-            >
-              <motion.div 
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  autoPlay 
-                    ? 'bg-green-500 shadow-lg shadow-green-500/30' 
-                    : 'bg-white/20 backdrop-blur-sm hover:bg-white/30'
-                }`}
-                animate={autoPlay ? { scale: [1, 1.05, 1] } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Play className="w-4 h-4 text-white" />
-              </motion.div>
-              <span className="text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-1 py-0.5 rounded-full">
-                {autoPlay ? 'Auto' : 'Manuel'}
-              </span>
-            </motion.button>
+            
             {/* Like Button - Compact */}
             <motion.button
               whileHover={{ scale: 1.05 }}

@@ -180,15 +180,6 @@ export function Cart() {
               </motion.button>
             </div>
             
-            {/* Suggestions */}
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-100">
-              <h3 className="font-semibold text-gray-900 mb-2">💡 Conseils</h3>
-              <ul className="text-sm text-gray-600 space-y-1 text-left">
-                <li>• Parcourez nos catégories populaires</li>
-                <li>• Utilisez la recherche pour trouver vos produits</li>
-                <li>• Consultez les avis clients avant d'acheter</li>
-              </ul>
-            </div>
           </motion.div>
         </div>
       </div>
