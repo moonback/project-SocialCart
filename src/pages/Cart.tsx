@@ -21,7 +21,7 @@ import { useCart } from '../hooks/useCart';
 import { useSocial } from '../hooks/useSocial';
 import toast from 'react-hot-toast';
 
-export function Cart() {
+export default function Cart() {
   const navigate = useNavigate();
   const { items, updateQuantity, removeFromCart, clearCart } = useCart();
   const { toggleBookmark, isBookmarked } = useSocial();

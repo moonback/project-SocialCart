@@ -5,7 +5,7 @@ import { ProductCard } from '../components/ProductCard';
 import { Product } from '../lib/supabase';
 import { ProductService } from '../lib/products';
 
-export function Search() {
+export default function Search() {
   const [query, setQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');

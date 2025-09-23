@@ -4,7 +4,7 @@ import { Eye, EyeOff, CheckCircle, XCircle, Mail, Lock, User, Sparkles } from 'l
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
-export function Auth() {
+export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

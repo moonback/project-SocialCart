@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, Search, Plus, Bell, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -30,7 +29,7 @@ export function BottomNav() {
               <motion.button
                 key={path}
                 onClick={() => navigate(path)}
-                className={`flex-1 py-3 px-2 flex flex-col items-center space-y-1 transition-all duration-300 relative ${
+                className={`flex-1 py-2 px-1 flex flex-col items-center space-y-0.5 transition-all duration-300 relative touch-target ${
                   isActive 
                     ? 'text-primary-600' 
                     : 'text-surface-400 hover:text-surface-600'
@@ -51,21 +50,21 @@ export function BottomNav() {
                 {/* Icon container */}
                 <div className={`relative ${special && !isActive ? 'mb-1' : ''}`}>
                   {special && !isActive ? (
-                    <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow">
-                      <Icon className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow">
+                      <Icon className="w-5 h-5 text-white" />
                     </div>
                   ) : (
                     <motion.div
                       animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                      <Icon className={`w-6 h-6 ${isActive ? 'text-primary-600' : 'text-surface-400'}`} />
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-primary-600' : 'text-surface-400'}`} />
                     </motion.div>
                   )}
                 </div>
 
                 {/* Label */}
-                <span className={`text-xs font-medium transition-all duration-300 ${
+                <span className={`text-[10px] font-medium transition-all duration-300 ${
                   special && !isActive ? 'text-white' : ''
                 }`}>
                   {label}

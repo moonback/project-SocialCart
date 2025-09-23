@@ -54,7 +54,7 @@ interface ProductFormData {
   videoFile: File | null;
 }
 
-export function CreateProduct() {
+export default function CreateProduct() {
   const navigate = useNavigate();
   const { user } = useAuth();
   

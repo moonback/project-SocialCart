@@ -33,7 +33,7 @@ import { ProfileImageUploader } from '../components/ProfileImageUploader';
 import { UserAvatar } from '../components/UserAvatar';
 import toast from 'react-hot-toast';
 
-export function Profile() {
+export default function Profile() {
   const { user, signOut } = useAuth();
   const { 
     profile, 

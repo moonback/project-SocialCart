@@ -45,7 +45,7 @@ interface ProductFormData {
   metaDescription: string;
 }
 
-export function EditProduct() {
+export default function EditProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();

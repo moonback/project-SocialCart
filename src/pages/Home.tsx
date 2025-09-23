@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { VideoFeed } from '../components/VideoFeed';
 import { ProductService, Product } from '../lib/products';
 
-export function Home() {
+export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 

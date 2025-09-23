@@ -1,0 +1,50 @@
+<!-- Icône PNG simple générée avec Canvas -->
+<canvas id="iconCanvas" width="512" height="512" style="display: none;"></canvas>
+
+<script>
+// Générer les icônes PWA
+function generateIcons() {
+  const canvas = document.getElementById('iconCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  // Tailles d'icônes nécessaires
+  const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+  
+  sizes.forEach(size => {
+    // Redimensionner le canvas
+    canvas.width = size;
+    canvas.height = size;
+    
+    // Créer un gradient de fond
+    const gradient = ctx.createLinearGradient(0, 0, size, size);
+    gradient.addColorStop(0, '#a855f7');
+    gradient.addColorStop(1, '#3b82f6');
+    
+    // Dessiner le fond
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    
+    // Dessiner le texte SC
+    ctx.fillStyle = 'white';
+    ctx.font = `bold ${size * 0.3}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SC', size / 2, size / 2);
+    
+    // Convertir en blob et télécharger
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `icon-${size}x${size}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  });
+}
+
+// Exécuter si dans le navigateur
+if (typeof window !== 'undefined') {
+  generateIcons();
+}
+</script>
