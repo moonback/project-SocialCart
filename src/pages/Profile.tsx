@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ProductService } from '../lib/products';
+import { ProfileImageUploader } from '../components/ProfileImageUploader';
 
 export function Profile() {
   const { user, signOut } = useAuth();
@@ -33,6 +34,7 @@ export function Profile() {
   );
   const [isEditing, setIsEditing] = useState(false);
   const [showStats, setShowStats] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || null);
 
   // Données mockées pour la démonstration
   const mockOrders = [
@@ -186,20 +188,11 @@ export function Profile() {
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 className="relative"
               >
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-white/20 backdrop-blur-sm rounded-3xl overflow-hidden border-4 border-white/30 shadow-glow">
-                  <img
-                    src={user.avatar_url || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160&h=160&fit=crop&crop=face`}
-              alt={user.username}
-              className="w-full h-full object-cover"
-            />
-          </div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-2xl shadow-large flex items-center justify-center hover:bg-surface-50 transition-colors"
-                >
-                  <Camera className="w-5 h-5 text-surface-600" />
-                </motion.button>
+                <ProfileImageUploader
+                  currentImageUrl={avatarUrl}
+                  onImageChange={setAvatarUrl}
+                  userId={user.id}
+                />
               </motion.div>
 
               {/* Profile Info */}
