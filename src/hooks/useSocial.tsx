@@ -47,9 +47,15 @@ export function useSocial() {
       const likedProducts = await SocialService.getUserLikedProducts(user.id);
       const likedProductIds = new Set(likedProducts.map(p => p.id));
 
-      // Charger les produits en wishlist
-      const wishlistProducts = await SocialService.getUserWishlist(user.id);
-      const bookmarkedProductIds = new Set(wishlistProducts.map(p => p.id));
+      // Charger les produits en wishlist (avec gestion d'erreur)
+      let bookmarkedProductIds = new Set<string>();
+      try {
+        const wishlistProducts = await SocialService.getUserWishlist(user.id);
+        bookmarkedProductIds = new Set(wishlistProducts.map(p => p.id));
+      } catch (wishlistError) {
+        console.warn('Impossible de charger la wishlist:', wishlistError);
+        // Continuer sans la wishlist
+      }
 
       // Charger les utilisateurs suivis (à implémenter si nécessaire)
       const followingUsers = new Set<string>(); // TODO: implémenter getUserFollowing

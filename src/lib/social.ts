@@ -264,13 +264,13 @@ export class SocialService {
         query = query.eq('session_id', sessionId);
       }
 
-      const { data, error } = await query.single();
+      const { data, error } = await query.limit(1);
 
       if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
-      return !!data;
+      return data && data.length > 0;
     } catch (error) {
       console.error('Error checking recent view:', error);
       return false;
@@ -662,6 +662,9 @@ export class SocialService {
         .from('wishlist_items')
         .select(`
           *,
+          wishlist:wishlist_id(
+            user_id
+          ),
           product:products!wishlist_items_product_id_fkey(
             *,
             seller:users!products_seller_id_fkey(

@@ -96,8 +96,13 @@ export function VideoFeed({ products }: VideoFeedProps) {
     // Lancer la lecture de la vidéo actuelle si autoPlay est activé
     if (autoPlay && currentProduct.video_url) {
       const currentVideo = videoRefs.current[currentProduct.id];
-      if (currentVideo) {
-        currentVideo.play().catch(console.error);
+      if (currentVideo && currentVideo.paused) {
+        currentVideo.play().catch((error) => {
+          // Ignorer les erreurs d'interruption de lecture
+          if (error.name !== 'AbortError') {
+            console.error('Erreur de lecture vidéo:', error);
+          }
+        });
         setIsPlaying(true);
       }
     } else {
