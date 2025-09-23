@@ -20,6 +20,7 @@ interface MediaUploaderProps {
   maxFiles?: number;
   maxFileSize?: number; // in MB
   acceptedTypes?: string[];
+  acceptedVideoTypes?: string[];
   error?: string;
   className?: string;
 }
@@ -30,6 +31,7 @@ export function MediaUploader({
   maxFiles = 10,
   maxFileSize = 10,
   acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'],
+  acceptedVideoTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'],
   error,
   className = ''
 }: MediaUploaderProps) {
@@ -52,6 +54,18 @@ export function MediaUploader({
     
     if (file.size > maxFileSize * 1024 * 1024) {
       return `Fichier trop volumineux. Taille maximum: ${maxFileSize}MB`;
+    }
+    
+    return null;
+  };
+
+  const validateVideoFile = (file: File): string | null => {
+    if (!acceptedVideoTypes.includes(file.type)) {
+      return `Type de fichier vidéo non supporté. Types acceptés: ${acceptedVideoTypes.join(', ')}`;
+    }
+    
+    if (file.size > maxFileSize * 1024 * 1024) {
+      return `Fichier vidéo trop volumineux. Taille maximum: ${maxFileSize}MB`;
     }
     
     return null;
@@ -93,7 +107,7 @@ export function MediaUploader({
   const handleVideoUpload = useCallback((file: File | null) => {
     if (!file) return;
 
-    const error = validateFile(file);
+    const error = validateVideoFile(file);
     if (error) {
       console.warn('Erreur de validation vidéo:', error);
       return;
@@ -102,7 +116,7 @@ export function MediaUploader({
     setVideo(file);
     onVideoChange(file);
     setVideoPreviewUrl(URL.createObjectURL(file));
-  }, [maxFileSize, onVideoChange]);
+  }, [maxFileSize, onVideoChange, acceptedVideoTypes]);
 
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
@@ -205,7 +219,7 @@ export function MediaUploader({
         <input
           ref={videoInputRef}
           type="file"
-          accept="video/*"
+          accept="video/mp4,video/quicktime,video/x-msvideo,video/webm"
           onChange={(e) => handleVideoUpload(e.target.files?.[0] || null)}
           className="hidden"
         />

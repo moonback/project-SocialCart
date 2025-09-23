@@ -157,6 +157,8 @@ export function CreateProduct() {
                 onVideoChange={handleVideoChange}
                 maxFiles={8}
                 maxFileSize={10}
+                acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                acceptedVideoTypes={['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']}
                 error={errors.media || errors.video}
               />
             </motion.div>
