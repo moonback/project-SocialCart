@@ -242,21 +242,53 @@ export function ProductDetail() {
           </div>
         </div>
 
-        {/* Product Info */}
-        <div className="space-y-6">
-          <div>
-            <div className="flex items-start justify-between mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-              <span className="text-2xl font-bold text-purple-600">${product.price}</span>
-            </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-600">
-              <span>by @{product.user.username}</span>
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span>4.8 (324 reviews)</span>
+          {/* Product Info */}
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
+                  {product.sku && (
+                    <p className="text-sm text-gray-500 mt-1">Réf: {product.sku}</p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-purple-600">€{product.price}</span>
+                  {product.compare_price && product.compare_price > product.price && (
+                    <p className="text-sm text-gray-500 line-through">€{product.compare_price}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 text-sm text-gray-600 mb-4">
+                <span>par @{product.user.username}</span>
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span>{product.rating_average || 4.8} ({product.rating_count || 324} avis)</span>
+                </div>
+              </div>
+              
+              {product.short_description && (
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="text-gray-700 text-sm leading-relaxed">{product.short_description}</p>
+                </div>
+              )}
+
+              {/* Product Stats */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-purple-600">{product.likes_count || 0}</div>
+                  <div className="text-xs text-gray-600">J'aime</div>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-purple-600">{product.views_count || 0}</div>
+                  <div className="text-xs text-gray-600">Vues</div>
+                </div>
+                <div className="text-center bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-purple-600">{product.sales_count || 0}</div>
+                  <div className="text-xs text-gray-600">Ventes</div>
+                </div>
               </div>
             </div>
-          </div>
 
           {/* Variants */}
           {product.variants.map((variant) => (

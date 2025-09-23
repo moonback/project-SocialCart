@@ -7,7 +7,14 @@ import {
   Check,
   AlertCircle,
   Tag,
-  Sparkles
+  Sparkles,
+  Settings,
+  Truck,
+  Scale,
+  Barcode,
+  Target,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -25,8 +32,22 @@ interface ProductVariant {
 interface ProductFormData {
   name: string;
   description: string;
+  shortDescription: string;
   price: string;
+  comparePrice: string;
+  costPrice: string;
+  sku: string;
+  weight: string;
   category: string;
+  brand: string;
+  status: 'draft' | 'active' | 'inactive' | 'archived';
+  inventoryTracking: boolean;
+  inventoryQuantity: number;
+  allowBackorder: boolean;
+  requiresShipping: boolean;
+  taxable: boolean;
+  metaTitle: string;
+  metaDescription: string;
   variants: ProductVariant[];
   mediaFiles: File[];
   videoFile: File | null;
@@ -39,8 +60,22 @@ export function CreateProduct() {
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
+    shortDescription: '',
     price: '',
+    comparePrice: '',
+    costPrice: '',
+    sku: '',
+    weight: '',
     category: 'tech',
+    brand: '',
+    status: 'active',
+    inventoryTracking: true,
+    inventoryQuantity: 1,
+    allowBackorder: false,
+    requiresShipping: true,
+    taxable: true,
+    metaTitle: '',
+    metaDescription: '',
     variants: [],
     mediaFiles: [],
     videoFile: null
@@ -115,14 +150,27 @@ export function CreateProduct() {
       const productData: CreateProductData = {
         name: formData.name,
         description: formData.description,
+        short_description: formData.shortDescription || formData.description.substring(0, 500),
         price: parseFloat(formData.price),
-        short_description: formData.description.substring(0, 500),
+        compare_price: formData.comparePrice ? parseFloat(formData.comparePrice) : undefined,
+        cost_price: formData.costPrice ? parseFloat(formData.costPrice) : undefined,
+        sku: formData.sku || undefined,
+        weight: formData.weight ? parseFloat(formData.weight) : undefined,
+        category_id: formData.category,
+        brand_id: formData.brand || undefined,
+        status: formData.status,
+        inventory_tracking: formData.inventoryTracking,
+        inventory_quantity: formData.inventoryQuantity,
+        allow_backorder: formData.allowBackorder,
+        requires_shipping: formData.requiresShipping,
+        taxable: formData.taxable,
+        meta_title: formData.metaTitle || undefined,
+        meta_description: formData.metaDescription || undefined,
         images: mediaResult.images,
         primary_image_url: mediaResult.primaryImageUrl,
         video_url: mediaResult.videoUrl,
         variants: formData.variants,
-        inventory_quantity: 1,
-        tags: [`#${formData.category}`]
+        tags: [`#${formData.category}`, ...formData.variants.flatMap(v => v.options.map(o => `${v.name}:${o}`))]
       };
 
       // Étape 3: Créer le produit
@@ -275,10 +323,25 @@ export function CreateProduct() {
                 </select>
               </div>
 
+              {/* Short Description */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-surface-700">
+                  Description courte
+                </label>
+                <textarea
+                  value={formData.shortDescription}
+                  onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
+                  className="input min-h-[80px] resize-none"
+                  placeholder="Description courte pour les aperçus..."
+                  maxLength={500}
+                />
+                <p className="text-xs text-surface-500">{formData.shortDescription.length}/500 caractères</p>
+              </div>
+
               {/* Description */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-surface-700">
-                  Description *
+                  Description complète *
                 </label>
                 <textarea
                   value={formData.description}
@@ -289,6 +352,116 @@ export function CreateProduct() {
                 {errors.description && (
                   <p className="text-red-600 text-sm">{errors.description}</p>
                 )}
+              </div>
+
+              {/* Additional Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* SKU */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Référence (SKU)
+                  </label>
+                  <div className="relative">
+                    <Barcode className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+                    <input
+                      type="text"
+                      value={formData.sku}
+                      onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
+                      className="input pl-12"
+                      placeholder="REF-001"
+                    />
+                  </div>
+                </div>
+
+                {/* Weight */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Poids (kg)
+                  </label>
+                  <div className="relative">
+                    <Scale className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.weight}
+                      onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                      className="input pl-12"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Compare Price */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Prix comparatif
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.comparePrice}
+                      onChange={(e) => setFormData(prev => ({ ...prev, comparePrice: e.target.value }))}
+                      className="input pl-12"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Cost Price */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Prix de revient
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.costPrice}
+                      onChange={(e) => setFormData(prev => ({ ...prev, costPrice: e.target.value }))}
+                      className="input pl-12"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Inventory */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Quantité en stock
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.inventoryQuantity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, inventoryQuantity: parseInt(e.target.value) || 0 }))}
+                    className="input"
+                    placeholder="1"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Statut du produit
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as any }))}
+                    className="input"
+                  >
+                    <option value="draft">Brouillon</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Inactif</option>
+                    <option value="archived">Archivé</option>
+                  </select>
+                </div>
               </div>
             </motion.div>
 
@@ -303,6 +476,119 @@ export function CreateProduct() {
                 variants={formData.variants}
                 onVariantsChange={handleVariantsChange}
               />
+            </motion.div>
+
+            {/* Advanced Settings */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.35 }}
+              className="card p-8"
+            >
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-surface-900">Paramètres avancés</h2>
+                  <p className="text-surface-600 text-sm">Options supplémentaires pour votre produit</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Inventory Tracking */}
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.inventoryTracking}
+                      onChange={(e) => setFormData(prev => ({ ...prev, inventoryTracking: e.target.checked }))}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm font-semibold text-surface-700">Suivi d'inventaire</span>
+                  </label>
+                  <p className="text-xs text-surface-500">Suivre automatiquement le stock</p>
+                </div>
+
+                {/* Allow Backorder */}
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.allowBackorder}
+                      onChange={(e) => setFormData(prev => ({ ...prev, allowBackorder: e.target.checked }))}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm font-semibold text-surface-700">Autoriser les commandes en attente</span>
+                  </label>
+                  <p className="text-xs text-surface-500">Permettre les commandes même sans stock</p>
+                </div>
+
+                {/* Requires Shipping */}
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.requiresShipping}
+                      onChange={(e) => setFormData(prev => ({ ...prev, requiresShipping: e.target.checked }))}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm font-semibold text-surface-700">Nécessite une expédition</span>
+                  </label>
+                  <p className="text-xs text-surface-500">Produit physique nécessitant un envoi</p>
+                </div>
+
+                {/* Taxable */}
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.taxable}
+                      onChange={(e) => setFormData(prev => ({ ...prev, taxable: e.target.checked }))}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm font-semibold text-surface-700">Assujetti aux taxes</span>
+                  </label>
+                  <p className="text-xs text-surface-500">Produit soumis à la TVA</p>
+                </div>
+              </div>
+
+              {/* SEO Fields */}
+              <div className="mt-6 space-y-4">
+                <h3 className="text-lg font-semibold text-surface-900 flex items-center space-x-2">
+                  <Eye className="w-5 h-5" />
+                  <span>SEO et Métadonnées</span>
+                </h3>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Titre SEO
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.metaTitle}
+                    onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
+                    className="input"
+                    placeholder="Titre pour les moteurs de recherche..."
+                    maxLength={255}
+                  />
+                  <p className="text-xs text-surface-500">{formData.metaTitle.length}/255 caractères</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-surface-700">
+                    Description SEO
+                  </label>
+                  <textarea
+                    value={formData.metaDescription}
+                    onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
+                    className="input min-h-[80px] resize-none"
+                    placeholder="Description pour les moteurs de recherche..."
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-surface-500">{formData.metaDescription.length}/500 caractères</p>
+                </div>
+              </div>
             </motion.div>
 
             {/* Submit Section */}

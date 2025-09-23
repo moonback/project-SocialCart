@@ -11,14 +11,27 @@ export interface CreateProductData {
   description: string;
   price: number;
   category_id?: string;
+  brand_id?: string;
   short_description?: string;
   sku?: string;
   compare_price?: number;
   cost_price?: number;
   weight?: number;
-  dimensions?: any;
+  dimensions?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    unit?: string;
+  };
+  status?: 'draft' | 'active' | 'inactive' | 'archived';
+  inventory_tracking?: boolean;
   inventory_quantity?: number;
+  allow_backorder?: boolean;
+  requires_shipping?: boolean;
+  taxable?: boolean;
   tags?: string[];
+  meta_title?: string;
+  meta_description?: string;
   video_url?: string;
   primary_image_url?: string;
   images?: string[];
@@ -39,8 +52,13 @@ export interface Product {
   compare_price?: number;
   cost_price?: number;
   weight?: number;
-  dimensions?: any;
-  status: string;
+  dimensions?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    unit?: string;
+  };
+  status: 'draft' | 'active' | 'inactive' | 'archived';
   inventory_tracking: boolean;
   inventory_quantity: number;
   allow_backorder: boolean;
@@ -156,15 +174,22 @@ export class ProductService {
         p_description: data.description,
         p_price: data.price,
         p_category_id: data.category_id || null,
-        p_brand_id: null,
+        p_brand_id: data.brand_id || null,
         p_short_description: data.short_description || null,
         p_sku: data.sku || null,
         p_compare_price: data.compare_price || null,
         p_cost_price: data.cost_price || null,
         p_weight: data.weight || null,
         p_dimensions: data.dimensions || null,
+        p_status: data.status || 'active',
+        p_inventory_tracking: data.inventory_tracking !== false,
         p_inventory_quantity: data.inventory_quantity || 0,
+        p_allow_backorder: data.allow_backorder || false,
+        p_requires_shipping: data.requires_shipping !== false,
+        p_taxable: data.taxable !== false,
         p_tags: tags.length > 0 ? tags : null,
+        p_meta_title: data.meta_title || null,
+        p_meta_description: data.meta_description || null,
         p_video_url: data.video_url || null,
         p_primary_image_url: data.primary_image_url || null,
         p_images: data.images || []
