@@ -22,5 +22,11 @@ export default defineConfig({
       }
     }
   },
-  publicDir: 'public'
+  publicDir: 'public',
+  // Configuration pour Vercel
+  base: '/',
+  server: {
+    port: 3000,
+    host: true
+  }
 });
