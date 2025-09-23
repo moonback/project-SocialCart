@@ -6,46 +6,20 @@ import {
   Share, 
   ShoppingCart, 
   Star, 
-  Truck, 
-  Shield, 
   Clock, 
-  Package, 
-  Scale, 
-  Tag, 
   Eye, 
-  MessageCircle,
   CheckCircle,
   AlertCircle,
   Info,
-  MapPin,
-  CreditCard,
   RefreshCw,
-  Award,
-  Users,
   TrendingUp,
-  FileText,
-  ChevronDown,
-  ChevronUp,
   Minus,
   Plus,
   Bookmark,
   Flag,
-  ThumbsUp,
-  ThumbsDown,
-  Send,
-  Camera,
-  Play,
-  Pause,
-  Volume2,
-  Maximize,
-  Download,
-  ExternalLink,
-  Zap,
-  Gift,
   ShieldCheck,
   TruckIcon,
-  RotateCcw,
-  HelpCircle
+  RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '../lib/supabase';
@@ -69,27 +43,8 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('description');
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  
-  // Nouveaux états pour les fonctionnalités avancées
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [showVideoModal, setShowVideoModal] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
-  const [showSellerInfo, setShowSellerInfo] = useState(false);
-  const [showShippingInfo, setShowShippingInfo] = useState(false);
-  const [showWarrantyInfo, setShowWarrantyInfo] = useState(false);
-  const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [newReview, setNewReview] = useState('');
-  const [reviewRating, setReviewRating] = useState(5);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [imageRotation, setImageRotation] = useState(0);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -250,23 +205,20 @@ export default function ProductDetail() {
   };
 
   const handleShare = () => {
-    setShowShareModal(true);
+    if (navigator.share) {
+      navigator.share({
+        title: product?.name,
+        text: product?.description,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Lien copié dans le presse-papiers !');
+    }
   };
 
   const handleReport = () => {
-    setShowReportModal(true);
-  };
-
-  const handleImageZoom = (level: number) => {
-    setZoomLevel(Math.max(0.5, Math.min(3, level)));
-  };
-
-  const handleImageRotate = () => {
-    setImageRotation(prev => (prev + 90) % 360);
-  };
-
-  const handleVideoToggle = () => {
-    setIsVideoPlaying(!isVideoPlaying);
+    toast.info('Fonctionnalité de signalement en cours de développement');
   };
 
   const handleAddToWishlist = async () => {
@@ -277,17 +229,8 @@ export default function ProductDetail() {
 
   const handleCompare = () => {
     setIsComparing(true);
-    setShowComparison(true);
     toast.success('Produit ajouté à la comparaison');
     setTimeout(() => setIsComparing(false), 1000);
-  };
-
-  const handleSubmitReview = () => {
-    if (newReview.trim()) {
-      toast.success('Avis soumis avec succès !');
-      setNewReview('');
-      setReviewRating(5);
-    }
   };
 
   const formatPrice = (price: number) => {
@@ -456,57 +399,18 @@ export default function ProductDetail() {
       </div>
 
       <div className="px-4 pb-40">
-        {/* Galerie d'Images Améliorée */}
+        {/* Galerie d'Images Simplifiée */}
         <div className="space-y-4 mb-6">
-          {/* Image Principale avec Contrôles */}
+          {/* Image Principale */}
           <div className="relative group">
             <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden shadow-lg">
               <motion.img
                 src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-cover cursor-pointer"
-                style={{
-                  transform: `scale(${zoomLevel}) rotate(${imageRotation}deg)`,
-                  transition: 'transform 0.3s ease'
-                }}
-                onClick={() => setShowImageModal(true)}
+                className="w-full h-full object-cover"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               />
-              
-              {/* Overlay avec Contrôles */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <div className="flex space-x-2">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleImageZoom(zoomLevel + 0.5)}
-                    className="p-2 bg-white/90 rounded-full shadow-lg"
-                  >
-                    <Plus className="w-4 h-4 text-gray-700" />
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleImageZoom(zoomLevel - 0.5)}
-                    className="p-2 bg-white/90 rounded-full shadow-lg"
-                  >
-                    <Minus className="w-4 h-4 text-gray-700" />
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleImageRotate}
-                    className="p-2 bg-white/90 rounded-full shadow-lg"
-                  >
-                    <RotateCcw className="w-4 h-4 text-gray-700" />
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowImageModal(true)}
-                    className="p-2 bg-white/90 rounded-full shadow-lg"
-                  >
-                    <Maximize className="w-4 h-4 text-gray-700" />
-                  </motion.button>
-                </div>
-              </div>
               
               {/* Badge de Réduction */}
               {calculateDiscount() > 0 && (
@@ -518,15 +422,6 @@ export default function ProductDetail() {
                   >
                     -{calculateDiscount()}%
                   </motion.div>
-                </div>
-              )}
-              
-              {/* Indicateur de Zoom */}
-              {zoomLevel !== 1 && (
-                <div className="absolute top-4 right-4">
-                  <div className="bg-black/70 text-white px-2 py-1 rounded text-xs">
-                    {Math.round(zoomLevel * 100)}%
-                  </div>
                 </div>
               )}
             </div>
@@ -660,13 +555,6 @@ export default function ProductDetail() {
                   <p className="text-sm text-gray-500">Vendeur vérifié</p>
                 </div>
               </div>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowSellerInfo(true)}
-                className="text-blue-600 text-sm font-medium hover:text-blue-700"
-              >
-                Voir le profil
-              </motion.button>
             </div>
             
             {/* Statistiques */}
@@ -703,13 +591,6 @@ export default function ProductDetail() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900">Disponibilité</h3>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowShippingInfo(true)}
-                className="text-blue-600 text-sm font-medium hover:text-blue-700"
-              >
-                Infos livraison
-              </motion.button>
             </div>
             
             {(() => {

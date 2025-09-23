@@ -64,17 +64,24 @@ self.addEventListener('activate', (event) => {
 // Gestion des requêtes
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
-
+  
   // Ignorer les requêtes non-HTTP
   if (!request.url.startsWith('http')) {
     return;
   }
 
-  // Stratégie de cache selon le type de requête
-  if (request.method === 'GET') {
-    event.respondWith(handleRequest(request));
+  // Ignorer les requêtes de développement (localhost)
+  if (request.url.includes('localhost') || request.url.includes('127.0.0.1')) {
+    return;
   }
+
+  // Ignorer les requêtes POST, PUT, DELETE pour éviter les problèmes
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  // Stratégie de cache selon le type de requête
+  event.respondWith(handleRequest(request));
 });
 
 // Gestion simplifiée des requêtes
@@ -104,8 +111,33 @@ async function handleRequest(request) {
       });
     }
     
-    // Pour les autres requêtes, laisser passer l'erreur
-    throw error;
+    // Pour les requêtes API Supabase, retourner une réponse d'erreur propre
+    if (request.url.includes('supabase.co')) {
+      return new Response(JSON.stringify({ 
+        error: 'Service temporairement indisponible',
+        message: 'Veuillez réessayer plus tard'
+      }), {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+    
+    // Pour les images externes, retourner une réponse d'erreur
+    if (request.url.includes('pexels.com') || request.url.includes('cloudinary.com')) {
+      return new Response('', {
+        status: 404,
+        statusText: 'Image not available'
+      });
+    }
+    
+    // Pour les autres requêtes, retourner une réponse d'erreur générique
+    return new Response('', {
+      status: 503,
+      statusText: 'Service Unavailable'
+    });
   }
 }
 

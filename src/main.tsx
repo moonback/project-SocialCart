@@ -6,8 +6,8 @@ import './index.css';
 // Enregistrement du Service Worker pour PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Utiliser le service worker de production en production, sinon celui de développement
-    const swPath = import.meta.env.PROD ? '/sw-production.js' : '/sw.js';
+    // Utiliser le service worker corrigé
+    const swPath = '/sw-simple-fixed.js';
     
     navigator.serviceWorker.register(swPath)
       .then((registration) => {

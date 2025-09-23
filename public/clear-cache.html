@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nettoyage du Cache - SocialCart</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Nettoyage du Cache</h1>
+        <p>Utilisez cette page pour nettoyer le cache du Service Worker et résoudre les problèmes de PWA.</p>
+        
+        <button class="button" onclick="clearServiceWorkers()">
+            🗑️ Désinscrire les Service Workers
+        </button>
+        
+        <button class="button" onclick="clearCaches()">
+            📦 Nettoyer les Caches
+        </button>
+        
+        <button class="button" onclick="clearStorage()">
+            💾 Nettoyer le Stockage Local
+        </button>
+        
+        <button class="button" onclick="clearAll()">
+            🚀 Nettoyer Tout
+        </button>
+        
+        <button class="button" onclick="reloadPage()">
+            🔄 Recharger la Page
+        </button>
+        
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const status = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '';
+            status.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        async function clearServiceWorkers() {
+            log('🗑️ Désinscription des Service Workers...', 'warning');
+            
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    log(`📋 ${registrations.length} service worker(s) trouvé(s)`);
+                    
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                        log(`✅ Service Worker désinscrit: ${registration.scope}`);
+                    }
+                    
+                    log('🎉 Tous les Service Workers ont été désinscrits !', 'success');
+                } catch (error) {
+                    log(`❌ Erreur lors de la désinscription: ${error.message}`, 'error');
+                }
+            } else {
+                log('ℹ️ Service Workers non supportés par ce navigateur', 'warning');
+            }
+        }
+
+        async function clearCaches() {
+            log('📦 Nettoyage des caches...', 'warning');
+            
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    log(`📋 ${cacheNames.length} cache(s) trouvé(s)`);
+                    
+                    await Promise.all(
+                        cacheNames.map(async (cacheName) => {
+                            await caches.delete(cacheName);
+                            log(`✅ Cache supprimé: ${cacheName}`);
+                        })
+                    );
+                    
+                    log('🎉 Tous les caches ont été supprimés !', 'success');
+                } catch (error) {
+                    log(`❌ Erreur lors du nettoyage des caches: ${error.message}`, 'error');
+                }
+            } else {
+                log('ℹ️ Cache API non supportée par ce navigateur', 'warning');
+            }
+        }
+
+        function clearStorage() {
+            log('💾 Nettoyage du stockage local...', 'warning');
+            
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                log('✅ localStorage et sessionStorage nettoyés !', 'success');
+            } catch (error) {
+                log(`❌ Erreur lors du nettoyage du stockage: ${error.message}`, 'error');
+            }
+        }
+
+        async function clearAll() {
+            log('🚀 Nettoyage complet en cours...', 'warning');
+            await clearServiceWorkers();
+            await clearCaches();
+            clearStorage();
+            log('🎉 Nettoyage complet terminé !', 'success');
+            log('🔄 Rechargez la page pour appliquer les changements', 'warning');
+        }
+
+        function reloadPage() {
+            log('🔄 Rechargement de la page...', 'warning');
+            window.location.reload();
+        }
+
+        // Log initial
+        log('🧹 Page de nettoyage du cache chargée');
+        log('ℹ️ Cliquez sur les boutons pour nettoyer différents types de cache');
+    </script>
+</body>
+</html>
