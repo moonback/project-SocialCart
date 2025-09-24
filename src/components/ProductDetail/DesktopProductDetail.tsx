@@ -6,7 +6,6 @@ import {
   ShoppingCart, 
   Clock, 
   CheckCircle,
-  AlertCircle,
   Info,
   Minus,
   Plus,
@@ -35,11 +34,9 @@ import { useAuth } from '../../hooks/useAuth';
 interface DesktopProductDetailProps {
   product: Product;
   selectedImage: number;
-  selectedVariants: Record<string, string>;
   quantity: number;
   relatedProducts: Product[];
   onImageSelect: (index: number) => void;
-  onVariantSelect: (type: string, value: string) => void;
   onQuantityChange: (quantity: number) => void;
   onAddToCart: () => void;
   onBuyNow: () => void;
@@ -54,11 +51,9 @@ interface DesktopProductDetailProps {
 export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
   product,
   selectedImage,
-  selectedVariants,
   quantity,
   relatedProducts,
   onImageSelect,
-  onVariantSelect,
   onQuantityChange,
   onAddToCart,
   onBuyNow,
@@ -97,24 +92,18 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
 
   // Calcul du prix avec variantes
   const finalPrice = useMemo(() => {
-    let price = product.price;
-    if (product.variants) {
-      Object.entries(selectedVariants).forEach(([type, value]) => {
-        const variant = product.variants?.find(v => v.type === type && v.value === value);
-        if (variant?.price_adjustment) {
-          price += variant.price_adjustment;
-        }
-      });
-    }
+    const price = product.price;
+    // Note: Les variantes ne sont pas encore implémentées avec les ajustements de prix
+    // Cette logique sera mise à jour quand la structure des variantes sera définie
     return price;
-  }, [product.price, product.variants, selectedVariants]);
+  }, [product.price]);
 
   // Images disponibles
   const images = product.images && product.images.length > 0 ? product.images : [product.image_url];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-12xl mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-8">
           {/* Galerie d'images - 6 colonnes */}
           <div className="col-span-6">
@@ -325,41 +314,10 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                   </div>
                 </div>
 
-                {/* Variantes */}
+                {/* Variantes - Temporairement désactivées jusqu'à la définition de la structure */}
                 {product.variants && product.variants.length > 0 && (
                   <div className="space-y-4 mb-6">
-                    {Object.entries(
-                      product.variants.reduce((acc, variant) => {
-                        if (!acc[variant.type]) acc[variant.type] = [];
-                        if (!acc[variant.type].includes(variant.value)) {
-                          acc[variant.type].push(variant.value);
-                        }
-                        return acc;
-                      }, {} as Record<string, string[]>)
-                    ).map(([type, values]) => (
-                      <div key={type}>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                          {type}
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          {values.map((value) => (
-                            <motion.button
-                              key={value}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => onVariantSelect(type, value)}
-                              className={`px-4 py-2 rounded-lg border transition-all ${
-                                selectedVariants[type] === value
-                                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                  : 'border-gray-300 hover:border-gray-400'
-                              }`}
-                            >
-                              {value}
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                    <p className="text-gray-500 text-sm">Les variantes seront disponibles prochainement</p>
                   </div>
                 )}
 
@@ -451,7 +409,7 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                     <motion.button
                       key={key}
                       whileHover={{ backgroundColor: '#f9fafb' }}
-                      onClick={() => setActiveTab(key as any)}
+                      onClick={() => setActiveTab(key as 'description' | 'specifications' | 'reviews' | 'shipping')}
                       className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center space-x-2 ${
                         activeTab === key
                           ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
@@ -617,12 +575,8 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                       id: product.id,
                       name: product.name,
                       likes_count: product.likes_count || 0,
-                      views_count: product.views_count || 0,
-                      sales_count: product.sales_count || 0,
-                      created_at: product.created_at,
                     }}
                     isLiked={isLiked}
-                    viewersCount={Math.floor(Math.random() * 50) + 20}
                   />
                 )}
 
