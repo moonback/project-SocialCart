@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ChevronUp, ChevronDown } from 'lucide-react';
+import { Heart, ChevronUp, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { VideoPlayer } from './VideoPlayer';
 import { ActionButtons } from './ActionButtons';
 import { ActionsMenu } from './ActionsMenu';
@@ -37,6 +37,7 @@ interface DesktopVideoFeedProps {
 
 export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isInfoPanelCollapsed, setIsInfoPanelCollapsed] = useState(false);
 
   // Hooks
   const { addToCart } = useCart();
@@ -213,7 +214,9 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed top-16 left-0 right-96 bottom-0 bg-white flex items-center justify-center"
+            className={`fixed top-16 left-0 bottom-0 bg-white flex items-center justify-center transition-all duration-300 ${
+              isInfoPanelCollapsed ? 'right-0' : 'right-96'
+            }`}
           >
              {/* Zone vidéo/image - Centrée avec fond blanc */}
              <div className="relative w-full h-full flex items-center justify-center bg-white">
@@ -239,8 +242,22 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                 }}
               />
 
-              {/* Boutons d'action flottants */}
-               <div className="absolute top-18 right-18 flex flex-col space-y-4">
+                {/* Bouton de repliement du panneau d'infos */}
+                <button
+                  onClick={() => setIsInfoPanelCollapsed(!isInfoPanelCollapsed)}
+                  className="absolute top-18 right-18 w-12 h-12 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-xl shadow-large border border-surface-200 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-glow z-20"
+                >
+                  {isInfoPanelCollapsed ? (
+                    <ChevronLeft className="w-5 h-5 text-surface-700" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-surface-700" />
+                  )}
+                </button>
+
+                {/* Boutons d'action flottants */}
+                <div className={`absolute top-18 flex flex-col space-y-4 transition-all duration-300 ${
+                  isInfoPanelCollapsed ? 'right-18' : 'right-32'
+                }`}>
                 <ActionButtons
                   productId={currentProduct.id}
                   userId={currentProduct.user_id}
@@ -254,8 +271,10 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                 />
               </div>
 
-               {/* Boutons de navigation */}
-               <div className="absolute top-1/2 right-18 transform -translate-y-1/2 flex flex-col space-y-6">
+                {/* Boutons de navigation */}
+                <div className={`absolute top-1/2 transform -translate-y-1/2 flex flex-col space-y-6 transition-all duration-300 ${
+                  isInfoPanelCollapsed ? 'right-18' : 'right-32'
+                }`}>
                  {currentIndex > 0 && (
                    <button
                      onClick={goToPreviousProduct}
@@ -274,8 +293,10 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                  )}
                </div>
 
-               {/* Statistiques de likes sur la vidéo/image */}
-               <div className="absolute bottom-18 left-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200">
+                {/* Statistiques de likes sur la vidéo/image */}
+                <div className={`absolute bottom-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200 transition-all duration-300 ${
+                  isInfoPanelCollapsed ? 'left-18' : 'left-18'
+                }`}>
                  <div className="flex items-center space-x-4">
                    <Heart className={`w-7 h-7 ${isLiked(currentProduct.id) ? 'text-red-500 fill-current' : 'text-surface-600'} drop-shadow-sm`} />
                    <span className="text-surface-900 font-display font-bold text-xl">
@@ -284,8 +305,10 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                  </div>
                </div>
 
-               {/* Indicateur de navigation */}
-               <div className="absolute bottom-18 right-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200">
+                {/* Indicateur de navigation */}
+                <div className={`absolute bottom-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200 transition-all duration-300 ${
+                  isInfoPanelCollapsed ? 'right-18' : 'right-32'
+                }`}>
                  <div className="flex items-center space-x-3">
                    <span className="text-surface-600 text-sm font-inter">Produit</span>
                    <span className="text-surface-900 font-display font-bold text-lg">
@@ -301,7 +324,15 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
 
       {/* Panneau d'informations à droite - Fixed */}
       {currentProduct && (
-        <div className="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10">
+        <motion.div 
+          initial={false}
+          animate={{ 
+            x: isInfoPanelCollapsed ? 384 : 0,
+            opacity: isInfoPanelCollapsed ? 0 : 1
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10"
+        >
               {/* Informations produit */}
           <div className="p-6 border-b border-surface-200">
                 <div className="flex items-center space-x-3 mb-4">
@@ -371,7 +402,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                 {/* Espace supplémentaire pour le scroll */}
             <div className="h-32"></div>
               </div>
-            </div>
+            </motion.div>
         )}
 
       {/* Modales */}
