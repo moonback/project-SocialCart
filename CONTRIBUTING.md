@@ -2,7 +2,7 @@
 
 ## Bienvenue ! 👋
 
-Merci de votre intérêt pour contribuer à **SocialCart** ! Ce guide vous aidera à comprendre comment participer au développement de la plateforme.
+Merci de votre intérêt pour contribuer à **SocialCart** ! Ce guide vous aidera à comprendre comment participer au développement de la plateforme de commerce social de nouvelle génération.
 
 ## 📋 Table des matières
 
@@ -13,6 +13,8 @@ Merci de votre intérêt pour contribuer à **SocialCart** ! Ce guide vous aider
 - [Processus de Pull Request](#processus-de-pull-request)
 - [Rapport de bugs](#rapport-de-bugs)
 - [Propositions de fonctionnalités](#propositions-de-fonctionnalités)
+- [Tests et qualité](#tests-et-qualité)
+- [Documentation](#documentation)
 
 ## 📜 Code de conduite
 
@@ -26,7 +28,8 @@ Nous nous engageons à offrir une expérience de contribution ouverte et accueil
 - **Empathie** envers les autres points de vue
 - **Acceptation** des critiques constructives
 - **Focus** sur ce qui est le mieux pour la communauté
-- **Respect** des autres contributeurs
+- **Respect** des autres contributeurs et utilisateurs
+- **Transparence** dans les décisions techniques
 
 ### Comportements inacceptables
 
@@ -34,7 +37,8 @@ Nous nous engageons à offrir une expérience de contribution ouverte et accueil
 - **Trolling**, commentaires insultants ou désobligeants
 - **Harcèlement** public ou privé
 - **Publishing** d'informations privées sans permission
-- **Comportement** non professionnel
+- **Comportement** non professionnel ou discriminatoire
+- **Spam** ou promotion non sollicitée
 
 ## 🚀 Comment contribuer
 
@@ -44,26 +48,37 @@ Nous nous engageons à offrir une expérience de contribution ouverte et accueil
 - Identifier et corriger des problèmes existants
 - Améliorer la gestion d'erreurs
 - Optimiser les performances
+- Corriger les problèmes d'accessibilité
 
 #### ✨ Nouvelles fonctionnalités
 - Implémenter des features demandées
 - Améliorer l'expérience utilisateur
 - Ajouter de nouveaux composants
+- Intégrer des APIs externes
 
 #### 📚 Documentation
 - Améliorer la documentation existante
 - Ajouter des exemples de code
 - Traduire la documentation
+- Créer des tutoriels et guides
 
 #### 🧪 Tests
 - Ajouter des tests unitaires
 - Implémenter des tests d'intégration
 - Améliorer la couverture de tests
+- Tests de performance et E2E
 
 #### 🎨 Design
 - Améliorer l'interface utilisateur
 - Optimiser l'expérience mobile
 - Créer de nouveaux assets
+- Améliorer l'accessibilité
+
+#### 🔧 Infrastructure
+- Optimiser les performances
+- Améliorer la sécurité
+- Automatiser les déploiements
+- Monitoring et alertes
 
 ### Processus de contribution
 
@@ -88,6 +103,9 @@ yarn --version  # 1.22.0+
 
 # Git
 git --version   # 2.30.0+
+
+# Supabase CLI (optionnel)
+supabase --version  # 1.0.0+
 ```
 
 ### Installation
@@ -122,13 +140,27 @@ yarn dev
 socialcart/
 ├── 📁 src/
 │   ├── 📁 components/     # Composants réutilisables
+│   │   ├── 📁 VideoFeed/  # Composants du feed vidéo
+│   │   ├── 📁 Layout/     # Structure principale
+│   │   └── ...
 │   ├── 📁 hooks/         # Hooks personnalisés
-│   ├── 📁 lib/           # Services et utilitaires
+│   │   ├── useAuth.tsx
+│   │   ├── useCart.tsx
+│   │   └── ...
+│   ├── 📁 lib/           # Services et clients
+│   │   ├── supabase.ts
+│   │   ├── products.ts
+│   │   └── ...
 │   ├── 📁 pages/         # Pages de l'application
+│   │   ├── Home.tsx
+│   │   ├── Cart.tsx
+│   │   └── ...
+│   ├── 📁 services/      # Services métier
 │   └── 📁 types/         # Définitions TypeScript
 ├── 📁 supabase/          # Scripts base de données
 ├── 📁 docs/              # Documentation
-└── 📁 tests/             # Tests (à venir)
+├── 📁 tests/             # Tests (à venir)
+└── 📁 scripts/           # Scripts de build
 ```
 
 ## 📏 Standards de code
@@ -141,9 +173,15 @@ interface UserProps {
   id: string;
   username: string;
   avatarUrl?: string;
+  isVerified?: boolean;
 }
 
-const UserProfile: React.FC<UserProps> = ({ id, username, avatarUrl }) => {
+const UserProfile: React.FC<UserProps> = ({ 
+  id, 
+  username, 
+  avatarUrl, 
+  isVerified = false 
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleClick = useCallback(() => {
@@ -166,15 +204,16 @@ const UserProfile = ({ id, username, avatarUrl }) => {
 ### React
 
 ```typescript
-// ✅ Composants fonctionnels
+// ✅ Composants fonctionnels avec hooks
 export function Component({ prop }: ComponentProps) {
   // Hooks au début
   const [state, setState] = useState();
+  const { data, loading } = useQuery();
   
   // Handlers avec useCallback
   const handleClick = useCallback(() => {
     // Logique
-  }, []);
+  }, [dependency]);
   
   // Effets avec dépendances
   useEffect(() => {
@@ -190,13 +229,14 @@ interface ComponentProps {
   title: string;
   isVisible?: boolean;
   onAction?: () => void;
+  children?: React.ReactNode;
 }
 ```
 
 ### CSS / Tailwind
 
 ```tsx
-// ✅ Classes Tailwind organisées
+// ✅ Classes Tailwind organisées et lisibles
 <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
   <h2 className="text-lg font-semibold text-gray-900">
     {title}
@@ -218,6 +258,7 @@ const Button: React.FC<ButtonProps> = ({
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
     secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   };
   
   const sizeClasses = {
@@ -244,22 +285,27 @@ const Button: React.FC<ButtonProps> = ({
 // Variables et fonctions : camelCase
 const userName = 'john';
 const getUserData = () => {};
+const isUserVerified = true;
 
 // Composants : PascalCase
 const UserProfile = () => {};
 const ProductCard = () => {};
+const VideoFeed = () => {};
 
 // Types et interfaces : PascalCase
 interface UserData {}
-type ProductStatus = 'active' | 'inactive';
+type ProductStatus = 'active' | 'inactive' | 'draft';
+type VideoQuality = 'low' | 'medium' | 'high';
 
 // Constantes : UPPER_SNAKE_CASE
-const API_BASE_URL = 'https://api.example.com';
+const API_BASE_URL = 'https://api.socialcart.app';
 const MAX_RETRY_ATTEMPTS = 3;
+const DEFAULT_PAGE_SIZE = 20;
 
 // Fichiers : kebab-case
 user-profile.tsx
 product-card.tsx
+video-feed.tsx
 api-client.ts
 ```
 
@@ -271,14 +317,16 @@ api-client.ts
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { useQuery } from '@tanstack/react-query';
 
 // 2. Imports internes (composants, hooks, services)
 import { UserAvatar } from './UserAvatar';
 import { useAuth } from '../hooks/useAuth';
 import { ProductService } from '../lib/products';
+import { Button } from '../components/Button';
 
 // 3. Imports de types
-import type { User, Product } from '../types';
+import type { User, Product, CartItem } from '../types';
 
 // 4. Imports relatifs
 import './UserProfile.css';
@@ -293,6 +341,8 @@ import './UserProfile.css';
 - [ ] **Types** : TypeScript sans erreurs
 - [ ] **Documentation** : Mettre à jour si nécessaire
 - [ ] **Commits** : Messages clairs et descriptifs
+- [ ] **Performance** : Vérifier l'impact sur les performances
+- [ ] **Accessibilité** : Tester avec les lecteurs d'écran
 
 ### Template de Pull Request
 
@@ -305,10 +355,13 @@ Brève description des changements apportés.
 - [ ] Nouvelle feature (changement non-breaking qui ajoute une fonctionnalité)
 - [ ] Breaking change (fix ou feature qui causerait un changement de comportement existant)
 - [ ] Documentation (changements uniquement dans la documentation)
+- [ ] Performance (amélioration des performances)
+- [ ] Refactoring (changement de code sans modification fonctionnelle)
 
 ## Comment tester
 1. Étapes pour tester les changements
 2. Résultats attendus
+3. Tests automatisés ajoutés
 
 ## Checklist
 - [ ] Mon code suit les standards du projet
@@ -318,12 +371,20 @@ Brève description des changements apportés.
 - [ ] J'ai ajouté des tests qui prouvent que ma correction est efficace
 - [ ] Les tests passent localement
 - [ ] J'ai mis à jour la documentation si nécessaire
+- [ ] J'ai vérifié l'accessibilité
+- [ ] J'ai testé sur mobile et desktop
 
 ## Screenshots (si applicable)
 Ajouter des captures d'écran pour les changements UI.
 
 ## Références
 Lier les issues GitHub concernées.
+
+## Performance
+Décrire l'impact sur les performances si applicable.
+
+## Accessibilité
+Décrire les améliorations d'accessibilité si applicable.
 ```
 
 ### Processus de review
@@ -332,6 +393,7 @@ Lier les issues GitHub concernées.
 2. **Review manuel** : Un mainteneur examine le code
 3. **Feedback** : Discussion et améliorations si nécessaire
 4. **Approval** : Approbation et merge dans main
+5. **Deployment** : Déploiement automatique si tests passent
 
 ## 🐛 Rapport de bugs
 
@@ -350,6 +412,9 @@ Une description claire et concise du problème.
 ## Comportement attendu
 Une description claire et concise de ce qui devrait se passer.
 
+## Comportement actuel
+Une description claire et concise de ce qui se passe actuellement.
+
 ## Screenshots
 Si applicable, ajouter des captures d'écran.
 
@@ -358,6 +423,10 @@ Si applicable, ajouter des captures d'écran.
 - Navigateur: [ex. Chrome, Safari, Firefox]
 - Version: [ex. 22]
 - Version de l'app: [ex. 1.0.0]
+- Résolution d'écran: [ex. 1920x1080]
+
+## Logs
+Ajouter les logs de la console si applicable.
 
 ## Informations additionnelles
 Toute autre information pertinente.
@@ -365,9 +434,9 @@ Toute autre information pertinente.
 
 ### Priorité des bugs
 
-- 🔴 **Critique** : App crash, perte de données
-- 🟡 **Majeur** : Fonctionnalité cassée, mauvaise UX
-- 🟢 **Mineur** : Problème cosmétique, amélioration
+- 🔴 **Critique** : App crash, perte de données, faille de sécurité
+- 🟡 **Majeur** : Fonctionnalité cassée, mauvaise UX, performance dégradée
+- 🟢 **Mineur** : Problème cosmétique, amélioration, suggestion
 
 ## 💡 Propositions de fonctionnalités
 
@@ -392,11 +461,20 @@ Si vous avez des idées sur l'implémentation, les partager ici.
 ## Impact utilisateur
 Comment cette fonctionnalité améliorerait l'expérience utilisateur ?
 
+## Impact technique
+Quel serait l'impact sur l'architecture et les performances ?
+
 ## Priorité
 - [ ] Critique (bloque d'autres fonctionnalités)
 - [ ] Haute (améliore significativement l'UX)
 - [ ] Moyenne (amélioration nice-to-have)
 - [ ] Basse (bon à avoir)
+
+## Exemples d'utilisation
+Fournir des exemples concrets d'utilisation.
+
+## Mockups/Wireframes (optionnel)
+Ajouter des maquettes si applicable.
 ```
 
 ### Processus d'évaluation
@@ -405,8 +483,10 @@ Comment cette fonctionnalité améliorerait l'expérience utilisateur ?
 2. **Priorisation** : Déterminer la priorité selon la roadmap
 3. **Planning** : Intégrer dans le planning de développement
 4. **Implémentation** : Assigner à un développeur
+5. **Review** : Validation et tests
+6. **Release** : Déploiement et documentation
 
-## 🧪 Tests
+## 🧪 Tests et Qualité
 
 ### Tests unitaires (à venir)
 
@@ -420,6 +500,19 @@ describe('UserProfile', () => {
     render(<UserProfile username="john" />);
     expect(screen.getByText('john')).toBeInTheDocument();
   });
+
+  it('affiche le badge de vérification si vérifié', () => {
+    render(<UserProfile username="john" isVerified={true} />);
+    expect(screen.getByTestId('verified-badge')).toBeInTheDocument();
+  });
+
+  it('gère le clic sur le bouton de suivi', () => {
+    const mockOnFollow = jest.fn();
+    render(<UserProfile username="john" onFollow={mockOnFollow} />);
+    
+    fireEvent.click(screen.getByRole('button', { name: /suivre/i }));
+    expect(mockOnFollow).toHaveBeenCalledTimes(1);
+  });
 });
 ```
 
@@ -427,19 +520,102 @@ describe('UserProfile', () => {
 
 ```typescript
 // Test d'intégration avec React Testing Library
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Cart } from './Cart';
+import { CartProvider } from '../hooks/useCart';
 
 describe('Cart Integration', () => {
   it('ajoute un produit au panier', async () => {
-    render(<Cart />);
+    render(
+      <CartProvider>
+        <Cart />
+      </CartProvider>
+    );
     
     const addButton = screen.getByRole('button', { name: /ajouter/i });
     fireEvent.click(addButton);
     
-    expect(await screen.findByText('Produit ajouté')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Produit ajouté')).toBeInTheDocument();
+    });
   });
 });
+```
+
+### Tests E2E (optionnel)
+
+```typescript
+// Test E2E avec Playwright
+import { test, expect } from '@playwright/test';
+
+test('flux d\'achat complet', async ({ page }) => {
+  await page.goto('/');
+  
+  // Naviguer dans le feed vidéo
+  await page.click('[data-testid="video-feed"]');
+  
+  // Ajouter un produit au panier
+  await page.click('[data-testid="add-to-cart"]');
+  
+  // Aller au panier
+  await page.click('[data-testid="cart-button"]');
+  
+  // Vérifier que le produit est dans le panier
+  await expect(page.locator('[data-testid="cart-item"]')).toBeVisible();
+  
+  // Procéder au paiement
+  await page.click('[data-testid="checkout-button"]');
+  
+  // Vérifier la page de paiement
+  await expect(page.locator('[data-testid="payment-form"]')).toBeVisible();
+});
+```
+
+### Qualité du code
+
+```typescript
+// ✅ Code de qualité avec gestion d'erreur
+export async function fetchUserProfile(userId: string): Promise<User | null> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      throw new Error(`Failed to fetch user profile: ${error.message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return null;
+  }
+}
+
+// ✅ Code avec validation
+export function validateProductData(data: CreateProductData): ValidationResult {
+  const errors: string[] = [];
+
+  if (!data.name || data.name.trim().length < 3) {
+    errors.push('Le nom du produit doit contenir au moins 3 caractères');
+  }
+
+  if (!data.price || data.price <= 0) {
+    errors.push('Le prix doit être supérieur à 0');
+  }
+
+  if (!data.description || data.description.trim().length < 10) {
+    errors.push('La description doit contenir au moins 10 caractères');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
 ```
 
 ## 📝 Documentation
@@ -454,6 +630,7 @@ describe('Cart Integration', () => {
  * @param props.user - Données de l'utilisateur
  * @param props.showActions - Afficher les boutons d'action
  * @param props.onEdit - Callback appelé lors de l'édition
+ * @param props.onFollow - Callback appelé lors du suivi
  * 
  * @example
  * ```tsx
@@ -461,10 +638,16 @@ describe('Cart Integration', () => {
  *   user={userData} 
  *   showActions={true}
  *   onEdit={() => console.log('Edit clicked')}
+ *   onFollow={() => console.log('Follow clicked')}
  * />
  * ```
  */
-export function UserProfile({ user, showActions, onEdit }: UserProfileProps) {
+export function UserProfile({ 
+  user, 
+  showActions = false, 
+  onEdit, 
+  onFollow 
+}: UserProfileProps) {
   // Implementation
 }
 ```
@@ -477,9 +660,15 @@ export function UserProfile({ user, showActions, onEdit }: UserProfileProps) {
  */
 export class ProductService {
   /**
-   * Récupère la liste des produits
+   * Récupère la liste des produits avec filtres optionnels
    * 
    * @param filters - Filtres optionnels pour la recherche
+   * @param filters.category - ID de la catégorie
+   * @param filters.minPrice - Prix minimum
+   * @param filters.maxPrice - Prix maximum
+   * @param filters.search - Terme de recherche
+   * @param filters.limit - Nombre maximum de résultats
+   * @param filters.offset - Décalage pour la pagination
    * @returns Promise<Product[]> - Liste des produits
    * 
    * @throws {Error} Si la requête échoue
@@ -488,7 +677,9 @@ export class ProductService {
    * ```typescript
    * const products = await ProductService.getProducts({
    *   category: 'electronics',
-   *   priceRange: { min: 100, max: 500 }
+   *   priceRange: { min: 100, max: 500 },
+   *   search: 'iphone',
+   *   limit: 20
    * });
    * ```
    */
@@ -496,6 +687,35 @@ export class ProductService {
     // Implementation
   }
 }
+```
+
+### Documentation des composants
+
+```markdown
+# VideoFeed Component
+
+## Description
+Composant principal pour l'affichage du feed vidéo social avec navigation par swipe.
+
+## Props
+- `products: VideoFeedProduct[]` - Liste des produits à afficher
+- `onProductSelect?: (product: Product) => void` - Callback lors de la sélection d'un produit
+
+## Usage
+```tsx
+import { VideoFeed } from './VideoFeed';
+
+<VideoFeed 
+  products={products}
+  onProductSelect={(product) => console.log('Selected:', product)}
+/>
+```
+
+## Fonctionnalités
+- Navigation par swipe vertical
+- Autoplay intelligent
+- Gestion des gestes tactiles
+- Optimisation des performances
 ```
 
 ## 🏷️ Versioning et Releases
@@ -509,10 +729,19 @@ export class ProductService {
 ### Processus de release
 
 1. **Feature freeze** : Arrêt des nouvelles fonctionnalités
-2. **Testing** : Tests intensifs
+2. **Testing** : Tests intensifs et validation
 3. **Documentation** : Mise à jour de la documentation
 4. **Release notes** : Préparation des notes de version
 5. **Deployment** : Déploiement en production
+6. **Monitoring** : Surveillance des métriques post-release
+
+### Branches
+
+- **main** : Branche principale stable
+- **develop** : Branche de développement
+- **feature/*** : Branches de fonctionnalités
+- **bugfix/*** : Branches de corrections
+- **hotfix/*** : Branches de corrections urgentes
 
 ## 🆘 Support et Aide
 
@@ -529,6 +758,14 @@ export class ProductService {
 - [Documentation TypeScript](https://www.typescriptlang.org/docs/)
 - [Documentation Tailwind CSS](https://tailwindcss.com/docs)
 - [Documentation Supabase](https://supabase.com/docs)
+- [Documentation Framer Motion](https://www.framer.com/motion/)
+
+### Communauté
+
+- **Discord** : Rejoignez notre serveur Discord pour échanger avec la communauté
+- **Twitter** : Suivez @SocialCartApp pour les dernières nouvelles
+- **Blog** : Lisez notre blog technique sur les dernières innovations
+- **Newsletter** : Abonnez-vous à notre newsletter mensuelle
 
 ## 🙏 Remerciements
 
@@ -538,8 +775,15 @@ Merci à tous les contributeurs qui participent à faire de SocialCart une plate
 
 <!-- Liste des contributeurs sera mise à jour automatiquement -->
 
+### Reconnaissance
+
+- **Contributeurs** : Merci à tous ceux qui participent au développement
+- **Testeurs** : Merci aux utilisateurs qui testent et rapportent les bugs
+- **Documentation** : Merci à ceux qui améliorent la documentation
+- **Design** : Merci aux designers qui améliorent l'UX/UI
+
 ---
 
 **Ensemble, construisons l'avenir du commerce social !** 🚀
 
-*Ce guide est un document vivant qui évolue avec le projet. N'hésitez pas à proposer des améliorations !*
+*Ce guide est un document vivant qui évolue avec le projet. N'hésitez pas à proposer des améliorations via une issue ou une pull request !*

@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-SocialCart utilise **Supabase** comme Backend-as-a-Service, fournissant une API REST et GraphQL complète avec authentification, base de données PostgreSQL, et stockage de fichiers.
+SocialCart utilise **Supabase** comme Backend-as-a-Service, fournissant une API REST complète avec authentification, base de données PostgreSQL, stockage de fichiers, et fonctionnalités temps réel. Cette documentation couvre tous les endpoints disponibles et leur utilisation.
 
 ## 🔐 Authentification
 
@@ -95,6 +95,7 @@ Authorization: Bearer <access_token>
     "bio": "Bio utilisateur",
     "is_seller": true,
     "is_verified": false,
+    "loyalty_points": 150,
     "created_at": "2024-01-01T00:00:00Z"
   }
 ]
@@ -110,7 +111,11 @@ Content-Type: application/json
 {
   "full_name": "John Updated",
   "bio": "Nouvelle bio",
-  "avatar_url": "https://new-avatar.com/image.jpg"
+  "avatar_url": "https://new-avatar.com/image.jpg",
+  "location": "Paris, France",
+  "website_url": "https://john-doe.com",
+  "instagram_handle": "@johndoe",
+  "tiktok_handle": "@johndoe"
 }
 ```
 
@@ -121,12 +126,19 @@ GET /rest/v1/users?username=ilike.%{search_term}%
 Authorization: Bearer <access_token>
 ```
 
+### Rechercher des vendeurs
+
+```typescript
+GET /rest/v1/users?is_seller=eq.true&username=ilike.%{search_term}%
+Authorization: Bearer <access_token>
+```
+
 ## 🛍️ Produits
 
 ### Récupérer tous les produits
 
 ```typescript
-GET /rest/v1/products?select=*,user:users(*),images:product_images(*)
+GET /rest/v1/products?select=*,seller:users(*),images:product_images(*)
 ```
 
 **Réponse :**
@@ -139,11 +151,6 @@ GET /rest/v1/products?select=*,user:users(*),images:product_images(*)
     "price": 999.99,
     "video_url": "https://video-url.com",
     "primary_image_url": "https://image-url.com",
-    "user": {
-      "id": "uuid",
-      "username": "seller123",
-      "avatar_url": "https://..."
-    },
     "images": [
       {
         "id": "uuid",
@@ -151,6 +158,13 @@ GET /rest/v1/products?select=*,user:users(*),images:product_images(*)
         "alt": "Image 1"
       }
     ],
+    "seller": {
+      "id": "uuid",
+      "username": "seller123",
+      "avatar_url": "https://..."
+    },
+    "likes_count": 42,
+    "views_count": 1250,
     "created_at": "2024-01-01T00:00:00Z"
   }
 ]
@@ -159,7 +173,7 @@ GET /rest/v1/products?select=*,user:users(*),images:product_images(*)
 ### Récupérer un produit par ID
 
 ```typescript
-GET /rest/v1/products?id=eq.{product_id}&select=*,user:users(*),images:product_images(*),variants:product_variants(*)
+GET /rest/v1/products?id=eq.{product_id}&select=*,seller:users(*),images:product_images(*),variants:product_variants(*)
 ```
 
 ### Créer un produit
@@ -177,7 +191,9 @@ Content-Type: application/json
   "primary_image_url": "https://image-url.com",
   "seller_id": "user_uuid",
   "category_id": "category_uuid",
-  "status": "active"
+  "status": "active",
+  "inventory_quantity": 10,
+  "tags": ["tech", "mobile", "premium"]
 }
 ```
 
@@ -190,7 +206,8 @@ Content-Type: application/json
 
 {
   "name": "Nom mis à jour",
-  "price": 59.99
+  "price": 59.99,
+  "inventory_quantity": 5
 }
 ```
 
@@ -199,6 +216,18 @@ Content-Type: application/json
 ```typescript
 DELETE /rest/v1/products?id=eq.{product_id}
 Authorization: Bearer <access_token>
+```
+
+### Incrémenter les vues d'un produit
+
+```typescript
+POST /rest/v1/rpc/increment_product_views
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "product_id": "uuid"
+}
 ```
 
 ## 🛒 Panier
@@ -279,6 +308,13 @@ Content-Type: application/json
 {
   "total": 89.97,
   "status": "pending",
+  "shipping_address": {
+    "full_name": "John Doe",
+    "address_line_1": "123 Main St",
+    "city": "Paris",
+    "postal_code": "75001",
+    "country": "France"
+  },
   "items": [
     {
       "product_id": "uuid",
@@ -299,12 +335,25 @@ GET /rest/v1/orders?user_id=eq.{user_id}&select=*,order_items(*,product:products
 Authorization: Bearer <access_token>
 ```
 
+### Mettre à jour le statut d'une commande
+
+```typescript
+PATCH /rest/v1/orders?id=eq.{order_id}
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "status": "shipped",
+  "tracking_number": "TRK123456789"
+}
+```
+
 ## ❤️ Interactions Sociales
 
 ### Liker un produit
 
 ```typescript
-POST /rest/v1/likes
+POST /rest/v1/product_likes
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
@@ -314,10 +363,17 @@ Content-Type: application/json
 }
 ```
 
+### Retirer un like
+
+```typescript
+DELETE /rest/v1/product_likes?product_id=eq.{product_id}&user_id=eq.{user_id}
+Authorization: Bearer <access_token>
+```
+
 ### Récupérer les likes d'un produit
 
 ```typescript
-GET /rest/v1/likes?product_id=eq.{product_id}&select=*,user:users(username,avatar_url)
+GET /rest/v1/product_likes?product_id=eq.{product_id}&select=*,user:users(username,avatar_url)
 ```
 
 ### Suivre un utilisateur
@@ -343,7 +399,7 @@ Authorization: Bearer <access_token>
 ### Ajouter un commentaire
 
 ```typescript
-POST /rest/v1/comments
+POST /rest/v1/product_comments
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
@@ -357,7 +413,34 @@ Content-Type: application/json
 ### Récupérer les commentaires
 
 ```typescript
-GET /rest/v1/comments?product_id=eq.{product_id}&select=*,user:users(username,avatar_url)
+GET /rest/v1/product_comments?product_id=eq.{product_id}&select=*,user:users(username,avatar_url),replies:product_comments(*)
+```
+
+### Ajouter une réponse à un commentaire
+
+```typescript
+POST /rest/v1/product_comments
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "product_id": "uuid",
+  "content": "Merci !",
+  "parent_id": "parent_comment_uuid"
+}
+```
+
+### Enregistrer un partage
+
+```typescript
+POST /rest/v1/product_shares
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "product_id": "uuid",
+  "platform": "instagram"
+}
 ```
 
 ## 📁 Stockage de fichiers
@@ -367,7 +450,7 @@ GET /rest/v1/comments?product_id=eq.{product_id}&select=*,user:users(username,av
 ```typescript
 // Via Supabase Storage
 const { data, error } = await supabase.storage
-  .from('product-images')
+  .from('products')
   .upload(`products/${productId}/${fileName}`, file, {
     cacheControl: '3600',
     upsert: true
@@ -375,7 +458,7 @@ const { data, error } = await supabase.storage
 
 // Récupérer l'URL publique
 const { data: { publicUrl } } = supabase.storage
-  .from('product-images')
+  .from('products')
   .getPublicUrl(`products/${productId}/${fileName}`);
 ```
 
@@ -383,8 +466,8 @@ const { data: { publicUrl } } = supabase.storage
 
 ```typescript
 const { data, error } = await supabase.storage
-  .from('product-videos')
-  .upload(`products/${productId}/${fileName}`, videoFile, {
+  .from('products')
+  .upload(`products/videos/${fileName}`, videoFile, {
     cacheControl: '3600',
     upsert: true
   });
@@ -394,8 +477,16 @@ const { data, error } = await supabase.storage
 
 ```typescript
 const { error } = await supabase.storage
-  .from('product-images')
+  .from('products')
   .remove([`products/${productId}/${fileName}`]);
+```
+
+### Lister les fichiers d'un produit
+
+```typescript
+const { data, error } = await supabase.storage
+  .from('products')
+  .list(`products/${productId}/`);
 ```
 
 ## 🔍 Recherche et Filtres
@@ -403,7 +494,7 @@ const { error } = await supabase.storage
 ### Rechercher des produits
 
 ```typescript
-GET /rest/v1/products?name=ilike.%{search_term}%&select=*,user:users(*)
+GET /rest/v1/products?name=ilike.%{search_term}%&select=*,seller:users(*)
 ```
 
 ### Filtrer par catégorie
@@ -418,11 +509,25 @@ GET /rest/v1/products?category_id=eq.{category_id}&select=*
 GET /rest/v1/products?price=gte.{min_price}&price=lte.{max_price}
 ```
 
+### Filtrer par vendeur
+
+```typescript
+GET /rest/v1/products?seller_id=eq.{seller_id}&select=*
+```
+
 ### Trier les résultats
 
 ```typescript
 GET /rest/v1/products?order=price.desc&select=*
 GET /rest/v1/products?order=created_at.desc&select=*
+GET /rest/v1/products?order=likes_count.desc&select=*
+```
+
+### Recherche avec pagination
+
+```typescript
+GET /rest/v1/products?select=*&range=0-9
+GET /rest/v1/products?select=*&range=10-19
 ```
 
 ## 📊 Analytics et Métriques
@@ -430,27 +535,113 @@ GET /rest/v1/products?order=created_at.desc&select=*
 ### Récupérer les statistiques d'un produit
 
 ```typescript
-GET /rest/v1/product_stats?product_id=eq.{product_id}
+GET /rest/v1/rpc/get_product_social_stats
+Content-Type: application/json
+
+{
+  "p_product_id": "uuid"
+}
 ```
 
 **Réponse :**
 ```json
-[
-  {
-    "product_id": "uuid",
-    "views_count": 1250,
-    "likes_count": 89,
-    "shares_count": 23,
-    "comments_count": 15,
-    "purchases_count": 7
-  }
-]
+{
+  "likes_count": 89,
+  "shares_count": 23,
+  "comments_count": 15,
+  "views_count": 1250
+}
 ```
 
 ### Récupérer les statistiques utilisateur
 
 ```typescript
-GET /rest/v1/user_stats?user_id=eq.{user_id}
+GET /rest/v1/rpc/get_user_stats
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "p_user_id": "uuid"
+}
+```
+
+### Enregistrer une vue de produit
+
+```typescript
+POST /rest/v1/product_views
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "product_id": "uuid",
+  "session_id": "session_uuid",
+  "ip_address": "192.168.1.1",
+  "user_agent": "Mozilla/5.0...",
+  "referrer": "https://google.com"
+}
+```
+
+## 🎁 Système de Fidélité
+
+### Récupérer les transactions de fidélité
+
+```typescript
+GET /rest/v1/loyalty_transactions?user_id=eq.{user_id}&order=created_at.desc
+Authorization: Bearer <access_token>
+```
+
+### Attribuer des points de fidélité
+
+```typescript
+POST /rest/v1/rpc/award_loyalty_points
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "p_user_id": "uuid",
+  "p_action": "like_product",
+  "p_object_id": "product_uuid"
+}
+```
+
+### Récupérer le solde de points
+
+```typescript
+GET /rest/v1/users?id=eq.{user_id}&select=loyalty_points
+Authorization: Bearer <access_token>
+```
+
+## 🤖 Intelligence Artificielle
+
+### Analyser une image de produit
+
+```typescript
+POST /rest/v1/rpc/analyze_product_image
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "image_data": "base64_encoded_image",
+  "options": {
+    "include_price": true,
+    "include_brand": true,
+    "include_category": true,
+    "language": "fr"
+  }
+}
+```
+
+**Réponse :**
+```json
+{
+  "name": "iPhone 15 Pro",
+  "description": "Smartphone Apple avec écran Super Retina XDR",
+  "category": "electronics",
+  "brand": "Apple",
+  "price": 999.99,
+  "tags": ["smartphone", "apple", "premium", "5g"],
+  "confidence": 0.92
+}
 ```
 
 ## 🔄 Real-time Subscriptions
@@ -476,7 +667,7 @@ const subscription = supabase
 const subscription = supabase
   .channel('likes')
   .on('postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'likes' },
+    { event: 'INSERT', schema: 'public', table: 'product_likes' },
     (payload) => {
       console.log('Nouveau like:', payload.new);
       // Mettre à jour le compteur de likes
@@ -491,10 +682,25 @@ const subscription = supabase
 const subscription = supabase
   .channel('comments')
   .on('postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'comments' },
+    { event: 'INSERT', schema: 'public', table: 'product_comments' },
     (payload) => {
       console.log('Nouveau commentaire:', payload.new);
       // Ajouter le commentaire à la liste
+    }
+  )
+  .subscribe();
+```
+
+### Écouter les changements de commande
+
+```typescript
+const subscription = supabase
+  .channel('orders')
+  .on('postgres_changes',
+    { event: 'UPDATE', schema: 'public', table: 'orders' },
+    (payload) => {
+      console.log('Commande mise à jour:', payload.new);
+      // Mettre à jour le statut de la commande
     }
   )
   .subscribe();
@@ -530,6 +736,26 @@ Content-Type: application/json
 Prefer: return=minimal
 ```
 
+### Politiques RLS principales
+
+```sql
+-- Users : Lecture publique des profils, modification de son propre profil
+CREATE POLICY "Users can view profiles" ON users FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
+
+-- Products : Lecture publique, modification par le vendeur
+CREATE POLICY "Products are viewable by everyone" ON products FOR SELECT USING (true);
+CREATE POLICY "Sellers can manage their products" ON products FOR ALL USING (auth.uid() = seller_id);
+
+-- Likes : Tout le monde peut liker
+CREATE POLICY "Users can like products" ON product_likes FOR ALL USING (auth.uid() = user_id);
+
+-- Comments : Lecture publique, écriture authentifiée
+CREATE POLICY "Comments are viewable by everyone" ON product_comments FOR SELECT USING (true);
+CREATE POLICY "Users can create comments" ON product_comments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own comments" ON product_comments FOR UPDATE USING (auth.uid() = user_id);
+```
+
 ## 📝 Codes d'erreur
 
 ### Codes d'erreur courants
@@ -541,6 +767,7 @@ Prefer: return=minimal
 | `42501` | Permission refusée | Vérifier les politiques RLS |
 | `42P01` | Table inexistante | Vérifier le nom de la table |
 | `42601` | Erreur de syntaxe SQL | Vérifier la requête |
+| `PGRST116` | Aucune ligne trouvée | Gérer le cas où aucun résultat |
 
 ### Gestion des erreurs
 
@@ -563,6 +790,8 @@ try {
     toast.error('Ce produit existe déjà');
   } else if (error.code === '42501') {
     toast.error('Permission refusée');
+  } else if (error.code === 'PGRST116') {
+    toast.error('Aucun produit trouvé');
   } else {
     toast.error('Erreur inconnue');
   }
@@ -594,6 +823,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storage: window.localStorage,
     storageKey: 'supabase.auth.token',
     flowType: 'pkce'
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    }
   }
 });
 ```
@@ -631,6 +865,96 @@ const { data: products } = useQuery({
   staleTime: 5 * 60 * 1000, // 5 minutes
   cacheTime: 10 * 60 * 1000, // 10 minutes
 });
+```
+
+### Requêtes complexes avec jointures
+
+```typescript
+// Feed vidéo avec informations sociales
+const { data } = await supabase
+  .from('products')
+  .select(`
+    *,
+    seller:users!products_seller_id_fkey(
+      id,
+      username,
+      avatar_url,
+      is_verified
+    ),
+    likes:product_likes(count),
+    comments:product_comments(count),
+    user_like:product_likes!left(
+      id
+    ).filter(user_id.eq.${userId})
+  `)
+  .eq('status', 'active')
+  .order('created_at', { ascending: false });
+```
+
+## 🔍 Exemples d'utilisation
+
+### Service complet pour les produits
+
+```typescript
+class ProductService {
+  static async getProducts(filters?: ProductFilters): Promise<Product[]> {
+    let query = supabase
+      .from('products')
+      .select(`
+        *,
+        seller:users!products_seller_id_fkey(
+          id,
+          username,
+          avatar_url,
+          is_verified
+        )
+      `)
+      .eq('status', 'active');
+
+    if (filters?.category) {
+      query = query.eq('category_id', filters.category);
+    }
+
+    if (filters?.minPrice) {
+      query = query.gte('price', filters.minPrice);
+    }
+
+    if (filters?.maxPrice) {
+      query = query.lte('price', filters.maxPrice);
+    }
+
+    if (filters?.search) {
+      query = query.ilike('name', `%${filters.search}%`);
+    }
+
+    const { data, error } = await query
+      .order('created_at', { ascending: false })
+      .range(filters?.offset || 0, (filters?.limit || 10) - 1);
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  static async getProductById(id: string): Promise<Product | null> {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        seller:users!products_seller_id_fkey(*),
+        images:product_images(*),
+        variants:product_variants(*)
+      `)
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      throw error;
+    }
+
+    return data;
+  }
+}
 ```
 
 ---

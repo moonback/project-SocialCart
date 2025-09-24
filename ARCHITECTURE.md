@@ -2,24 +2,33 @@
 
 ## Vue d'ensemble
 
-SocialCart utilise une architecture moderne **JAMstack** (JavaScript, APIs, Markup) avec React côté client et Supabase comme Backend-as-a-Service, optimisée pour les performances et la scalabilité.
+SocialCart utilise une architecture moderne **JAMstack** (JavaScript, APIs, Markup) avec React côté client et Supabase comme Backend-as-a-Service, optimisée pour les performances, la scalabilité et l'expérience utilisateur mobile-first.
 
 ## 🎯 Principes Architecturaux
 
 ### 1. **Mobile-First Design**
-- Interface adaptée aux gestes tactiles
-- Optimisation pour les écrans verticaux
-- Performance prioritaire sur mobile
+- Interface adaptée aux gestes tactiles (swipe, tap, pinch)
+- Optimisation pour les écrans verticaux (portrait)
+- Performance prioritaire sur mobile (3G/4G)
+- PWA avec installation native
 
 ### 2. **Composants Réutilisables**
 - Architecture modulaire avec composants isolés
 - Hooks personnalisés pour la logique métier
-- Design System cohérent
+- Design System cohérent avec Tailwind CSS
+- Séparation claire des responsabilités
 
 ### 3. **Performance et UX**
-- Lazy loading des composants
+- Lazy loading des composants et routes
 - Optimisation des images et vidéos
 - Animations fluides avec Framer Motion
+- Cache intelligent avec Service Worker
+
+### 4. **Sécurité et Scalabilité**
+- Row Level Security (RLS) sur toutes les tables
+- Authentification sécurisée avec Supabase Auth
+- Architecture évolutive vers microservices
+- Monitoring et analytics intégrés
 
 ## 🏛️ Architecture Globale
 
@@ -38,26 +47,40 @@ graph TB
             I[useAuth]
             J[useCart]
             K[useSocial]
+            L[useVideoPlayer]
         end
         
         subgraph "Services"
-            L[Supabase Client]
-            M[Product Service]
-            N[Profile Service]
+            M[Supabase Client]
+            N[Product Service]
+            O[Social Service]
+            P[Gemini AI Service]
         end
     end
     
     subgraph "Backend (Supabase)"
-        O[Authentication]
-        P[Database PostgreSQL]
-        Q[Storage Buckets]
-        R[Real-time Subscriptions]
+        Q[Authentication]
+        R[Database PostgreSQL]
+        S[Storage Buckets]
+        T[Real-time Subscriptions]
+        U[Edge Functions]
     end
     
-    L --> O
-    L --> P
-    L --> Q
-    L --> R
+    subgraph "External Services"
+        V[Google Gemini AI]
+        W[Stripe Payments]
+        X[CDN/Assets]
+    end
+    
+    M --> Q
+    M --> R
+    M --> S
+    M --> T
+    N --> R
+    O --> R
+    P --> V
+    A --> W
+    A --> X
 ```
 
 ## 📱 Architecture Frontend
@@ -68,18 +91,25 @@ graph TB
 src/
 ├── components/           # Composants UI réutilisables
 │   ├── Layout/          # Structure principale
-│   ├── VideoFeed/       # Feed vidéo social
+│   ├── VideoFeed/       # Feed vidéo social modulaire
+│   │   ├── VideoPlayer.tsx
+│   │   ├── ActionButtons.tsx
+│   │   ├── ProductInfo.tsx
+│   │   └── ...
 │   ├── ProductCard/     # Cartes produits
 │   ├── Navigation/      # TopBar, BottomNav
-│   └── Modals/          # Commentaires, Partage
-├── hooks/               # Logique métier
+│   └── Modals/          # Commentaires, Partage, etc.
+├── hooks/               # Logique métier réutilisable
 │   ├── useAuth.tsx      # Authentification
 │   ├── useCart.tsx      # Gestion panier
-│   └── useSocial.tsx    # Interactions sociales
+│   ├── useSocial.tsx    # Interactions sociales
+│   ├── useVideoPlayer.tsx # Gestion vidéo
+│   └── useVideoFeedScroll.tsx # Scroll optimisé
 ├── lib/                 # Services et clients
 │   ├── supabase.ts      # Client Supabase
 │   ├── products.ts      # Service produits
-│   └── social.ts        # Service social
+│   ├── social.ts        # Service social
+│   └── gemini.ts        # Service IA
 └── pages/               # Pages de l'application
     ├── Home.tsx         # Feed principal
     ├── Cart.tsx         # Panier
@@ -96,7 +126,40 @@ graph LR
     D --> E[Database/Storage]
     E --> F[Real-time Update]
     F --> G[UI Update]
+    
+    H[External API] --> C
+    C --> I[Local State]
+    I --> G
 ```
+
+### Gestion d'État
+
+#### État Global (Context)
+```typescript
+// AuthContext
+interface AuthState {
+  user: User | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  updateProfile: (data: ProfileUpdateData) => Promise<void>;
+}
+
+// CartContext
+interface CartState {
+  items: CartItem[];
+  addItem: (product: Product, variants?: Record<string, string>) => void;
+  removeItem: (itemId: string) => void;
+  clearCart: () => void;
+  total: number;
+  itemCount: number;
+}
+```
+
+#### État Local (useState/useReducer)
+- **États UI** : modales, loading, erreurs
+- **États temporaires** : formulaires, filtres
+- **États de cache** : données mises en cache localement
 
 ## 🗄️ Architecture Backend (Supabase)
 
@@ -106,28 +169,33 @@ graph LR
 
 ```sql
 -- Utilisateurs et profils
-users                 # Profils utilisateurs
+users                 # Profils utilisateurs complets
 user_addresses        # Adresses de livraison
-user_social_profiles  # Profils sociaux
+user_social_profiles  # Profils sociaux (Instagram, TikTok)
 
 -- Produits et catalogue
-products             # Catalogue produits
-product_variants     # Variantes de produits
-product_images       # Images produits
-categories           # Catégories produits
+products             # Catalogue produits avec métadonnées
+product_variants     # Variantes de produits (taille, couleur)
+product_images       # Images multiples par produit
+categories           # Catégories hiérarchiques
 brands              # Marques
 
 -- E-commerce
 cart_items          # Panier utilisateur
-orders              # Commandes
-order_items         # Articles commandés
-payments           # Paiements
+orders              # Commandes avec statuts
+order_items         # Articles commandés (snapshot)
+payments           # Paiements avec intégration Stripe
 
 -- Social et interactions
 follows            # Relations de suivi
 likes             # Likes sur produits
-comments          # Commentaires
-shares            # Partages
+comments          # Commentaires avec réponses
+shares            # Partages sur réseaux sociaux
+product_views     # Analytics des vues
+
+-- Système de fidélité
+loyalty_transactions # Transactions de points
+loyalty_actions     # Actions récompensées
 ```
 
 #### Relations Clés
@@ -167,14 +235,17 @@ CREATE POLICY "Users can view own cart" ON cart_items
 -- Politique pour les commandes (propriétaire uniquement)
 CREATE POLICY "Users can view own orders" ON orders
     FOR SELECT USING (auth.uid() = user_id);
+
+-- Politique pour les vendeurs (gestion de leurs produits)
+CREATE POLICY "Sellers can manage their products" ON products
+    FOR ALL USING (auth.uid() = seller_id);
 ```
 
 ### Storage Buckets
 
 ```
 storage/
-├── product-images/     # Images produits (public)
-├── product-videos/     # Vidéos produits (public)
+├── products/           # Images et vidéos produits (public)
 ├── user-avatars/       # Avatars utilisateurs (public)
 └── temp-uploads/       # Uploads temporaires (private)
 ```
@@ -193,68 +264,58 @@ sequenceDiagram
     S->>D: Validate Credentials
     D-->>S: User Data
     S-->>F: JWT Token
-    F->>F: Store Token
+    F->>F: Store Token (localStorage)
     F-->>U: Redirect to Home
     
-    Note over F,S: Session persistée avec localStorage
+    Note over F,S: Session persistée avec auto-refresh
 ```
-
-## 📊 Gestion d'État
-
-### État Global (Context)
-
-```typescript
-// AuthContext
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-}
-
-// CartContext
-interface CartState {
-  items: CartItem[];
-  addItem: (product: Product, quantity: number) => void;
-  removeItem: (productId: string) => void;
-  clearCart: () => void;
-}
-```
-
-### État Local (useState/useReducer)
-
-- **États UI** : modales, loading, erreurs
-- **États temporaires** : formulaires, filtres
-- **États de cache** : données mises en cache localement
 
 ## 🎥 Architecture VideoFeed
 
-### Composant Principal
+### Composant Principal Modulaire
 
 ```typescript
 interface VideoFeedProps {
   products: VideoFeedProduct[];
 }
 
-// Structure interne
+// Structure interne modulaire
 const VideoFeed = ({ products }) => {
   // États locaux
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
   
   // Hooks personnalisés
   const { addItem } = useCart();
   const { likeProduct, followUser } = useSocial();
+  const { 
+    videoRefs, 
+    autoPlay, 
+    togglePlay, 
+    handleVideoLoad 
+  } = useVideoPlayer();
   
   // Gestion des gestes
-  const { handleSwipeUp, handleSwipeDown } = useGestures();
+  const { handleSwipeUp, handleSwipeDown } = useVideoFeedScroll();
   
   return (
     <div className="video-container">
-      {/* Video Player */}
-      {/* Overlay Interactions */}
-      {/* Product Info */}
+      <VideoPlayer 
+        product={currentProduct}
+        videoRefs={videoRefs}
+        autoPlay={autoPlay}
+        onTogglePlay={togglePlay}
+      />
+      <ActionButtons 
+        product={currentProduct}
+        onLike={likeProduct}
+        onFollow={followUser}
+        onShare={shareProduct}
+      />
+      <ProductInfo 
+        product={currentProduct}
+        onAddToCart={addItem}
+      />
     </div>
   );
 };
@@ -266,6 +327,7 @@ const VideoFeed = ({ products }) => {
 2. **Preloading** : Préchargement de la vidéo suivante
 3. **Adaptive Streaming** : Qualité adaptée à la connexion
 4. **Memory Management** : Nettoyage des vidéos non visibles
+5. **Throttling** : Scroll optimisé avec cleanup automatique
 
 ## 🔧 Services et API
 
@@ -278,7 +340,7 @@ class ProductService {
       .from('products')
       .select(`
         *,
-        user:users(*),
+        seller:users(*),
         images:product_images(*),
         variants:product_variants(*)
       `)
@@ -288,12 +350,26 @@ class ProductService {
     return data;
   }
   
-  static async getProductById(id: string): Promise<Product> {
-    // Implementation
-  }
-  
   static async createProduct(productData: CreateProductData): Promise<Product> {
-    // Implementation
+    // Upload des médias
+    const { images, videoUrl } = await this.uploadMedia(
+      productData.files, 
+      productData.videoFile
+    );
+    
+    // Création du produit
+    const { data, error } = await supabase
+      .from('products')
+      .insert({
+        ...productData,
+        images,
+        video_url: videoUrl
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 }
 ```
@@ -302,20 +378,51 @@ class ProductService {
 
 ```typescript
 class SocialService {
-  static async likeProduct(productId: string): Promise<void> {
-    const { error } = await supabase
+  static async toggleProductLike(productId: string): Promise<boolean> {
+    const { data: existingLike } = await supabase
       .from('likes')
-      .insert({ product_id: productId, user_id: user.id });
+      .select('id')
+      .eq('product_id', productId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (existingLike) {
+      // Retirer le like
+      await supabase
+        .from('likes')
+        .delete()
+        .eq('product_id', productId)
+        .eq('user_id', user.id);
+      return false;
+    } else {
+      // Ajouter le like
+      await supabase
+        .from('likes')
+        .insert({ product_id: productId, user_id: user.id });
+      return true;
+    }
+  }
+}
+```
+
+### Service IA (Gemini)
+
+```typescript
+class GeminiService {
+  static async analyzeProductImage(imageFile: File): Promise<ProductAnalysisResult> {
+    const imageData = await this.fileToBase64(imageFile);
     
-    if (error) throw error;
-  }
-  
-  static async followUser(userId: string): Promise<void> {
-    // Implementation
-  }
-  
-  static async addComment(productId: string, content: string): Promise<Comment> {
-    // Implementation
+    const result = await this.model.generateContent([
+      this.buildAnalysisPrompt(),
+      {
+        inlineData: {
+          data: imageData,
+          mimeType: imageFile.type,
+        },
+      }
+    ]);
+    
+    return this.parseAnalysisResponse(result.response.text());
   }
 }
 ```
@@ -329,6 +436,9 @@ class SocialService {
 const Home = lazy(() => import('./pages/Home'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Profile = lazy(() => import('./pages/Profile'));
+
+// Lazy loading des composants lourds
+const ImageAnalysisPanel = lazy(() => import('./components/ImageAnalysisPanel'));
 ```
 
 ### 2. **Image Optimization**
@@ -342,6 +452,11 @@ const OptimizedImage = ({ src, alt, ...props }) => {
       alt={alt}
       loading="lazy"
       decoding="async"
+      style={{
+        backgroundImage: `url(${src})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
       {...props}
     />
   );
@@ -360,6 +475,31 @@ const { data: products } = useQuery({
 });
 ```
 
+### 4. **Service Worker Optimisé**
+
+```javascript
+// sw.js - Stratégies de cache
+const CACHE_STRATEGIES = {
+  images: 'cache-first',
+  videos: 'network-first',
+  api: 'network-first',
+  static: 'cache-first'
+};
+
+// Gestion d'erreur robuste
+async function networkFirst(request, cacheName) {
+  try {
+    const networkResponse = await fetch(request);
+    // Mise en cache
+    return networkResponse;
+  } catch (error) {
+    // Fallback vers le cache
+    const cachedResponse = await caches.match(request);
+    return cachedResponse || new Response('Offline', { status: 503 });
+  }
+}
+```
+
 ## 🔒 Sécurité
 
 ### Frontend
@@ -368,13 +508,15 @@ const { data: products } = useQuery({
 2. **Sanitisation** des données utilisateur
 3. **HTTPS** obligatoire en production
 4. **CSP** (Content Security Policy)
+5. **XSS Protection** avec React
 
 ### Backend (Supabase)
 
 1. **RLS** activé sur toutes les tables
 2. **Policies** granulaires par utilisateur
-3. **Validation** des schémas avec Zod (futur)
+3. **Validation** des schémas avec contraintes
 4. **Rate limiting** sur les API
+5. **Audit logs** pour les actions sensibles
 
 ## 📱 PWA Architecture
 
@@ -388,6 +530,13 @@ const CACHE_STRATEGIES = {
   api: 'network-first',
   static: 'cache-first'
 };
+
+// Gestion des mises à jour
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 ```
 
 ### Manifest
@@ -398,7 +547,10 @@ const CACHE_STRATEGIES = {
   "short_name": "SocialCart",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#0ea5e9"
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "start_url": "/",
+  "scope": "/"
 }
 ```
 
@@ -424,6 +576,28 @@ useEffect(() => {
 }, []);
 ```
 
+### WebSocket pour le Chat (futur)
+
+```typescript
+// Chat en temps réel avec les vendeurs
+const useChat = (productId: string) => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  
+  useEffect(() => {
+    const ws = new WebSocket(`wss://api.socialcart.app/chat/${productId}`);
+    
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setMessages(prev => [...prev, message]);
+    };
+    
+    return () => ws.close();
+  }, [productId]);
+  
+  return { messages, sendMessage };
+};
+```
+
 ## 🚀 Déploiement et Scaling
 
 ### Environnements
@@ -438,6 +612,27 @@ useEffect(() => {
 2. **Error Tracking** avec Sentry (futur)
 3. **Performance** avec Lighthouse CI
 4. **Database** monitoring avec Supabase Dashboard
+5. **Real-time** métriques avec Supabase Metrics
+
+### Scaling Strategy
+
+#### Phase 1 : Monolithique Optimisé
+- **Supabase** comme backend principal
+- **React** frontend avec optimisations
+- **CDN** pour les assets statiques
+- **Monitoring** basique
+
+#### Phase 2 : Microservices Hybrides
+- **API Gateway** pour router les requêtes
+- **Services spécialisés** (auth, payments, social)
+- **Base de données** distribuée
+- **Cache** Redis distribué
+
+#### Phase 3 : Cloud Native
+- **Kubernetes** pour l'orchestration
+- **Microservices** complets
+- **Event-driven** architecture
+- **Multi-cloud** deployment
 
 ## 🔮 Évolutions Futures
 
@@ -459,13 +654,15 @@ graph TB
         E[Payment Service]
         F[Social Service]
         G[Notification Service]
+        H[AI Service]
     end
     
     subgraph "Databases"
-        H[Auth DB]
-        I[Product DB]
-        J[Payment DB]
-        K[Social DB]
+        I[Auth DB]
+        J[Product DB]
+        K[Payment DB]
+        L[Social DB]
+        M[Analytics DB]
     end
     
     A --> B
@@ -474,21 +671,25 @@ graph TB
     B --> E
     B --> F
     B --> G
+    B --> H
     
-    C --> H
-    D --> I
-    E --> J
-    F --> K
+    C --> I
+    D --> J
+    E --> K
+    F --> L
+    G --> M
+    H --> M
 ```
 
 ### Optimisations Futures
 
 1. **Server-Side Rendering** avec Next.js
 2. **GraphQL** pour des requêtes optimisées
-3. **CDN** pour les assets statiques
-4. **Edge Computing** pour les performances globales
+3. **CDN** global pour les performances
+4. **Edge Computing** pour la latence minimale
 5. **Machine Learning** pour les recommandations
+6. **Blockchain** pour la traçabilité des produits
 
 ---
 
-Cette architecture est conçue pour évoluer avec les besoins de l'application tout en maintenant la simplicité et les performances optimales.
+Cette architecture est conçue pour évoluer avec les besoins de l'application tout en maintenant la simplicité, les performances optimales et une expérience utilisateur exceptionnelle.
