@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CommentsModal } from './CommentsModal';
 import { ShareModal } from './ShareModal';
@@ -12,15 +12,13 @@ import { useVideoFeedModals } from '../hooks/useVideoFeedModals';
 import { useVideoFeedScroll } from '../hooks/useVideoFeedScroll';
 import { useNavigate } from 'react-router-dom';
 import { productService } from '../services/productService';
-import {
-  VideoPlayer,
-  ActionButtons,
-  ProductInfo,
-  ActionsMenu,
-  DeleteConfirmModal,
-  InfoPanel,
-  EmptyState,
-} from './VideoFeed';
+import { VideoPlayer } from './VideoFeed/VideoPlayer';
+import { ActionButtons } from './VideoFeed/ActionButtons';
+import { ProductInfo } from './VideoFeed/ProductInfo';
+import { ActionsMenu } from './VideoFeed/ActionsMenu';
+import { DeleteConfirmModal } from './VideoFeed/DeleteConfirmModal';
+import { InfoPanel } from './VideoFeed/InfoPanel';
+import { EmptyState } from './VideoFeed/EmptyState';
 
 interface VideoFeedProduct extends ProductFromProducts {
   image_url: string;
@@ -108,7 +106,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showActionsMenu]);
+  }, [setShowActionsMenu, showActionsMenu]);
 
   // Fonction mémorisée pour enregistrer une vue
   const handleRecordView = useCallback((productId: string) => {
@@ -237,7 +235,6 @@ export function VideoFeed({ products }: VideoFeedProps) {
           <VideoPlayer
             videoUrl={product.video_url}
             imageUrl={product.image_url}
-            productId={product.id}
             productName={product.name}
             isPlaying={isPlaying}
             isMuted={isMuted}
@@ -245,7 +242,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
             playbackSpeed={playbackSpeed}
             showControls={showControls}
             isCurrentVideo={index === currentIndex}
-            videoRef={(el) => (videoRefs.current[product.id] = el)}
+            videoRef={(el: HTMLVideoElement | null) => (videoRefs.current[product.id] = el)}
             onPlay={() => {}} // Géré par le hook
             onPause={() => {}} // Géré par le hook
             onTogglePlayPause={() => togglePlayPause(product.id)}

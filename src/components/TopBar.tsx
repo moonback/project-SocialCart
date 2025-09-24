@@ -86,91 +86,93 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
         </div>
 
         {/* Actions */}
-        <div className="flex items-center space-x-1 md:space-x-2">
-          {/* Stories Button */}
+        <div className="flex items-center space-x-2 md:space-x-3">
+          {/* Bouton Stories amélioré */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.13, rotate: 2 }}
+            whileTap={{ scale: 0.92 }}
             onClick={onToggleStories}
-            className={`relative w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md transition-all duration-300 ${
-              isStoriesOpen ? 'bg-primary-500/20 text-primary-600' : 'bg-white/10 text-surface-600 hover:bg-white/20'
-            }`}
+            className={`relative w-11 h-11 rounded-2xl border-2 border-primary-400/60 shadow-lg bg-gradient-to-br ${
+              isStoriesOpen
+                ? 'from-primary-100/80 to-primary-300/60 text-primary-700'
+                : 'from-white/20 to-white/5 text-surface-600 hover:from-primary-50/60 hover:to-white/20'
+            } transition-all duration-300 flex items-center justify-center`}
             style={{
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
-            <Camera className="w-4 h-4 md:w-5 md:h-5" />
+            <Camera className="w-5 h-5 md:w-6 md:h-6 drop-shadow" />
             {isStoriesOpen && (
               <motion.div 
-                className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary-500 rounded-full"
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-primary-500 to-purple-500 rounded-full shadow-lg"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
               />
             )}
           </motion.button>
 
-          {/* Mobile Search */}
+          {/* Recherche Mobile améliorée */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.13, rotate: -2 }}
+            whileTap={{ scale: 0.92 }}
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="md:hidden w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md bg-white/10 text-surface-600 hover:bg-white/20 transition-all duration-300"
+            className="md:hidden w-11 h-11 rounded-2xl border-2 border-blue-300/40 shadow-lg bg-gradient-to-br from-white/20 to-blue-50/10 text-blue-700 hover:from-blue-100/40 hover:to-white/20 transition-all duration-300 flex items-center justify-center"
             style={{
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
-            <Search className="w-4 h-4 md:w-5 md:h-5" />
+            <Search className="w-5 h-5 md:w-6 md:h-6" />
           </motion.button>
 
-          {/* Notifications */}
+          {/* Notifications améliorées */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.13, rotate: 2 }}
+            whileTap={{ scale: 0.92 }}
             onClick={() => navigate('/notifications')}
-            className="relative w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md bg-white/10 text-surface-600 hover:bg-white/20 transition-all duration-300"
+            className="relative w-11 h-11 rounded-2xl border-2 border-pink-300/40 shadow-lg bg-gradient-to-br from-white/20 to-pink-50/10 text-pink-700 hover:from-pink-100/40 hover:to-white/20 transition-all duration-300 flex items-center justify-center"
             style={{
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              boxShadow: '0 6px 24px 0 rgba(236,72,153,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
-            <Bell className="w-4 h-4 md:w-5 md:h-5" />
+            <Bell className="w-5 h-5 md:w-6 md:h-6" />
             <motion.div 
-              className="absolute -top-1 -right-1 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 md:w-4 md:h-4 bg-gradient-to-br from-red-500 via-pink-500 to-yellow-400 border-2 border-white rounded-full shadow-lg"
+              animate={{ scale: [1, 1.25, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
             />
           </motion.button>
 
-          {/* Cart */}
+          {/* Panier amélioré */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.13, rotate: -2 }}
+            whileTap={{ scale: 0.92 }}
             onClick={() => navigate('/cart')}
-            className="relative w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md bg-white/10 text-surface-600 hover:bg-white/20 transition-all duration-300"
+            className="relative w-11 h-11 rounded-2xl border-2 border-purple-300/40 shadow-lg bg-gradient-to-br from-white/20 to-purple-50/10 text-purple-700 hover:from-purple-100/40 hover:to-white/20 transition-all duration-300 flex items-center justify-center"
             style={{
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              boxShadow: '0 6px 24px 0 rgba(147,51,234,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
-            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
+            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
             {itemCount > 0 && (
               <motion.div 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-gradient-primary text-white text-xs rounded-full flex items-center justify-center font-bold shadow-glow"
+                className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-glow border-2 border-white"
               >
                 {itemCount > 99 ? '99+' : itemCount}
               </motion.div>
             )}
           </motion.button>
 
-          {/* Profile */}
+          {/* Profil amélioré */}
           {user ? (
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.13 }}
+              whileTap={{ scale: 0.92 }}
               onClick={() => setIsProfileMenuOpen(true)}
-              className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl overflow-hidden border border-white/40 backdrop-blur-md transition-all duration-300"
+              className="w-10 h-10 md:w-11 md:h-11 rounded-2xl overflow-hidden border-2 border-white/60 shadow-lg bg-gradient-to-br from-white/30 to-primary-50/20 transition-all duration-300 flex items-center justify-center"
               style={{
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                boxShadow: '0 6px 24px 0 rgba(59,130,246,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
               }}
             >
               <HeaderUserAvatar 
@@ -182,13 +184,13 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             </motion.button>
           ) : (
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => navigate('/auth')}
-              className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border border-white/40 backdrop-blur-md text-white font-semibold text-sm transition-all duration-300"
+              className="px-4 py-2 md:px-5 md:py-2.5 rounded-xl border-2 border-primary-400/60 shadow-lg bg-gradient-to-r from-primary-500 via-blue-500 to-purple-500 text-white font-semibold text-sm transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%)',
-                boxShadow: '0 4px 16px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                background: 'linear-gradient(135deg, rgba(59,130,246,0.92) 0%, rgba(147,51,234,0.92) 100%)',
+                boxShadow: '0 6px 24px 0 rgba(59,130,246,0.18), 0 1.5px 0 rgba(255,255,255,0.18) inset'
               }}
             >
               Se connecter
