@@ -87,13 +87,18 @@ export function useSocial() {
         const newLikedProducts = new Set(prev.likedProducts);
         if (isLiked) {
           newLikedProducts.add(productId);
-          toast.success('Produit liké ! ❤️');
         } else {
           newLikedProducts.delete(productId);
-          toast.success('Like retiré');
         }
         return { ...prev, likedProducts: newLikedProducts };
       });
+
+      // Toast après setState pour éviter les warnings
+      if (isLiked) {
+        toast.success('Produit liké ! ❤️');
+      } else {
+        toast.success('Like retiré');
+      }
     } catch (error) {
       console.error('Error toggling like:', error);
       toast.error('Erreur lors du like');
@@ -113,13 +118,18 @@ export function useSocial() {
         const newBookmarkedProducts = new Set(prev.bookmarkedProducts);
         if (isBookmarked) {
           newBookmarkedProducts.add(productId);
-          toast.success('Ajouté aux favoris ! ⭐');
         } else {
           newBookmarkedProducts.delete(productId);
-          toast.success('Retiré des favoris');
         }
         return { ...prev, bookmarkedProducts: newBookmarkedProducts };
       });
+
+      // Toast après setState pour éviter les warnings
+      if (isBookmarked) {
+        toast.success('Ajouté aux favoris ! ⭐');
+      } else {
+        toast.success('Retiré des favoris');
+      }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
       toast.error('Impossible de modifier les favoris. Vérifiez votre connexion.');
@@ -149,13 +159,18 @@ export function useSocial() {
         const newFollowingUsers = new Set(prev.followingUsers);
         if (isFollowing) {
           newFollowingUsers.add(userId);
-          toast.success('Utilisateur suivi ! 👥');
         } else {
           newFollowingUsers.delete(userId);
-          toast.success('Suivi annulé');
         }
         return { ...prev, followingUsers: newFollowingUsers };
       });
+
+      // Toast après setState pour éviter les warnings
+      if (isFollowing) {
+        toast.success('Utilisateur suivi ! 👥');
+      } else {
+        toast.success('Suivi annulé');
+      }
       
       // Recharger les données de suivi pour s'assurer de la cohérence
       setTimeout(() => {
