@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Package,
   DollarSign,
   AlertCircle,
   ArrowLeft,
@@ -264,18 +263,7 @@ export default function CreateProduct() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8"
         >
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              className="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto shadow-glow"
-            >
-              <Package className="w-10 h-10 text-white" />
-            </motion.div>
-            <h1 className="text-display text-4xl text-gradient">Créer un produit</h1>
-            <p className="text-surface-600 text-lg">Partagez vos produits avec la communauté</p>
-          </div>
+          
 
           {/* Indicateur d'étapes */}
           <div className="flex items-center justify-center space-x-4 mb-8">
