@@ -206,76 +206,103 @@ export default function Profile() {
                 </div>
               </motion.div>
 
-              {/* Profile Info */}
+              {/* Profile Info - Layout amélioré pour desktop */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-center text-white w-full"
+                className="text-white w-full"
               >
-                <div className="space-y-4">
-                  <div>
-                    <h1 className="text-2xl md:text-3xl font-bold mb-1 text-display text-gradient">
-                      {profile?.full_name || `@${user.username}`}
-                    </h1>
-                    <p className="text-white/80 text-base mb-2">@{user.username}</p>
-                    {profile?.bio && (
-                      <p className="text-white/90 text-sm mb-4 max-w-sm mx-auto leading-relaxed">{profile.bio}</p>
-                    )}
-                    
-                    {/* Infos rapides */}
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{profile?.loyalty_points || 0} pts</span>
-                      </div>
-                      <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-white/80">Depuis {new Date(profile?.created_at || user.created_at).getFullYear()}</span>
-                      </div>
-                      {profile?.location && (
-                        <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
-                          <MapPin className="w-4 h-4" />
-                          <span className="text-white/80">{profile.location}</span>
+                {/* Layout desktop en 2 colonnes */}
+                <div className="flex flex-col lg:flex-row lg:items-start lg:space-x-8 space-y-6 lg:space-y-0">
+                  
+                  {/* Colonne gauche - Informations principales */}
+                  <div className="flex-1 text-center lg:text-left">
+                    <div className="space-y-4">
+                      <div>
+                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 text-display text-gradient">
+                          {profile?.full_name || `@${user.username}`}
+                        </h1>
+                        <p className="text-white/80 text-base mb-2">@{user.username}</p>
+                        {profile?.bio && (
+                          <p className="text-white/90 text-sm lg:text-base mb-4 max-w-md lg:max-w-none leading-relaxed">{profile.bio}</p>
+                        )}
+                        
+                        {/* Infos rapides - Layout amélioré */}
+                        <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center lg:items-start gap-3 lg:gap-4 text-sm">
+                          <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-medium">{profile?.loyalty_points || 0} pts</span>
+                          </div>
+                          <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+                            <Calendar className="w-4 h-4" />
+                            <span className="text-white/80">Depuis {new Date(profile?.created_at || user.created_at).getFullYear()}</span>
+                          </div>
+                          {profile?.location && (
+                            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
+                              <MapPin className="w-4 h-4" />
+                              <span className="text-white/80">{profile.location}</span>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-center lg:justify-start space-x-3">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => navigate('/settings')}
+                          className="btn-floating px-6 py-3 flex items-center space-x-2"
+                        >
+                          <Settings className="w-4 h-4" />
+                          <span>Paramètres</span>
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="btn-floating p-3"
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </motion.button>
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-center space-x-3">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => navigate('/settings')}
-                      className="btn-floating px-6 py-3 flex items-center space-x-2"
-                    >
-                      <Settings className="w-4 h-4" />
-                      <span>Paramètres</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="btn-floating p-3"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </motion.button>
-                  </div>
-                </div>
 
-                {/* Quick Stats - Design mobile optimisé */}
-                <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto mt-6">
-                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20">
-                    <div className="text-xl font-bold">{stats.followers}</div>
-                    <div className="text-xs text-white/80">Abonnés</div>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20">
-                    <div className="text-xl font-bold">{stats.following}</div>
-                    <div className="text-xs text-white/80">Abonnements</div>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 text-center border border-white/20">
-                    <div className="text-xl font-bold">{stats.reviews}</div>
-                    <div className="text-xs text-white/80">Avis</div>
+                  {/* Colonne droite - Statistiques détaillées */}
+                  <div className="lg:w-80 xl:w-96">
+                    {/* Statistiques compactes */}
+                    <div className="grid grid-cols-3 gap-2 lg:grid-cols-1 xl:grid-cols-3 lg:gap-3">
+                      <div className="bg-white/10 rounded-xl p-3 text-center border border-white/15">
+                        <div className="text-lg font-bold">{stats.followers}</div>
+                        <div className="text-xs text-white/70">Abonnés</div>
+                      </div>
+                      <div className="bg-white/10 rounded-xl p-3 text-center border border-white/15">
+                        <div className="text-lg font-bold">{stats.following}</div>
+                        <div className="text-xs text-white/70">Abonnements</div>
+                      </div>
+                      <div className="bg-white/10 rounded-xl p-3 text-center border border-white/15">
+                        <div className="text-lg font-bold">{stats.reviews}</div>
+                        <div className="text-xs text-white/70">Avis</div>
+                      </div>
+                    </div>
+                    {/* Statistiques supplémentaires (desktop) */}
+                    <div className="hidden lg:grid grid-cols-2 gap-2 mt-3">
+                      <div className="bg-white/10 rounded-xl p-3 border border-white/15 flex flex-col items-center">
+                        <div className="flex items-center gap-1 text-xs text-white/70 mb-1">
+                          <Package className="w-4 h-4 text-white/60" />
+                          <span>Commandes</span>
+                        </div>
+                        <div className="text-lg font-bold">{stats.totalOrders}</div>
+                      </div>
+                      <div className="bg-white/10 rounded-xl p-3 border border-white/15 flex flex-col items-center">
+                        <div className="flex items-center gap-1 text-xs text-white/70 mb-1">
+                          <TrendingUp className="w-4 h-4 text-white/60" />
+                          <span>Dépensé</span>
+                        </div>
+                        <div className="text-lg font-bold">{formatCurrency(stats.totalSpent)}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -328,169 +355,198 @@ export default function Profile() {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {/* Account Information */}
+              {/* Account Information - Layout amélioré pour desktop */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="card-glass p-4"
+                className="card-glass p-6"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-surface-900">Compte</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-surface-900">Informations du compte</h2>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsEditing(!isEditing)}
-                    className="btn-secondary px-3 py-1.5 flex items-center space-x-1.5 text-sm"
+                    className="btn-secondary px-4 py-2 flex items-center space-x-2 text-sm"
                   >
                     {isEditing ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                     <span>{isEditing ? 'Annuler' : 'Modifier'}</span>
                   </motion.button>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Nom complet
-                    </label>
-                    <input
-                      type="text"
-                      value={isEditing ? editingFields.full_name : (profile?.full_name || '')}
-                      onChange={e => setEditingFields(prev => ({ ...prev, full_name: e.target.value }))}
-                      className="input w-full text-sm"
-                      readOnly={!isEditing}
-                      placeholder="Nom complet"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Nom d'utilisateur
-                    </label>
-                    <input
-                      type="text"
-                      value={user.username}
-                      className="input w-full text-sm"
-                      readOnly
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={user.email}
-                      className="input w-full text-sm"
-                      readOnly
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Inscrit le
-                    </label>
-                    <input
-                      type="text"
-                      value={formatDate(profile?.created_at || user.created_at)}
-                      className="input w-full text-sm"
-                      readOnly
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Points
-                    </label>
-                    <div className="flex items-center space-x-1.5">
-                      <input
-                        type="text"
-                        value={(profile?.loyalty_points || 0).toLocaleString()}
-                        className="input w-full text-sm"
-                        readOnly
-                      />
-                      <Star className="w-4 h-4 text-yellow-500" />
+                {/* Layout en 2 colonnes pour desktop */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  
+                  {/* Colonne gauche - Informations de base */}
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-surface-800 mb-4 flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <UserPlus className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Informations personnelles</span>
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Nom complet
+                          </label>
+                          <input
+                            type="text"
+                            value={isEditing ? editingFields.full_name : (profile?.full_name || '')}
+                            onChange={e => setEditingFields(prev => ({ ...prev, full_name: e.target.value }))}
+                            className="input w-full"
+                            readOnly={!isEditing}
+                            placeholder="Nom complet"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Nom d'utilisateur
+                          </label>
+                          <input
+                            type="text"
+                            value={user.username}
+                            className="input w-full bg-surface-50"
+                            readOnly
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            value={user.email}
+                            className="input w-full bg-surface-50"
+                            readOnly
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Localisation
+                          </label>
+                          <input
+                            type="text"
+                            value={isEditing ? editingFields.location : (profile?.location || '')}
+                            onChange={e => setEditingFields(prev => ({ ...prev, location: e.target.value }))}
+                            className="input w-full"
+                            readOnly={!isEditing}
+                            placeholder="Ville, pays"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Bio
+                          </label>
+                          <textarea
+                            value={isEditing ? editingFields.bio : (profile?.bio || '')}
+                            onChange={e => setEditingFields(prev => ({ ...prev, bio: e.target.value }))}
+                            className="input w-full h-20 resize-none"
+                            readOnly={!isEditing}
+                            placeholder="À propos de vous..."
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Localisation
-                    </label>
-                    <input
-                      type="text"
-                      value={isEditing ? editingFields.location : (profile?.location || '')}
-                      onChange={e => setEditingFields(prev => ({ ...prev, location: e.target.value }))}
-                      className="input w-full text-sm"
-                      readOnly={!isEditing}
-                      placeholder="Ville, pays"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Bio
-                    </label>
-                    <textarea
-                      value={isEditing ? editingFields.bio : (profile?.bio || '')}
-                      onChange={e => setEditingFields(prev => ({ ...prev, bio: e.target.value }))}
-                      className="input w-full h-16 resize-none text-sm"
-                      readOnly={!isEditing}
-                      placeholder="À propos de vous..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Site web
-                    </label>
-                    <input
-                      type="url"
-                      value={isEditing ? editingFields.website_url : (profile?.website_url || '')}
-                      onChange={e => setEditingFields(prev => ({ ...prev, website_url: e.target.value }))}
-                      className="input w-full text-sm"
-                      readOnly={!isEditing}
-                      placeholder="https://site.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      Instagram
-                    </label>
-                    <input
-                      type="text"
-                      value={isEditing ? editingFields.instagram_handle : (profile?.instagram_handle || '')}
-                      onChange={e => setEditingFields(prev => ({ ...prev, instagram_handle: e.target.value }))}
-                      className="input w-full text-sm"
-                      readOnly={!isEditing}
-                      placeholder="@instagram"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-surface-700 mb-1">
-                      TikTok
-                    </label>
-                    <input
-                      type="text"
-                      value={isEditing ? editingFields.tiktok_handle : (profile?.tiktok_handle || '')}
-                      onChange={e => setEditingFields(prev => ({ ...prev, tiktok_handle: e.target.value }))}
-                      className="input w-full text-sm"
-                      readOnly={!isEditing}
-                      placeholder="@tiktok"
-                    />
+
+                  {/* Colonne droite - Informations supplémentaires */}
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-surface-800 mb-4 flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <Star className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Statistiques & Réseaux</span>
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Points de fidélité
+                          </label>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="text"
+                              value={(profile?.loyalty_points || 0).toLocaleString()}
+                              className="input w-full bg-surface-50"
+                              readOnly
+                            />
+                            <Star className="w-5 h-5 text-yellow-500" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Membre depuis
+                          </label>
+                          <input
+                            type="text"
+                            value={formatDate(profile?.created_at || user.created_at)}
+                            className="input w-full bg-surface-50"
+                            readOnly
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Site web
+                          </label>
+                          <input
+                            type="url"
+                            value={isEditing ? editingFields.website_url : (profile?.website_url || '')}
+                            onChange={e => setEditingFields(prev => ({ ...prev, website_url: e.target.value }))}
+                            className="input w-full"
+                            readOnly={!isEditing}
+                            placeholder="https://site.com"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            Instagram
+                          </label>
+                          <input
+                            type="text"
+                            value={isEditing ? editingFields.instagram_handle : (profile?.instagram_handle || '')}
+                            onChange={e => setEditingFields(prev => ({ ...prev, instagram_handle: e.target.value }))}
+                            className="input w-full"
+                            readOnly={!isEditing}
+                            placeholder="@instagram"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                            TikTok
+                          </label>
+                          <input
+                            type="text"
+                            value={isEditing ? editingFields.tiktok_handle : (profile?.tiktok_handle || '')}
+                            onChange={e => setEditingFields(prev => ({ ...prev, tiktok_handle: e.target.value }))}
+                            className="input w-full"
+                            readOnly={!isEditing}
+                            placeholder="@tiktok"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {isEditing && (
-                  <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-surface-200">
+                  <div className="flex items-center justify-center lg:justify-end space-x-3 mt-8 pt-6 border-t border-surface-200">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleSaveProfile}
-                      className="btn-primary px-4 py-1.5 flex items-center space-x-1.5 text-sm"
+                      className="btn-primary px-6 py-2 flex items-center space-x-2"
                     >
                       <Check className="w-4 h-4" />
-                      <span>Sauver</span>
+                      <span>Sauvegarder</span>
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleCancelEdit}
-                      className="btn-secondary px-4 py-1.5 flex items-center space-x-1.5 text-sm"
+                      className="btn-secondary px-6 py-2 flex items-center space-x-2"
                     >
                       <X className="w-4 h-4" />
                       <span>Annuler</span>
