@@ -3,15 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Package,
   DollarSign,
-  FileText,
   AlertCircle,
-  Tag,
-  Sparkles,
-  Settings,
-  Scale,
-  Barcode,
-  Target,
-  Eye} from 'lucide-react';
+  ArrowLeft,
+  ArrowRight,
+  Check
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { MediaUploader } from '../components/MediaUploader';
@@ -54,6 +50,7 @@ export default function CreateProduct() {
   const navigate = useNavigate();
   const { user } = useAuth();
   
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
@@ -63,7 +60,7 @@ export default function CreateProduct() {
     costPrice: '',
     sku: '',
     weight: '',
-    category: 'tech',
+    category: '',
     brand: '',
     status: 'active',
     inventoryTracking: true,
@@ -83,16 +80,14 @@ export default function CreateProduct() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const categories = [
-    { value: 'electronics', label: 'Électronique' },
-    { value: 'fashion', label: 'Mode & Accessoires' },
-    { value: 'home', label: 'Maison & Jardin' },
-    { value: 'sports', label: 'Sports & Loisirs' },
-    { value: 'beauty', label: 'Beauté & Santé' },
-    { value: 'food', label: 'Alimentation' },
-    { value: 'books', label: 'Livres & Médias' },
-    { value: 'automotive', label: 'Automobile' },
-    { value: 'toys', label: 'Jouets & Enfants' },
-    { value: 'other', label: 'Autres' }
+    { value: 'electronics', label: 'Électronique', icon: '📱' },
+    { value: 'fashion', label: 'Mode & Accessoires', icon: '👕' },
+    { value: 'home', label: 'Maison & Jardin', icon: '🏠' },
+    { value: 'sports', label: 'Sports & Loisirs', icon: '⚽' },
+    { value: 'beauty', label: 'Beauté & Santé', icon: '💄' },
+    { value: 'books', label: 'Livres & Médias', icon: '📚' },
+    { value: 'toys', label: 'Jouets & Jeux', icon: '🧸' },
+    { value: 'other', label: 'Autres', icon: '📦' }
   ];
 
   const brands = [
@@ -121,6 +116,29 @@ export default function CreateProduct() {
 
   const handleVariantsChange = (variants: ProductVariant[]) => {
     setFormData(prev => ({ ...prev, variants }));
+  };
+
+  // Fonctions de navigation des étapes
+  const nextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+
+  const getStepTitle = (step: number) => {
+    switch (step) {
+      case 1: return 'Catégorie';
+      case 2: return 'Médias';
+      case 3: return 'Détails';
+      default: return '';
+    }
   };
 
   const validateForm = () => {
@@ -229,534 +247,421 @@ export default function CreateProduct() {
             <p className="text-surface-600 text-lg">Partagez vos produits avec la communauté</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Media Upload Section */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="card p-8"
-            >
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center">
-                  <Tag className="w-5 h-5 text-white" />
+          {/* Indicateur d'étapes */}
+          <div className="flex items-center justify-center space-x-4 mb-8">
+            {[1, 2, 3].map((step) => (
+              <div key={step} className="flex items-center">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
+                  currentStep >= step 
+                    ? 'bg-gradient-primary text-white shadow-lg' 
+                    : 'bg-gray-200 text-gray-500'
+                }`}>
+                  {currentStep > step ? <Check className="w-6 h-6" /> : step}
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-surface-900">Médias</h2>
-                  <p className="text-surface-600 text-sm">Ajoutez des images et vidéos à votre produit</p>
-                </div>
-              </div>
-
-              <MediaUploader
-                onFilesChange={handleMediaFilesChange}
-                onVideoChange={handleVideoChange}
-                maxFiles={8}
-                maxFileSize={10}
-                acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                acceptedVideoTypes={['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']}
-                error={errors.media || errors.video}
-              />
-            </motion.div>
-
-            {/* Product Details */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="card p-8 space-y-6"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-secondary rounded-2xl flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-surface-900">Détails du produit</h2>
-                  <p className="text-surface-600 text-sm">Informations essentielles sur votre produit</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Product Name */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Nom du produit *
-                  </label>
-                  <div className="relative">
-                    <Package className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      className={`input pl-12 ${errors.name ? 'input-error' : ''}`}
-                      placeholder="Nom de votre produit"
-                    />
-                  </div>
-                  {errors.name && (
-                    <p className="text-red-600 text-sm">{errors.name}</p>
-                  )}
-                </div>
-
-                {/* Price */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Prix *
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price}
-                      onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                      className={`input pl-12 ${errors.price ? 'input-error' : ''}`}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {errors.price && (
-                    <p className="text-red-600 text-sm">{errors.price}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Category and Brand */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Catégorie
-                  </label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                    className="input"
-                  >
-                    {categories.map(category => (
-                      <option key={category.value} value={category.value}>
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Marque
-                  </label>
-                  <select
-                    value={formData.brand}
-                    onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
-                    className="input"
-                  >
-                    {brands.map(brand => (
-                      <option key={brand.value} value={brand.value}>
-                        {brand.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Short Description */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-surface-700">
-                  Description courte
-                </label>
-                <textarea
-                  value={formData.shortDescription}
-                  onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
-                  className="input min-h-[80px] resize-none"
-                  placeholder="Description courte pour les aperçus..."
-                  maxLength={500}
-                />
-                <p className="text-xs text-surface-500">{formData.shortDescription.length}/500 caractères</p>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-surface-700">
-                  Description complète *
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className={`input min-h-[120px] resize-none ${errors.description ? 'input-error' : ''}`}
-                  placeholder="Décrivez votre produit... Utilisez des hashtags pour plus de visibilité !"
-                />
-                {errors.description && (
-                  <p className="text-red-600 text-sm">{errors.description}</p>
+                {step < 3 && (
+                  <div className={`w-20 h-1 mx-3 rounded-full transition-all ${
+                    currentStep > step ? 'bg-gradient-primary' : 'bg-gray-200'
+                  }`} />
                 )}
               </div>
+            ))}
+          </div>
 
-              {/* Additional Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* SKU */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Référence (SKU)
-                  </label>
-                  <div className="relative">
-                    <Barcode className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
+          {/* Titre de l'étape actuelle */}
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-surface-900">
+              Étape {currentStep}: {getStepTitle(currentStep)}
+            </h2>
+            <p className="text-surface-600 mt-2">
+              {currentStep === 1 && 'Choisissez la catégorie de votre produit'}
+              {currentStep === 2 && 'Ajoutez des images et vidéos à votre produit'}
+              {currentStep === 3 && 'Renseignez les informations de votre produit'}
+            </p>
+          </div>
+
+          {/* Contenu des étapes */}
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="card p-8"
+              >
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 mb-4">
+                      Catégorie *
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {categories.map((category) => (
+                        <button
+                          key={category.value}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, category: category.value }))}
+                          className={`p-6 rounded-2xl border-2 transition-all text-center group ${
+                            formData.category === category.value
+                              ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-lg'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md'
+                          }`}
+                        >
+                          <div className="text-3xl mb-2">{category.icon}</div>
+                          <div className="font-medium text-sm">{category.label}</div>
+                        </button>
+                      ))}
+                    </div>
+                    {errors.category && (
+                      <div className="flex items-center space-x-2 text-red-500 text-sm mt-3">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>{errors.category}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 mb-3">
+                      Marque (optionnel)
+                    </label>
+                    <select
+                      value={formData.brand}
+                      onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
+                      className="input"
+                    >
+                      {brands.map((brand) => (
+                        <option key={brand.value} value={brand.value}>
+                          {brand.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="card p-8"
+              >
+                <MediaUploader
+                  onFilesChange={handleMediaFilesChange}
+                  onVideoChange={handleVideoChange}
+                  maxFiles={8}
+                  maxFileSize={10}
+                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                  acceptedVideoTypes={['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']}
+                  error={errors.media || errors.video}
+                />
+              </motion.div>
+            )}
+
+            {currentStep === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="card p-8"
+              >
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Informations de base */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Nom du produit *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        className="input"
+                        placeholder="Nom de votre produit"
+                      />
+                      {errors.name && (
+                        <div className="flex items-center space-x-2 text-red-500 text-sm mt-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.name}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Prix *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={formData.price}
+                          onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                          className="input pl-8"
+                          placeholder="0.00"
+                        />
+                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      </div>
+                      {errors.price && (
+                        <div className="flex items-center space-x-2 text-red-500 text-sm mt-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.price}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      Description courte
+                    </label>
                     <input
                       type="text"
-                      value={formData.sku}
-                      onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
-                      className="input pl-12"
-                      placeholder="REF-001"
-                    />
-                  </div>
-                </div>
-
-                {/* Weight */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Poids (kg)
-                  </label>
-                  <div className="relative">
-                    <Scale className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.weight}
-                      onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
-                      className="input pl-12"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-
-                {/* Compare Price */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Prix comparatif
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.comparePrice}
-                      onChange={(e) => setFormData(prev => ({ ...prev, comparePrice: e.target.value }))}
-                      className="input pl-12"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-
-                {/* Cost Price */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Prix de revient
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-400" />
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.costPrice}
-                      onChange={(e) => setFormData(prev => ({ ...prev, costPrice: e.target.value }))}
-                      className="input pl-12"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Dimensions Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-surface-900 flex items-center space-x-2">
-                  <Target className="w-5 h-5" />
-                  <span>Dimensions (optionnel)</span>
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-surface-700">
-                      Longueur (cm)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
+                      value={formData.shortDescription}
+                      onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
                       className="input"
-                      placeholder="0.0"
+                      placeholder="Description courte (optionnel)"
                     />
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-surface-700">
-                      Largeur (cm)
+
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      Description complète *
                     </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      className="input"
-                      placeholder="0.0"
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      className="input min-h-[120px] resize-none"
+                      placeholder="Décrivez votre produit en détail..."
                     />
+                    {errors.description && (
+                      <div className="flex items-center space-x-2 text-red-500 text-sm mt-1">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>{errors.description}</span>
+                      </div>
+                    )}
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-surface-700">
-                      Hauteur (cm)
-                    </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      className="input"
-                      placeholder="0.0"
-                    />
+
+                  {/* Variantes */}
+                  <ProductVariants
+                    variants={formData.variants}
+                    onVariantsChange={handleVariantsChange}
+                  />
+
+                  {/* Informations supplémentaires */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Référence (SKU)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.sku}
+                        onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
+                        className="input"
+                        placeholder="SKU-001"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Poids (kg)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.weight}
+                        onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                        className="input"
+                        placeholder="0.5"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Inventory */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Quantité en stock
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.inventoryQuantity}
-                    onChange={(e) => setFormData(prev => ({ ...prev, inventoryQuantity: parseInt(e.target.value) || 0 }))}
-                    className="input"
-                    placeholder="1"
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Prix comparatif
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.comparePrice}
+                        onChange={(e) => setFormData(prev => ({ ...prev, comparePrice: e.target.value }))}
+                        className="input"
+                        placeholder="Prix barré"
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Statut du produit
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'draft' | 'active' | 'inactive' | 'archived' }))}
-                    className="input"
-                  >
-                    <option value="draft">Brouillon</option>
-                    <option value="active">Actif</option>
-                    <option value="inactive">Inactif</option>
-                    <option value="archived">Archivé</option>
-                  </select>
-                </div>
-              </div>
-            </motion.div>
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Prix de revient (optionnel)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.costPrice}
+                        onChange={(e) => setFormData(prev => ({ ...prev, costPrice: e.target.value }))}
+                        className="input"
+                        placeholder="Coût d'achat"
+                      />
+                    </div>
+                  </div>
 
-            {/* Variants */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="card p-8"
+                  {/* Stock et statut */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Quantité en stock
+                      </label>
+                      <input
+                        type="number"
+                        value={formData.inventoryQuantity}
+                        onChange={(e) => setFormData(prev => ({ ...prev, inventoryQuantity: parseInt(e.target.value) || 0 }))}
+                        className="input"
+                        min="0"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                        Statut du produit
+                      </label>
+                      <select
+                        value={formData.status}
+                        onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'draft' | 'active' | 'inactive' | 'archived' }))}
+                        className="input"
+                      >
+                        <option value="draft">Brouillon</option>
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
+                        <option value="archived">Archivé</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Options */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-surface-900">Options</h3>
+                    
+                    <div className="space-y-3">
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.inventoryTracking}
+                          onChange={(e) => setFormData(prev => ({ ...prev, inventoryTracking: e.target.checked }))}
+                          className="w-5 h-5 text-primary-600 rounded"
+                        />
+                        <span className="text-surface-700">Suivi des stocks</span>
+                      </label>
+
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.allowBackorder}
+                          onChange={(e) => setFormData(prev => ({ ...prev, allowBackorder: e.target.checked }))}
+                          className="w-5 h-5 text-primary-600 rounded"
+                        />
+                        <span className="text-surface-700">Autoriser les commandes en attente</span>
+                      </label>
+
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.requiresShipping}
+                          onChange={(e) => setFormData(prev => ({ ...prev, requiresShipping: e.target.checked }))}
+                          className="w-5 h-5 text-primary-600 rounded"
+                        />
+                        <span className="text-surface-700">Nécessite une livraison</span>
+                      </label>
+
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.taxable}
+                          onChange={(e) => setFormData(prev => ({ ...prev, taxable: e.target.checked }))}
+                          className="w-5 h-5 text-primary-600 rounded"
+                        />
+                        <span className="text-surface-700">Taxable</span>
+                      </label>
+                    </div>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Boutons de navigation */}
+          <div className="flex items-center justify-between">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                currentStep === 1
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-surface-700 hover:bg-gray-50 shadow-md'
+              }`}
             >
-              <ProductVariants
-                variants={formData.variants}
-                onVariantsChange={handleVariantsChange}
-              />
-            </motion.div>
+              <ArrowLeft className="w-5 h-5" />
+              <span>Précédent</span>
+            </motion.button>
 
-            {/* Shipping Information */}
-            {/* <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="card p-8"
-            >
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center">
-                  <Truck className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-surface-900">Informations de livraison</h2>
-                  <p className="text-surface-600 text-sm">Détails sur l'expédition et la livraison</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Délai de livraison (jours)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    className="input"
-                    placeholder="3-5"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Frais de port (€)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    className="input"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-            </motion.div> */}
-
-            {/* Advanced Settings */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.35 }}
-              className="card p-8"
-            >
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-surface-900">Paramètres avancés</h2>
-                  <p className="text-surface-600 text-sm">Options supplémentaires pour votre produit</p>
-                </div>
-              </div>
-
-              
-
-              {/* Tags Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-surface-900 flex items-center space-x-2">
-                  <Tag className="w-5 h-5" />
-                  <span>Tags et Mots-clés</span>
-                </h3>
-                
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Tags personnalisés (séparés par des virgules)
-                  </label>
-                  <input
-                    type="text"
-                    className="input"
-                    placeholder="premium, qualité, nouveau, tendance..."
-                  />
-                  <p className="text-xs text-surface-500">Ajoutez des tags pour améliorer la visibilité de votre produit</p>
-                </div>
-              </div>
-
-              {/* SEO Fields */}
-              <div className="mt-6 space-y-4">
-                <h3 className="text-lg font-semibold text-surface-900 flex items-center space-x-2">
-                  <Eye className="w-5 h-5" />
-                  <span>SEO et Métadonnées</span>
-                </h3>
-                
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Titre SEO
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.metaTitle}
-                    onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
-                    className="input"
-                    placeholder="Titre pour les moteurs de recherche..."
-                    maxLength={255}
-                  />
-                  <p className="text-xs text-surface-500">{formData.metaTitle.length}/255 caractères</p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-surface-700">
-                    Description SEO
-                  </label>
-                  <textarea
-                    value={formData.metaDescription}
-                    onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
-                    className="input min-h-[80px] resize-none"
-                    placeholder="Description pour les moteurs de recherche..."
-                    maxLength={500}
-                  />
-                  <p className="text-xs text-surface-500">{formData.metaDescription.length}/500 caractères</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Submit Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-end"
-            >
+            {currentStep < 3 ? (
               <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/')}
-                className="btn-secondary px-8 py-4"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={nextStep}
+                className="flex items-center space-x-2 px-8 py-3 bg-gradient-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
               >
-                Annuler
+                <span>Suivant</span>
+                <ArrowRight className="w-5 h-5" />
               </motion.button>
-              
+            ) : (
               <motion.button
-                type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSubmit}
                 disabled={isUploading}
-                className="btn-primary px-8 py-4 flex items-center justify-center space-x-3 disabled:opacity-50"
+                className="flex items-center space-x-2 px-8 py-3 bg-gradient-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
               >
                 {isUploading ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Création...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5" />
-                    <span>Publier le produit</span>
+                    <Check className="w-5 h-5" />
+                    <span>Créer le produit</span>
                   </>
                 )}
               </motion.button>
-            </motion.div>
-
-            {/* Upload Progress */}
-            <AnimatePresence>
-              {isUploading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="card p-6 space-y-4"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
-                    <span className="font-semibold text-surface-900">Publication en cours...</span>
-                  </div>
-                  <div className="w-full bg-surface-200 rounded-full h-2">
-                    <motion.div
-                      className="bg-gradient-primary h-2 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${uploadProgress}%` }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </div>
-                  <p className="text-sm text-surface-600">{uploadProgress}% terminé</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {errors.submit && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center space-x-3"
-              >
-                <AlertCircle className="w-5 h-5 text-red-600" />
-                <span className="text-red-700">{errors.submit}</span>
-              </motion.div>
             )}
-          </form>
+          </div>
+
+          {/* Barre de progression */}
+          {isUploading && (
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <motion.div
+                className="bg-gradient-primary h-2 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${uploadProgress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          )}
+
+          {/* Erreur générale */}
+          {errors.submit && (
+            <div className="flex items-center space-x-2 text-red-500 text-center justify-center">
+              <AlertCircle className="w-5 h-5" />
+              <span>{errors.submit}</span>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>
