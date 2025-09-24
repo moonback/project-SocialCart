@@ -23,6 +23,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { LandingNavigation } from '../components/LandingNavigation';
 import { ProductService, Product } from '../lib/products';
+import { Constellation } from '../components/Constellation';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -223,6 +224,9 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+      {/* Constellation interactive */}
+      <Constellation />
+      
       {/* Background decorations avec effets glassmorphism cohérents */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Formes géométriques flottantes avec couleurs de marque bleue cohérente */}
