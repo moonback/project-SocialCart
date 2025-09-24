@@ -28,7 +28,6 @@ interface VideoFeedProduct extends ProductFromProducts {
     username: string;
     avatar_url?: string;
   };
-  user_id: string;
   variants?: ProductVariant[];
 }
 
@@ -175,9 +174,9 @@ export function VideoFeed({ products }: VideoFeedProps) {
       image_url: product.image_url,
       images: product.images,
       variants: product.variants || [],
-      user_id: product.user_id,
+      seller_id: product.seller_id,
       user: {
-        id: product.user_id,
+        id: product.seller_id,
         email: '',
         username: product.user.username,
         loyalty_points: 0,
@@ -263,7 +262,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
           {/* Action Buttons Component */}
           <ActionButtons
             productId={product.id}
-            userId={product.user_id}
+            userId={product.seller_id}
             username={product.user.username}
             avatarUrl={product.user.avatar_url}
             likesCount={product.likes_count}
@@ -279,11 +278,11 @@ export function VideoFeed({ products }: VideoFeedProps) {
             productName={product.name}
             productPrice={product.price}
             productDescription={product.description}
-            userId={product.user_id}
+            userId={product.seller_id}
             username={product.user.username}
             avatarUrl={product.user.avatar_url}
-            isFollowing={isFollowing(product.user_id)}
-            onToggleFollow={() => toggleFollow(product.user_id)}
+            isFollowing={isFollowing(product.seller_id)}
+            onToggleFollow={() => toggleFollow(product.seller_id)}
             onViewProduct={() => navigate(`/product/${product.id}`)}
             onBuyNow={() => handleBuyNow(product)}
           />
@@ -303,15 +302,15 @@ export function VideoFeed({ products }: VideoFeedProps) {
       <ActionsMenu
         isOpen={showActionsMenu}
         productId={currentProduct?.id || ''}
-        userId={currentProduct?.user_id || ''}
+        userId={currentProduct?.seller_id || ''}
         currentUserId={user?.id}
         isBookmarked={currentProduct ? isBookmarked(currentProduct.id) : false}
-        isFollowing={currentProduct ? isFollowing(currentProduct.user_id) : false}
+        isFollowing={currentProduct ? isFollowing(currentProduct.seller_id) : false}
         onClose={() => setShowActionsMenu(false)}
         onShowComments={() => setShowComments(true)}
         onShowShare={() => setShowShare(true)}
         onToggleBookmark={() => currentProduct && toggleBookmark(currentProduct.id)}
-        onToggleFollow={() => currentProduct && toggleFollow(currentProduct.user_id)}
+        onToggleFollow={() => currentProduct && toggleFollow(currentProduct.seller_id)}
         onOpenDeleteConfirm={() => currentProduct && openDeleteConfirm(currentProduct.id)}
       />
 

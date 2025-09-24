@@ -23,7 +23,7 @@ export default function Home() {
           video_url: product.video_url || undefined,
           variants: [], // Les variantes sont stockées dans les tags
           likes_count: product.likes_count || 0,
-          user_id: product.seller_id,
+          seller_id: product.seller_id,
           user: {
             id: product.seller_id,
             email: product.seller?.email || 'user@example.com',
@@ -49,7 +49,7 @@ export default function Home() {
             images: ['https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'],
             variants: [],
             likes_count: 1234,
-            user_id: '1',
+            seller_id: '1',
             user: {
               id: '1',
               email: 'user@example.com',

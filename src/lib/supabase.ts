@@ -50,7 +50,7 @@ export type Product = {
   images: string[];
   variants: ProductVariant[];
   likes_count: number;
-  user_id: string;
+  seller_id: string;
   user: User;
   created_at: string;
   // Nouvelles propriétés ajoutées

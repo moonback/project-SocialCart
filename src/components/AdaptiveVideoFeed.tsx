@@ -10,7 +10,6 @@ interface VideoFeedProduct extends ProductFromProducts {
     username: string;
     avatar_url?: string;
   };
-  user_id: string;
   variants?: ProductVariant[];
 }
 

@@ -69,7 +69,7 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
   const [showVideo, setShowVideo] = useState(false);
 
   // Vérifier si c'est le produit de l'utilisateur connecté
-  const isOwner = user && product.user_id === user.id;
+  const isOwner = user && product.user?.id === user.id;
 
   // Gérer la fermeture de la vidéo avec la touche Escape
   useEffect(() => {

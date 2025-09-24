@@ -18,7 +18,7 @@ import { useCart } from '../../hooks/useCart';
 import { useNavigate } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { Product as ProductFromProducts, ProductVariant } from '../../lib/products';
-import { Product as ProductFromSupabase } from '../../lib/supabase';
+import { Product as ProductFromSupabase, ProductVariant as ProductVariantFromSupabase } from '../../lib/supabase';
 
 interface VideoFeedProduct extends ProductFromProducts {
   image_url: string;
@@ -26,7 +26,6 @@ interface VideoFeedProduct extends ProductFromProducts {
     username: string;
     avatar_url?: string;
   };
-  user_id: string;
   variants?: ProductVariant[];
 }
 
@@ -156,10 +155,10 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
       video_url: product.video_url,
       image_url: product.image_url,
       images: product.images,
-      variants: product.variants || [],
-      user_id: product.user_id,
+      variants: (product.variants || []) as ProductVariantFromSupabase[],
+      seller_id: product.seller_id,
       user: {
-        id: product.user_id,
+        id: product.seller_id,
         email: '',
         username: product.user.username,
         loyalty_points: 0,
@@ -260,7 +259,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                 }`}>
                 <ActionButtons
                   productId={currentProduct.id}
-                  userId={currentProduct.user_id}
+                  userId={currentProduct.seller_id}
                   username={currentProduct.user.username}
                   avatarUrl={currentProduct.user.avatar_url}
                   likesCount={currentProduct.likes_count}
@@ -345,14 +344,14 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                   <div className="flex-1">
                     <h3 className="font-display font-medium text-surface-900 text-sm">@{currentProduct.user.username}</h3>
                     <button
-                      onClick={() => toggleFollow(currentProduct.user_id)}
+                      onClick={() => toggleFollow(currentProduct.seller_id)}
                       className={`text-xs px-2 py-1 rounded-lg transition-all font-inter ${
-                        isFollowing(currentProduct.user_id)
+                        isFollowing(currentProduct.seller_id)
                           ? 'bg-surface-100 text-surface-600 hover:bg-surface-200'
                           : 'bg-primary-500 text-white hover:bg-primary-600 shadow-soft'
                       }`}
                     >
-                      {isFollowing(currentProduct.user_id) ? 'Suivi' : 'Suivre'}
+                      {isFollowing(currentProduct.seller_id) ? 'Suivi' : 'Suivre'}
                     </button>
                   </div>
                 </div>
@@ -442,15 +441,15 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
       <ActionsMenu
         isOpen={showActionsMenu}
         productId={currentProduct?.id || ''}
-        userId={currentProduct?.user_id || ''}
+        userId={currentProduct?.seller_id || ''}
         currentUserId={user?.id}
         isBookmarked={currentProduct ? isBookmarked(currentProduct.id) : false}
-        isFollowing={currentProduct ? isFollowing(currentProduct.user_id) : false}
+        isFollowing={currentProduct ? isFollowing(currentProduct.seller_id) : false}
         onClose={() => setShowActionsMenu(false)}
         onShowComments={() => setShowComments(true)}
         onShowShare={() => setShowShare(true)}
         onToggleBookmark={() => currentProduct && toggleBookmark(currentProduct.id)}
-        onToggleFollow={() => currentProduct && toggleFollow(currentProduct.user_id)}
+        onToggleFollow={() => currentProduct && toggleFollow(currentProduct.seller_id)}
         onOpenDeleteConfirm={() => currentProduct && openDeleteConfirm(currentProduct.id)}
       />
 
