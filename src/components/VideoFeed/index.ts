@@ -7,4 +7,3 @@ export { InfoPanel } from './InfoPanel';
 export { EmptyState } from './EmptyState';
 export { DesktopVideoFeed } from './DesktopVideoFeed';
 export { StatsPanel } from './StatsPanel';
-export { RecommendationsPanel } from './RecommendationsPanel';

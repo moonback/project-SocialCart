@@ -29,7 +29,6 @@ import { Product } from '../../lib/supabase';
 import { UserAvatar } from '../UserAvatar';
 import { ProductCard } from '../ProductCard';
 import { StatsPanel } from '../VideoFeed/StatsPanel';
-import { RecommendationsPanel } from '../VideoFeed/RecommendationsPanel';
 import { getCategoryName, getBrandName } from '../../lib/categories';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -115,10 +114,10 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-8">
-          {/* Galerie d'images - 5 colonnes */}
-          <div className="col-span-5">
+          {/* Galerie d'images - 6 colonnes */}
+          <div className="col-span-6">
             <div className="sticky top-8">
               {/* Image principale */}
               <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-lg mb-4">
@@ -184,7 +183,7 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
               </div>
 
               {/* Miniatures */}
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-3 mb-6">
                 {images.map((image, index) => (
                   <motion.button
                     key={index}
@@ -205,11 +204,56 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                   </motion.button>
                 ))}
               </div>
+
+              {/* Section sous l'image */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">À propos de ce produit</h3>
+                
+                {/* Description courte */}
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  {product.description.length > 200 
+                    ? `${product.description.substring(0, 200)}...` 
+                    : product.description}
+                </p>
+
+                {/* Informations clés */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span>Produit authentique</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Shield className="w-4 h-4 text-blue-500" />
+                    <span>Garantie 2 ans</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Truck className="w-4 h-4 text-purple-500" />
+                    <span>Livraison gratuite</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <RotateCcw className="w-4 h-4 text-orange-500" />
+                    <span>Retour 30j</span>
+                  </div>
+                </div>
+
+                {/* Bouton vidéo */}
+                {product.video_url && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowVideo(true)}
+                    className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg"
+                  >
+                    <Play className="w-5 h-5" />
+                    <span>Voir la vidéo du produit</span>
+                  </motion.button>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Informations produit - 4 colonnes */}
-          <div className="col-span-4">
+          {/* Informations produit - 6 colonnes */}
+          <div className="col-span-6">
             <div className="space-y-6">
               {/* En-tête produit */}
               <div>
@@ -396,7 +440,7 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
               </div>
 
               {/* Onglets de contenu */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
                 <div className="flex border-b border-gray-200">
                   {[
                     { key: 'description', label: 'Description', icon: Info },
@@ -563,144 +607,114 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                   </AnimatePresence>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Sidebar droite - 3 colonnes */}
-          <div className="col-span-3 space-y-6">
-            {/* Statistiques - uniquement pour le propriétaire */}
-            {isOwner && (
-              <StatsPanel
-                product={{
-                  id: product.id,
-                  name: product.name,
-                  likes_count: product.likes_count || 0,
-                  views_count: product.views_count || 0,
-                  sales_count: product.sales_count || 0,
-                  created_at: product.created_at,
-                }}
-                isLiked={isLiked}
-                viewersCount={Math.floor(Math.random() * 50) + 20}
-              />
-            )}
+              {/* Statistiques et Actions - Nouvelle section */}
+              <div className="space-y-6">
+                {/* Statistiques - uniquement pour le propriétaire */}
+                {isOwner && (
+                  <StatsPanel
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      likes_count: product.likes_count || 0,
+                      views_count: product.views_count || 0,
+                      sales_count: product.sales_count || 0,
+                      created_at: product.created_at,
+                    }}
+                    isLiked={isLiked}
+                    viewersCount={Math.floor(Math.random() * 50) + 20}
+                  />
+                )}
 
-            {/* Informations publiques pour les visiteurs */}
-            {!isOwner && (
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-4">Informations produit</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Popularité</span>
-                    <div className="flex items-center space-x-1">
-                      <Heart className="w-4 h-4 text-red-500" />
-                      <span className="font-medium">{product.likes_count || 0} likes</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Vues</span>
-                    <div className="flex items-center space-x-1">
-                      <Eye className="w-4 h-4 text-blue-500" />
-                      <span className="font-medium">{product.views_count || 0}</span>
-                    </div>
-                  </div>
-                  {product.rating_average && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Note moyenne</span>
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                        <span className="font-medium">{product.rating_average.toFixed(1)}/5</span>
+                {/* Informations publiques pour les visiteurs */}
+                {!isOwner && (
+                  <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                    <h3 className="font-semibold text-gray-900 mb-4">Informations produit</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Popularité</span>
+                        <div className="flex items-center space-x-1">
+                          <Heart className="w-4 h-4 text-red-500" />
+                          <span className="font-medium">{product.likes_count || 0} likes</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Vues</span>
+                        <div className="flex items-center space-x-1">
+                          <Eye className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">{product.views_count || 0}</span>
+                        </div>
+                      </div>
+                      {product.rating_average && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Note moyenne</span>
+                          <div className="flex items-center space-x-1">
+                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                            <span className="font-medium">{product.rating_average.toFixed(1)}/5</span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Ajouté le</span>
+                        <span className="font-medium">
+                          {new Date(product.created_at).toLocaleDateString('fr-FR')}
+                        </span>
                       </div>
                     </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Ajouté le</span>
-                    <span className="font-medium">
-                      {new Date(product.created_at).toLocaleDateString('fr-FR')}
-                    </span>
+                  </div>
+                )}
+
+                {/* Actions supplémentaires */}
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    {isOwner ? 'Gestion' : 'Actions'}
+                  </h3>
+                  <div className="space-y-2">
+                    {isOwner ? (
+                      // Actions pour le propriétaire
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-left text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          onClick={() => window.location.href = `/edit-product/${product.id}`}
+                        >
+                          <SquarePen className="w-4 h-4" />
+                          <span>Modifier le produit</span>
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        >
+                          <TrendingUp className="w-4 h-4" />
+                          <span>Promouvoir</span>
+                        </motion.button>
+                      </>
+                    ) : (
+                      // Actions pour les visiteurs
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={onReport}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        >
+                          <Flag className="w-4 h-4" />
+                          <span>Signaler ce produit</span>
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        >
+                          <ShieldCheck className="w-4 h-4" />
+                          <span>Garantie produit</span>
+                        </motion.button>
+                      </>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Recommandations */}
-            <RecommendationsPanel
-              currentProduct={{
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image_url: product.image_url,
-                user: {
-                  username: product.user?.username || 'Vendeur',
-                  avatar_url: product.user?.avatar_url,
-                },
-                likes_count: product.likes_count || 0,
-              }}
-              allProducts={relatedProducts.map(p => ({
-                id: p.id,
-                name: p.name,
-                price: p.price,
-                image_url: p.image_url,
-                user: {
-                  username: p.user?.username || 'Vendeur',
-                  avatar_url: p.user?.avatar_url,
-                },
-                likes_count: p.likes_count || 0,
-              }))}
-              onProductSelect={(productId) => {
-                // Navigation vers le produit sélectionné
-                window.location.href = `/product/${productId}`;
-              }}
-            />
-
-            {/* Actions supplémentaires */}
-            <div className="bg-white rounded-xl p-4 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                {isOwner ? 'Gestion' : 'Actions'}
-              </h3>
-              <div className="space-y-2">
-                {isOwner ? (
-                  // Actions pour le propriétaire
-                  <>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      onClick={() => window.location.href = `/edit-product/${product.id}`}
-                    >
-                      <SquarePen className="w-4 h-4" />
-                      <span>Modifier le produit</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    >
-                      <TrendingUp className="w-4 h-4" />
-                      <span>Promouvoir</span>
-                    </motion.button>
-                  </>
-                ) : (
-                  // Actions pour les visiteurs
-                  <>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={onReport}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    >
-                      <Flag className="w-4 h-4" />
-                      <span>Signaler ce produit</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    >
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>Garantie produit</span>
-                    </motion.button>
-                  </>
-                )}
               </div>
             </div>
           </div>
