@@ -320,7 +320,7 @@ export function MediaUploader({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onAnalyzeImages(files)}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2 backdrop-blur-sm border border-blue-400/30"
               >
                 <Sparkles className="w-5 h-5" />
                 <span>Analyser avec l'IA</span>

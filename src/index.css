@@ -288,6 +288,19 @@
     animation: pulseGlow 2s ease-in-out infinite;
   }
 
+  /* Glass effect utilities */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-blue {
+    background: rgba(59, 130, 246, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
   /* Text utilities */
   .text-balance {
     text-wrap: balance;
