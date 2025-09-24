@@ -16,19 +16,27 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
   const [showStoriesFeed, setShowStoriesFeed] = useState(false);
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
 
-  // Grouper les stories par vendeur
+  // Grouper les stories par vendeur avec déduplication
   const storiesBySeller = stories.reduce((acc, story) => {
-    if (!acc[story.seller_id]) {
-      acc[story.seller_id] = {
+    const sellerKey = story.seller_id || `unknown-${story.seller_username || 'user'}`;
+    
+    if (!acc[sellerKey]) {
+      acc[sellerKey] = {
         seller: {
-          id: story.seller_id,
-          username: story.seller_username,
+          id: story.seller_id || `unknown-${story.seller_username || 'user'}`,
+          username: story.seller_username || 'Utilisateur inconnu',
           avatar_url: story.seller_avatar_url
         },
         stories: []
       };
     }
-    acc[story.seller_id].stories.push(story);
+    
+    // Éviter les doublons de stories
+    const existingStory = acc[sellerKey].stories.find(s => s.id === story.id);
+    if (!existingStory) {
+      acc[sellerKey].stories.push(story);
+    }
+    
     return acc;
   }, {} as Record<string, {
     seller: { id: string; username: string; avatar_url?: string };
@@ -101,7 +109,7 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                 </motion.button>
 
                 {/* Stories des utilisateurs suivis */}
-                {Object.values(storiesBySeller).map(({ seller, stories: sellerStories }, index) => {
+                {Object.entries(storiesBySeller).map(([sellerKey, { seller, stories: sellerStories }]) => {
                   const hasUnviewedStories = sellerStories.some(story => !story.is_viewed);
                   const viewedStoriesCount = sellerStories.filter(story => story.is_viewed).length;
                   const totalStoriesCount = sellerStories.length;
@@ -109,7 +117,7 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
 
                   return (
                     <motion.button
-                      key={`seller-${seller.id}-${index}`}
+                      key={sellerKey}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleStoryClick(

@@ -174,7 +174,7 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
       <div className="absolute top-4 left-4 right-4 z-10">
         <div className="flex space-x-1">
           {stories.map((story, index) => (
-            <div key={index} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+            <div key={story.id || `story-${index}`} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
               <motion.div
                 className={`h-full rounded-full transition-all duration-300 ${
                   story.is_viewed 
