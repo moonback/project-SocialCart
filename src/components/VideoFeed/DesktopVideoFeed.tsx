@@ -368,7 +368,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
             opacity: isInfoPanelCollapsed ? 0 : 1
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed top-16 right-0 w-96 h-full bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10"
+          className="fixed top-26 right-0 w-96 h-full bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10"
         >
               {/* Informations produit */}
           <div className="p-6 border-b border-surface-200">
