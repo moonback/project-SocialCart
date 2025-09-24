@@ -163,6 +163,9 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                             )}
                           </span>
                         )}
+                        <span className="text-xs text-primary-600 font-medium mt-1 block">
+                          Cliquez pour voir
+                        </span>
                       </div>
                     </motion.button>
                   );

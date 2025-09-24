@@ -15,7 +15,7 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [showProductDetails, setShowProductDetails] = useState(false);
+  const [showProductDetails, setShowProductDetails] = useState(true);
   const [likedStories, setLikedStories] = useState<Set<string>>(new Set());
   
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -63,6 +63,7 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
       setCurrentStoryIndex(currentStoryIndex + 1);
       setCurrentMediaIndex(0);
       setProgress(0);
+      // Le bandeau reste ouvert pour toutes les stories
     } else {
       onClose();
     }
@@ -73,6 +74,7 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
       setCurrentStoryIndex(currentStoryIndex - 1);
       setCurrentMediaIndex(0);
       setProgress(0);
+      // Le bandeau reste ouvert pour toutes les stories
     }
   };
 
@@ -126,7 +128,7 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
     
     try {
       await createStoryInteraction(currentStory.id, 'product_click');
-      setShowProductDetails(true);
+      // Le bandeau est maintenant toujours visible, pas besoin de le montrer/cacher
     } catch (error) {
       console.error('Erreur lors du clic produit:', error);
     }
@@ -228,6 +230,77 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
         </div>
       </div>
 
+      {/* Bandeau des informations du produit */}
+      <AnimatePresence>
+        {showProductDetails && (
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            className="absolute bottom-4 left-4 w-1/2 max-w-md z-20"
+          >
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/20">
+              <div className="space-y-4">
+                {/* Image du produit */}
+                <div className="w-full h-48 rounded-2xl overflow-hidden bg-gray-100 shadow-lg">
+                  {currentStory.product_image_url ? (
+                    <img
+                      src={currentStory.product_image_url}
+                      alt={currentStory.product_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100">
+                      <ShoppingBag className="w-12 h-12" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Informations du produit */}
+                <div className="space-y-2">
+                  <h4 className="font-bold text-xl text-white truncate">
+                    {currentStory.product_name}
+                  </h4>
+                  <p className="text-3xl font-bold text-white">
+                    {currentStory.product_price.toFixed(2)} €
+                  </p>
+                  <p className="text-sm text-white/80">
+                    Par {currentStory.seller_username}
+                  </p>
+                </div>
+
+                {/* Caption de la story si disponible */}
+                {currentStory.caption && (
+                  <div className="bg-white/10 rounded-xl p-3 border border-white/20">
+                    <p className="text-sm text-white/90 italic">"{currentStory.caption}"</p>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowProductDetails(false);
+                      window.location.href = `/product/${currentStory.product_id}`;
+                    }}
+                    className="flex-1 bg-white/20 backdrop-blur-sm text-white px-4 py-3 rounded-xl font-semibold hover:bg-white/30 transition-all duration-200 flex items-center justify-center space-x-2 border border-white/30"
+                  >
+                    <ShoppingBag className="w-5 h-5" />
+                    <span>Voir le produit</span>
+                  </button>
+                  <button
+                    onClick={() => setShowProductDetails(false)}
+                    className="p-3 hover:bg-white/20 rounded-xl transition-colors border border-white/30"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Contenu principal */}
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Navigation gauche/droite */}
@@ -311,78 +384,6 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
         </div>
       </div>
 
-      {/* Modal des détails du produit */}
-      <AnimatePresence>
-        {showProductDetails && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-            onClick={() => setShowProductDetails(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Détails du produit</h3>
-                <button
-                  onClick={() => setShowProductDetails(false)}
-                  className="p-1 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                  {currentStory.product_image_url ? (
-                    <img
-                      src={currentStory.product_image_url}
-                      alt={currentStory.product_name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      Aucune image
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <h4 className="font-semibold text-lg">{currentStory.product_name}</h4>
-                  <p className="text-2xl font-bold text-primary-600">
-                    {currentStory.product_price.toFixed(2)} €
-                  </p>
-                </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => {
-                      setShowProductDetails(false);
-                      // Rediriger vers la page du produit
-                      window.location.href = `/product/${currentStory.product_id}`;
-                    }}
-                    className="flex-1 bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-                  >
-                    Voir le produit
-                  </button>
-                  <button
-                    onClick={() => setShowProductDetails(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Fermer
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
