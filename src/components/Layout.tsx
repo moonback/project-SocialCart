@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BottomNav } from './BottomNav';
 import { TopBar } from './TopBar';
+import { DeployableStoriesBar } from './DeployableStoriesBar';
+import { CreateStoryModal } from './CreateStoryModal';
 
 export function Layout() {
+  const [isStoriesOpen, setIsStoriesOpen] = useState(false);
+  const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
+
+  const handleToggleStories = () => {
+    setIsStoriesOpen(!isStoriesOpen);
+  };
+
+  const handleCreateStory = () => {
+    setShowCreateStoryModal(true);
+    setIsStoriesOpen(false); // Fermer la StoriesBar quand on ouvre le modal
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-blue-50 to-surface-50 flex flex-col relative overflow-hidden">
       {/* Background decoration - Design minimaliste */}
@@ -15,10 +29,22 @@ export function Layout() {
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }} />
       </div>
 
-      <TopBar />
+      <TopBar 
+        onToggleStories={handleToggleStories}
+        isStoriesOpen={isStoriesOpen}
+      />
+      
+      {/* StoriesBar déployable */}
+      <DeployableStoriesBar 
+        isOpen={isStoriesOpen}
+        onClose={() => setIsStoriesOpen(false)}
+        onCreateStory={handleCreateStory}
+      />
       
       <motion.main 
-        className="flex-1 main-content-fixed relative z-10"
+        className={`flex-1 main-content-fixed relative z-10 transition-all duration-300 ${
+          isStoriesOpen ? 'pt-32' : 'pt-16'
+        }`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -27,6 +53,16 @@ export function Layout() {
       </motion.main>
       
       <BottomNav />
+
+      {/* Modal de création de story */}
+      <CreateStoryModal
+        isOpen={showCreateStoryModal}
+        onClose={() => setShowCreateStoryModal(false)}
+        onStoryCreated={() => {
+          setShowCreateStoryModal(false);
+          // Optionnel: recharger les stories
+        }}
+      />
     </div>
   );
 }

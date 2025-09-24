@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AdaptiveVideoFeed, VideoFeedProduct } from '../components/AdaptiveVideoFeed';
 import { ProductService, ProductVariant } from '../lib/products';
-import { StoriesBar } from '../components/StoriesBar';
 import { CreateStoryModal } from '../components/CreateStoryModal';
-import { StoriesErrorBoundary } from '../components/StoriesErrorBoundary';
 
 export default function Home() {
   const [products, setProducts] = useState<VideoFeedProduct[]>([]);
@@ -80,11 +78,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Barre des stories avec Error Boundary */}
-      <StoriesErrorBoundary>
-        <StoriesBar onCreateStory={() => setShowCreateStoryModal(true)} />
-      </StoriesErrorBoundary>
-      
       {/* Feed principal */}
       <div className="flex-1">
         <AdaptiveVideoFeed products={products} onProductDeleted={loadProducts} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Bell, X } from 'lucide-react';
+import { Search, ShoppingCart, Bell, X, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -7,7 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import { HeaderUserAvatar } from './UserAvatar';
 import { ProfileModal } from './ProfileModal';
 
-export function TopBar() {
+interface TopBarProps {
+  onToggleStories?: () => void;
+  isStoriesOpen?: boolean;
+}
+
+export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) {
   const { itemCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -68,6 +73,23 @@ export function TopBar() {
 
         {/* Actions */}
         <div className="flex items-center space-x-1 md:space-x-2">
+          {/* Stories Button */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onToggleStories}
+            className={`btn-floating relative ${isStoriesOpen ? 'bg-primary-100 text-primary-600' : ''}`}
+          >
+            <Camera className="w-4 h-4 md:w-5 md:h-5 text-surface-600" />
+            {isStoriesOpen && (
+              <motion.div 
+                className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary-500 rounded-full"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+              />
+            )}
+          </motion.button>
+
           {/* Mobile Search */}
           <motion.button
             whileHover={{ scale: 1.1 }}
