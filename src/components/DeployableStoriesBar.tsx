@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStories } from '../hooks/useStories';
 import { StoryService, ProductStory } from '../lib/stories';
@@ -9,10 +9,11 @@ interface DeployableStoriesBarProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateStory?: () => void;
+  refreshTrigger?: number; // Pour déclencher un refresh des stories
 }
 
-export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: DeployableStoriesBarProps) {
-  const { stories, loading } = useStories();
+export function DeployableStoriesBar({ isOpen, onClose, onCreateStory, refreshTrigger }: DeployableStoriesBarProps) {
+  const { stories, loading, refreshStories } = useStories();
   const [showStoriesFeed, setShowStoriesFeed] = useState(false);
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
 
@@ -53,6 +54,13 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
       onCreateStory();
     }
   };
+
+  // Rafraîchir les stories quand refreshTrigger change
+  useEffect(() => {
+    if (refreshTrigger && refreshTrigger > 0) {
+      refreshStories();
+    }
+  }, [refreshTrigger, refreshStories]);
 
   return (
     <AnimatePresence>
@@ -127,11 +135,22 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                     >
                       <div className="relative">
                         {/* Avatar avec bordure colorée si stories non vues */}
-                        <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
-                          hasUnviewedStories 
-                            ? 'bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg' 
-                            : 'bg-gray-300 shadow-sm'
-                        }`}>
+                        <motion.div 
+                          className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
+                            hasUnviewedStories 
+                              ? 'bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg' 
+                              : 'bg-gray-300 shadow-sm'
+                          }`}
+                          animate={hasUnviewedStories ? { 
+                            scale: [1, 1.05, 1],
+                            boxShadow: ['0 0 0 0 rgba(59, 130, 246, 0.5)', '0 0 0 8px rgba(59, 130, 246, 0)', '0 0 0 0 rgba(59, 130, 246, 0)']
+                          } : {}}
+                          transition={{ 
+                            duration: 3, 
+                            repeat: hasUnviewedStories ? Infinity : 0,
+                            ease: "easeInOut"
+                          }}
+                        >
                           <div className="w-full h-full rounded-full overflow-hidden bg-white p-0.5">
                             {seller.avatar_url ? (
                               <img
@@ -149,7 +168,7 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                               </div>
                             )}
                           </div>
-                        </div>
+                        </motion.div>
 
                         {/* Indicateur de temps restant */}
                         {latestStory && (
@@ -168,13 +187,24 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
 
                         {/* Badge nombre de stories avec état de visualisation */}
                         {totalStoriesCount > 1 && (
-                          <div className={`absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
-                            hasUnviewedStories 
-                              ? 'bg-red-500' 
-                              : 'bg-gray-400'
-                          }`}>
+                          <motion.div 
+                            className={`absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
+                              hasUnviewedStories 
+                                ? 'bg-red-500' 
+                                : 'bg-gray-400'
+                            }`}
+                            animate={hasUnviewedStories ? { 
+                              scale: [1, 1.2, 1],
+                              boxShadow: ['0 0 0 0 rgba(239, 68, 68, 0.7)', '0 0 0 10px rgba(239, 68, 68, 0)', '0 0 0 0 rgba(239, 68, 68, 0)']
+                            } : {}}
+                            transition={{ 
+                              duration: 2, 
+                              repeat: hasUnviewedStories ? Infinity : 0,
+                              ease: "easeInOut"
+                            }}
+                          >
                             {totalStoriesCount}
-                          </div>
+                          </motion.div>
                         )}
 
                         {/* Indicateur de progression des stories vues */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BottomNav } from './BottomNav';
@@ -9,6 +9,7 @@ import { CreateStoryModal } from './CreateStoryModal';
 export function Layout() {
   const [isStoriesOpen, setIsStoriesOpen] = useState(false);
   const [showCreateStoryModal, setShowCreateStoryModal] = useState(false);
+  const [storiesRefreshTrigger, setStoriesRefreshTrigger] = useState(0);
 
   const handleToggleStories = () => {
     setIsStoriesOpen(!isStoriesOpen);
@@ -39,6 +40,7 @@ export function Layout() {
         isOpen={isStoriesOpen}
         onClose={() => setIsStoriesOpen(false)}
         onCreateStory={handleCreateStory}
+        refreshTrigger={storiesRefreshTrigger}
       />
       
       <motion.main 
@@ -60,7 +62,8 @@ export function Layout() {
         onClose={() => setShowCreateStoryModal(false)}
         onStoryCreated={() => {
           setShowCreateStoryModal(false);
-          // Optionnel: recharger les stories
+          // Déclencher le refresh des stories
+          setStoriesRefreshTrigger(prev => prev + 1);
         }}
       />
     </div>
