@@ -172,7 +172,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                     onClick={handleSignOut}
-                    className="w-full px-4 py-3 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 text-red-600 hover:bg-red-500/15 transition-colors border border-red-500/20"
+                    className="w-full px-4 py-3 flex items-center justify-center gap-2 rounded-xl bg-red-500/90 text-white hover:bg-red-500/15 transition-colors border border-red-500/20"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="font-medium">Se déconnecter</span>
