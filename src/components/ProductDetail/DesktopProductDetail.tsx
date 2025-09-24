@@ -21,7 +21,8 @@ import {
   Award,
   Truck,
   RotateCcw,
-  Shield
+  Shield,
+  X
 } from 'lucide-react';
 import { Product } from '../../lib/supabase';
 import { UserAvatar } from '../UserAvatar';
@@ -70,6 +71,25 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews' | 'shipping'>('description');
   const [showVideo, setShowVideo] = useState(false);
 
+  // Gérer la fermeture de la vidéo avec la touche Escape
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showVideo) {
+        setShowVideo(false);
+      }
+    };
+
+    if (showVideo) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden'; // Empêcher le scroll
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset'; // Restaurer le scroll
+    };
+  }, [showVideo]);
+
   // Calcul du prix avec variantes
   const finalPrice = useMemo(() => {
     let price = product.price;
@@ -115,9 +135,10 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setShowVideo(true)}
-                    className="absolute top-4 left-4 w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white shadow-lg"
+                    className="absolute top-4 left-4 flex items-center space-x-2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 text-white shadow-lg hover:bg-black/70 transition-colors"
                   >
-                    <Play className="w-6 h-6 ml-0.5" />
+                    <Play className="w-5 h-5 ml-0.5" />
+                    <span className="text-sm font-medium">Vidéo</span>
                   </motion.button>
                 )}
 
@@ -623,6 +644,54 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
           </div>
         )}
       </div>
+
+      {/* Modal Vidéo */}
+      <AnimatePresence>
+        {showVideo && product.video_url && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowVideo(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative max-w-4xl w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Bouton fermer */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowVideo(false)}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors z-10"
+              >
+                <X className="w-5 h-5" />
+              </motion.button>
+
+              {/* Vidéo */}
+              <video
+                src={product.video_url}
+                controls
+                autoPlay
+                className="w-full h-full object-cover"
+                poster={product.image_url}
+                onError={(e) => {
+                  console.error('Erreur de lecture vidéo:', e);
+                  setShowVideo(false);
+                }}
+              >
+                <p className="text-white text-center p-4">
+                  Votre navigateur ne supporte pas la lecture vidéo.
+                </p>
+              </video>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
