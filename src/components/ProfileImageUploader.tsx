@@ -17,7 +17,7 @@ export function ProfileImageUploader({
   userId,
   className = ''
 }: ProfileImageUploaderProps) {
-  const { updateProfile } = useAuth();
+  const { updateProfile, user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -71,6 +71,12 @@ export function ProfileImageUploader({
   const handleFileSelect = useCallback(async (file: File | null) => {
     if (!file) return;
 
+    // Vérifier que l'utilisateur est connecté
+    if (!user || !userId) {
+      setError('Utilisateur non connecté');
+      return;
+    }
+
     setError(null);
     setIsUploading(true);
 
@@ -122,6 +128,20 @@ export function ProfileImageUploader({
   };
 
   const displayImage = previewUrl || currentImageUrl;
+
+  // Afficher un message d'erreur si l'utilisateur n'est pas connecté
+  if (!user || !userId) {
+    return (
+      <div className={`relative ${className}`}>
+        <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden bg-gray-100 border-4 border-red-300 flex items-center justify-center">
+          <div className="text-center p-4">
+            <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+            <p className="text-xs text-red-600">Non connecté</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative ${className}`}>

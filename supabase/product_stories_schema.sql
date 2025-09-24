@@ -223,7 +223,7 @@ SELECT
   ps.*,
   p.name as product_name,
   p.price as product_price,
-  p.image_url as product_image,
+  p.primary_image_url as product_image,
   u.username as seller_username,
   u.avatar_url as seller_avatar,
   u.is_verified as seller_verified,

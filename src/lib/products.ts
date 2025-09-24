@@ -230,6 +230,52 @@ export class ProductService {
     }
   }
 
+  // Récupérer des produits suggérés basés sur une catégorie
+  static async getSuggestedProducts(categoryId?: string, excludeId?: string, limit: number = 4): Promise<Product[]> {
+    try {
+      let query = supabase
+        .from('products')
+        .select(`
+          *,
+          seller:users!products_seller_id_fkey(
+            id,
+            username,
+            avatar_url,
+            email,
+            loyalty_points,
+            is_seller,
+            is_verified,
+            created_at,
+            updated_at
+          )
+        `)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      // Exclure le produit actuel
+      if (excludeId) {
+        query = query.neq('id', excludeId);
+      }
+
+      // Prioriser les produits de la même catégorie
+      if (categoryId) {
+        query = query.eq('category_id', categoryId);
+      }
+
+      const { data, error } = await query.limit(limit);
+
+      if (error) {
+        console.error('Error fetching suggested products:', error);
+        throw new Error('Erreur lors de la récupération des suggestions');
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getSuggestedProducts:', error);
+      throw error;
+    }
+  }
+
   // Récupérer tous les produits avec les informations utilisateur
   static async getProducts(): Promise<Product[]> {
     try {

@@ -313,7 +313,7 @@ export function StoriesViewer({ stories, initialIndex = 0, onClose, onSwipeUp }:
             >
               <div className="flex items-center space-x-3 mb-3">
                 <img
-                  src={currentStory.product.image_url}
+                  src={currentStory.product.primary_image_url}
                   alt={currentStory.product.name}
                   className="w-12 h-12 rounded-lg object-cover"
                 />

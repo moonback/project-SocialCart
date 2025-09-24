@@ -662,7 +662,7 @@ export function StoryCreator({ productId, onClose, onStoryCreated }: StoryCreato
                         <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 text-white">
                           <div className="flex items-center space-x-3">
                             <img
-                              src={selectedProduct.image_url}
+                              src={selectedProduct.primary_image_url}
                               alt={selectedProduct.name}
                               className="w-8 h-8 rounded-lg object-cover"
                             />

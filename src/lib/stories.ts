@@ -81,7 +81,7 @@ export class StoryService {
       })
       .select(`
         *,
-        product:products(id, name, price, image_url, seller_id),
+        product:products(id, name, price, primary_image_url, seller_id),
         seller:users!product_stories_seller_id_fkey(id, username, avatar_url, is_verified)
       `)
       .single();
@@ -96,7 +96,7 @@ export class StoryService {
       .from('product_stories')
       .select(`
         *,
-        product:products(id, name, price, image_url, seller_id),
+        product:products(id, name, price, primary_image_url, seller_id),
         seller:users!product_stories_seller_id_fkey(id, username, avatar_url, is_verified)
       `)
       .eq('product_id', productId)
@@ -114,7 +114,7 @@ export class StoryService {
       .from('product_stories')
       .select(`
         *,
-        product:products(id, name, price, image_url, seller_id),
+        product:products(id, name, price, primary_image_url, seller_id),
         seller:users!product_stories_seller_id_fkey(id, username, avatar_url, is_verified)
       `)
       .eq('is_active', true)

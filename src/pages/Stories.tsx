@@ -18,6 +18,7 @@ import {
 import { useStories } from '../hooks/useStories';
 import { StoriesGrid } from '../components/StoriesGrid';
 import { StoryCreator } from '../components/StoryCreator';
+import { StoriesTest } from '../components/StoriesTest';
 import { ProductStory } from '../lib/stories';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,7 @@ import toast from 'react-hot-toast';
 export default function Stories() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { stories, loading, loadStories } = useStories();
+  const { stories, loading, error, loadStories } = useStories();
   const [showCreator, setShowCreator] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterType, setFilterType] = useState<'all' | 'image' | 'video' | 'text' | 'poll' | 'quiz'>('all');
@@ -85,6 +86,70 @@ export default function Stories() {
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-gray-900">Chargement des stories</h2>
             <p className="text-gray-600">Récupération des dernières stories...</p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Afficher un message d'erreur si les stories ne peuvent pas être chargées
+  if (error && (error.includes('400') || error.includes('404') || error.includes('406'))) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-6 p-8 max-w-2xl"
+        >
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
+            <AlertCircle className="w-8 h-8 text-red-500" />
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900">Installation Requise</h2>
+            <p className="text-gray-600">
+              Le système de Stories n'est pas encore configuré. Suivez les étapes d'installation ci-dessous.
+            </p>
+            
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-left">
+              <h3 className="font-semibold text-gray-900 mb-4">📋 Étapes d'installation :</h3>
+              <ol className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start space-x-2">
+                  <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">1</span>
+                  <span>Ouvrir <strong>Supabase Dashboard</strong></span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">2</span>
+                  <span>Aller dans <strong>SQL Editor</strong></span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">3</span>
+                  <span>Copier le contenu de <code className="bg-gray-100 px-2 py-1 rounded">supabase/product_stories_schema.sql</code></span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">4</span>
+                  <span>Exécuter le script SQL</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">5</span>
+                  <span>Créer le bucket <code className="bg-gray-100 px-2 py-1 rounded">stories</code> dans Storage</span>
+                </li>
+              </ol>
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-sm text-blue-700">
+                📖 <strong>Guide détaillé :</strong> Consultez <code className="bg-blue-100 px-2 py-1 rounded">docs/MANUAL_SETUP_GUIDE.md</code>
+              </p>
+            </div>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              Recharger après installation
+            </motion.button>
           </div>
         </motion.div>
       </div>
@@ -228,6 +293,18 @@ export default function Stories() {
             </div>
           </div>
         </motion.div>
+
+        {/* Composant de test (en mode développement) */}
+        {process.env.NODE_ENV === 'development' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-8"
+          >
+            <StoriesTest />
+          </motion.div>
+        )}
 
         {/* Liste des stories */}
         <motion.div
