@@ -87,7 +87,8 @@ export default function Settings() {
     setLoading(true);
     try {
       await signOut();
-      navigate('/auth');
+      // Redirection vers la landing page
+      window.location.href = '/landing';
     } catch (error) {
       console.error('Error signing out:', error);
     } finally {

@@ -27,6 +27,7 @@ import { StoryStats } from '../components/StoryStats';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { 
     profile, 
     stats, 
@@ -37,7 +38,16 @@ export default function Profile() {
     loading,
     updateProfile
   } = useProfile();
-  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      // Redirection vers la landing page
+      window.location.href = '/landing';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(
     location.state?.showOrders ? 'orders' : 'profile'
@@ -643,7 +653,7 @@ export default function Profile() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={signOut}
+                  onClick={handleSignOut}
                   className="btn-secondary w-full flex items-center justify-center space-x-2 py-4 border-red-200 text-red-600 hover:bg-red-50"
                 >
                   <LogOut className="w-5 h-5" />

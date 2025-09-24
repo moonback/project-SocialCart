@@ -54,8 +54,9 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate('/auth');
       onClose();
+      // Forcer une redirection complète vers la landing page
+      window.location.href = '/landing';
     } catch (error) {
       console.error('Error signing out:', error);
     }

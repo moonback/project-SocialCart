@@ -7,6 +7,7 @@ import { CartProvider } from './hooks/useCart';
 import { Layout } from './components/Layout';
 
 // Lazy loading des pages pour optimiser les performances
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Home = lazy(() => import('./pages/Home'));
 const Search = lazy(() => import('./pages/Search'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -84,20 +85,62 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/landing" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen message="Vérification de l'authentification..." />;
+  }
+
+  if (user) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
 }
 
 function AppRoutes() {
+  const { user, loading } = useAuth();
+
+  // Redirection intelligente basée sur l'état d'authentification
+  const getDefaultRoute = () => {
+    if (loading) return null;
+    return user ? "/" : "/landing";
+  };
+
   return (
     <Suspense fallback={<LoadingScreen message="Chargement de la page..." />}>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
+        {/* Routes publiques */}
+        <Route path="/landing" element={
+          <PublicRoute>
+            <LandingPage />
+          </PublicRoute>
+        } />
+        <Route path="/auth" element={
+          <PublicRoute>
+            <Auth />
+          </PublicRoute>
+        } />
+        
+        {/* Routes protégées avec Layout */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="search" element={<Search />} />
+          <Route index element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } />
+          <Route path="search" element={
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          } />
           <Route path="create" element={
             <ProtectedRoute>
               <CreateProduct />
@@ -123,9 +166,21 @@ function AppRoutes() {
               <Notifications />
             </ProtectedRoute>
           } />
-          <Route path="profile" element={<Profile />} />
-          <Route path="product/:id" element={<ProductDetail />} />
-          <Route path="cart" element={<Cart />} />
+          <Route path="profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="product/:id" element={
+            <ProtectedRoute>
+              <ProductDetail />
+            </ProtectedRoute>
+          } />
+          <Route path="cart" element={
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          } />
           <Route path="payment" element={
             <ProtectedRoute>
               <Payment />
@@ -142,13 +197,16 @@ function AppRoutes() {
             </ProtectedRoute>
           } />
         </Route>
+        
+        {/* Redirection intelligente */}
+        <Route path="*" element={<Navigate to={getDefaultRoute() || "/landing"} replace />} />
       </Routes>
     </Suspense>
   );
 }
 
 function AppInner() {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
 
   if (loading) {
     return <LoadingScreen message="Initialisation de l'application..." />;
