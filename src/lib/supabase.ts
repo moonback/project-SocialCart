@@ -53,6 +53,28 @@ export type Product = {
   user_id: string;
   user: User;
   created_at: string;
+  // Nouvelles propriétés ajoutées
+  sku?: string;
+  compare_price?: number;
+  cost_price?: number;
+  weight?: number;
+  dimensions?: string;
+  status?: string;
+  inventory_tracking?: boolean;
+  inventory_quantity?: number;
+  allow_backorder?: boolean;
+  requires_shipping?: boolean;
+  taxable?: boolean;
+  tags?: string[];
+  meta_title?: string;
+  meta_description?: string;
+  category_id?: string;
+  brand_id?: string;
+  views_count?: number;
+  sales_count?: number;
+  rating_average?: number;
+  rating_count?: number;
+  short_description?: string;
 };
 
 export type ProductVariant = {

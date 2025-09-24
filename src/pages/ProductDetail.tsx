@@ -1,28 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Heart, 
   Share, 
   ShoppingCart, 
-  Star, 
   Clock, 
-  Eye, 
   CheckCircle,
   AlertCircle,
   Info,
-  RefreshCw,
-  TrendingUp,
   Minus,
   Plus,
   Bookmark,
   Flag,
   ShieldCheck,
-  TruckIcon,
-  RotateCcw
+  Play
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Product } from '../lib/supabase';
+import { motion } from 'framer-motion';
+import { Product, supabase } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { useSocial } from '../hooks/useSocial';
 import { ProductCard } from '../components/ProductCard';
@@ -31,11 +26,24 @@ import { getCategoryName, getBrandName } from '../lib/categories';
 import { UserAvatar } from '../components/UserAvatar';
 import toast from 'react-hot-toast';
 
+// Résout une URL d'avatar : si c'est un chemin de stockage, retourne l'URL publique
+function resolveAvatarUrl(possibleUrl?: string) {
+  if (!possibleUrl) return undefined;
+  if (possibleUrl.startsWith('http')) return possibleUrl;
+  try {
+    const path = possibleUrl.startsWith('profiles/') ? possibleUrl : `profiles/${possibleUrl}`;
+    const { data: { publicUrl } } = supabase.storage.from('profiles').getPublicUrl(path);
+    return publicUrl || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { toggleLike, toggleBookmark, isLiked, isBookmarked, recordView } = useSocial();
+  const { toggleLike, toggleBookmark, isLiked, isBookmarked } = useSocial();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -44,7 +52,6 @@ export default function ProductDetail() {
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
-  const [isComparing, setIsComparing] = useState(false);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -59,6 +66,20 @@ export default function ProductDetail() {
         const dbProduct = await ProductService.getProductById(id);
         
         if (dbProduct) {
+          // Incrémenter le compteur de vues
+          try {
+            // Mise à jour directe du compteur de vues
+            await supabase
+              .from('products')
+              .update({ 
+                views_count: (dbProduct.views_count || 0) + 1,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', id);
+          } catch (error) {
+            console.error('Error incrementing views:', error);
+          }
+
           // Convertir le produit de la BDD vers le format attendu avec toutes les informations
           const convertedProduct: Product = {
             id: dbProduct.id,
@@ -71,12 +92,25 @@ export default function ProductDetail() {
             variants: [], // Les variantes sont stockées dans les tags
             likes_count: dbProduct.likes_count || 0,
             user_id: dbProduct.seller_id,
-            user: {
+            user: dbProduct.seller ? {
+              id: dbProduct.seller.id,
+              email: dbProduct.seller.email,
+              username: dbProduct.seller.username,
+              loyalty_points: dbProduct.seller.loyalty_points,
+              is_seller: dbProduct.seller.is_seller,
+              is_verified: dbProduct.seller.is_verified,
+              created_at: dbProduct.seller.created_at,
+              updated_at: dbProduct.seller.updated_at,
+              avatar_url: resolveAvatarUrl(dbProduct.seller.avatar_url),
+            } : {
               id: dbProduct.seller_id,
               email: 'user@example.com',
               username: 'user',
               loyalty_points: 0,
+              is_seller: true,
+              is_verified: true,
               created_at: dbProduct.created_at,
+              updated_at: dbProduct.created_at,
             },
             created_at: dbProduct.created_at,
             // Ajouter toutes les nouvelles propriétés
@@ -84,7 +118,7 @@ export default function ProductDetail() {
             compare_price: dbProduct.compare_price,
             cost_price: dbProduct.cost_price,
             weight: dbProduct.weight,
-            dimensions: dbProduct.dimensions,
+            dimensions: typeof dbProduct.dimensions === 'string' ? dbProduct.dimensions : JSON.stringify(dbProduct.dimensions),
             status: dbProduct.status,
             inventory_tracking: dbProduct.inventory_tracking,
             inventory_quantity: dbProduct.inventory_quantity,
@@ -128,7 +162,10 @@ export default function ProductDetail() {
               email: 'user@example.com',
               username: 'techguru',
               loyalty_points: 500,
+              is_seller: true,
+              is_verified: true,
               created_at: '2024-01-01',
+              updated_at: '2024-01-01',
             },
             created_at: '2024-01-01',
           };
@@ -150,12 +187,25 @@ export default function ProductDetail() {
           variants: [],
           likes_count: p.likes_count || 0,
           user_id: p.seller_id,
-          user: {
+          user: p.seller ? {
+            id: p.seller.id,
+            email: p.seller.email,
+            username: p.seller.username,
+            loyalty_points: p.seller.loyalty_points,
+            is_seller: p.seller.is_seller,
+            is_verified: p.seller.is_verified,
+            created_at: p.seller.created_at,
+            updated_at: p.seller.updated_at,
+            avatar_url: resolveAvatarUrl(p.seller.avatar_url),
+          } : {
             id: p.seller_id,
             email: 'user@example.com',
             username: 'user',
             loyalty_points: 0,
+            is_seller: true,
+            is_verified: true,
             created_at: p.created_at,
+            updated_at: p.created_at,
           },
           created_at: p.created_at,
         }));
@@ -218,7 +268,7 @@ export default function ProductDetail() {
   };
 
   const handleReport = () => {
-    toast.info('Fonctionnalité de signalement en cours de développement');
+    toast('Fonctionnalité de signalement en cours de développement');
   };
 
   const handleAddToWishlist = async () => {
@@ -227,11 +277,6 @@ export default function ProductDetail() {
     setTimeout(() => setIsAddingToWishlist(false), 1000);
   };
 
-  const handleCompare = () => {
-    setIsComparing(true);
-    toast.success('Produit ajouté à la comparaison');
-    setTimeout(() => setIsComparing(false), 1000);
-  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -251,10 +296,11 @@ export default function ProductDetail() {
     if (!product) return { status: 'unknown', message: '', color: 'gray' };
     
     if (product.inventory_tracking) {
-      if (product.inventory_quantity > 10) {
+      const quantity = product.inventory_quantity || 0;
+      if (quantity > 10) {
         return { status: 'in-stock', message: 'En stock', color: 'green' };
-      } else if (product.inventory_quantity > 0) {
-        return { status: 'low-stock', message: `Seulement ${product.inventory_quantity} restants`, color: 'yellow' };
+      } else if (quantity > 0) {
+        return { status: 'low-stock', message: `Seulement ${quantity} restants`, color: 'yellow' };
       } else if (product.allow_backorder) {
         return { status: 'backorder', message: 'Commande en attente', color: 'orange' };
       } else {
@@ -330,6 +376,18 @@ export default function ProductDetail() {
             >
               <ArrowLeft className="w-6 h-6 text-gray-700" />
             </motion.button>
+            
+            {/* Bouton Retour à la vidéo */}
+            {product?.video_url && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/')}
+                className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 rounded-full transition-all shadow-md hover:shadow-lg"
+              >
+                <Play className="w-5 h-5 text-white" />
+              </motion.button>
+            )}
+            
             <div className="hidden sm:block">
               <h1 className="text-lg font-semibold text-gray-900 truncate max-w-xs">
                 {product?.name}
@@ -338,19 +396,6 @@ export default function ProductDetail() {
           </div>
           
           <div className="flex items-center space-x-1">
-            {/* Bouton Comparer */}
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleCompare}
-              className={`p-2 rounded-full transition-all ${
-                isComparing 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'hover:bg-gray-100 text-gray-600'
-              }`}
-            >
-              <RefreshCw className={`w-5 h-5 ${isComparing ? 'animate-spin' : ''}`} />
-            </motion.button>
-            
             {/* Bouton Signet */}
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -546,40 +591,29 @@ export default function ProductDetail() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <UserAvatar 
-                  user={product.user} 
-                  size="md" 
+                  avatarUrl={product.user.avatar_url} 
+                  username={product.user.username} 
+                  size="lg" 
                   className="w-12 h-12"
                 />
                 <div>
-                  <h3 className="font-semibold text-gray-900">@{product.user.username}</h3>
-                  <p className="text-sm text-gray-500">Vendeur vérifié</p>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-semibold text-gray-900">@{product.user.username}</h3>
+                    {product.user.is_verified && (
+                      <div className="flex items-center space-x-1">
+                        <ShieldCheck className="w-4 h-4 text-green-500" />
+                        <span className="text-xs text-green-600 font-medium">Vérifié</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {product.user.is_seller ? 'Vendeur' : 'Utilisateur'} • {product.user.loyalty_points} points
+                  </p>
                 </div>
               </div>
             </div>
             
-            {/* Statistiques */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100">
-                <Heart className="w-6 h-6 text-red-500 mx-auto mb-2" />
-                <div className="text-xl font-bold text-red-600">{product.likes_count || 0}</div>
-                <div className="text-xs text-gray-600">J'aime</div>
-              </div>
-              <div className="text-center bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
-                <Eye className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                <div className="text-xl font-bold text-blue-600">{product.views_count || 0}</div>
-                <div className="text-xs text-gray-600">Vues</div>
-              </div>
-              <div className="text-center bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
-                <TrendingUp className="w-6 h-6 text-green-500 mx-auto mb-2" />
-                <div className="text-xl font-bold text-green-600">{product.sales_count || 0}</div>
-                <div className="text-xs text-gray-600">Ventes</div>
-              </div>
-              <div className="text-center bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-100">
-                <Star className="w-6 h-6 text-yellow-500 mx-auto mb-2 fill-current" />
-                <div className="text-xl font-bold text-yellow-600">{product.rating_average || 4.8}</div>
-                <div className="text-xs text-gray-600">Note ({product.rating_count || 324})</div>
-              </div>
-            </div>
+            
           </motion.div>
           
           {/* Statut de Stock Amélioré */}
@@ -619,40 +653,12 @@ export default function ProductDetail() {
                     }`}>
                       {stockStatus.message}
                     </p>
-                    {product.inventory_tracking && product.inventory_quantity > 0 && (
-                      <p className="text-sm text-gray-600">
-                        Livraison sous 2-3 jours ouvrés
-                      </p>
-                    )}
+                    
                   </div>
                 </div>
               );
             })()}
             
-            {/* Garanties et Services */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                <ShieldCheck className="w-5 h-5 text-green-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Garantie</p>
-                  <p className="text-xs text-gray-600">2 ans inclus</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                <TruckIcon className="w-5 h-5 text-blue-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Livraison</p>
-                  <p className="text-xs text-gray-600">Gratuite dès 50€</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                <RotateCcw className="w-5 h-5 text-purple-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Retour</p>
-                  <p className="text-xs text-gray-600">30 jours</p>
-                </div>
-              </div>
-            </div>
           </motion.div>
 
           {/* Variantes et Quantité */}
@@ -833,20 +839,6 @@ export default function ProductDetail() {
             >
               <Bookmark className={`w-5 h-5 ${isAddingToWishlist ? 'animate-pulse' : ''}`} />
               <span>{isAddingToWishlist ? 'Ajouté !' : 'Liste de souhaits'}</span>
-            </motion.button>
-            
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleCompare}
-              disabled={isComparing}
-              className={`flex-1 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-all ${
-                isComparing
-                  ? 'bg-blue-100 text-blue-600'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <RefreshCw className={`w-5 h-5 ${isComparing ? 'animate-spin' : ''}`} />
-              <span>{isComparing ? 'Ajouté !' : 'Comparer'}</span>
             </motion.button>
           </div>
         </div>

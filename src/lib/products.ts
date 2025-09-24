@@ -264,12 +264,25 @@ export class ProductService {
     }
   }
 
-  // Récupérer un produit par ID
+  // Récupérer un produit par ID avec les informations du vendeur
   static async getProductById(id: string): Promise<Product | null> {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          seller:users!products_seller_id_fkey(
+            id,
+            username,
+            avatar_url,
+            email,
+            loyalty_points,
+            is_seller,
+            is_verified,
+            created_at,
+            updated_at
+          )
+        `)
         .eq('id', id)
         .single();
 
@@ -324,6 +337,23 @@ export class ProductService {
       }
     } catch (error) {
       console.error('Error in deleteProduct:', error);
+      throw error;
+    }
+  }
+
+  // Incrémenter le compteur de vues
+  static async incrementViews(id: string): Promise<void> {
+    try {
+      const { error } = await supabase.rpc('increment_product_views', {
+        product_id: id
+      });
+
+      if (error) {
+        console.error('Error incrementing views:', error);
+        throw new Error('Erreur lors de l\'incrémentation des vues');
+      }
+    } catch (error) {
+      console.error('Error in incrementViews:', error);
       throw error;
     }
   }
