@@ -17,15 +17,20 @@ import {
   Award,
   Clock,
   Target,
-  Rocket
+  Rocket,
+  Smartphone,
+  Monitor
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LandingNavigation } from '../components/LandingNavigation';
+import { ProductService, Product } from '../lib/products';
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   
   // Refs pour les animations
   const heroRef = useRef<HTMLDivElement>(null);
@@ -54,6 +59,29 @@ export default function LandingPage() {
     
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Récupérer les produits tendance
+  useEffect(() => {
+    const fetchTrendingProducts = async () => {
+      try {
+        setLoadingProducts(true);
+        const products = await ProductService.getProducts();
+        // Prendre les 4 premiers produits les plus populaires (par likes_count et views_count)
+        const trending = products
+          .sort((a, b) => (b.likes_count + b.views_count) - (a.likes_count + a.views_count))
+          .slice(0, 4);
+        setTrendingProducts(trending);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des produits:', error);
+        // En cas d'erreur, utiliser des produits par défaut
+        setTrendingProducts([]);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+
+    fetchTrendingProducts();
   }, []);
 
   const features = [
@@ -143,7 +171,7 @@ export default function LandingPage() {
       name: "Sarah M.",
       role: "Influenceuse Mode",
       content: "SocialCart a révolutionné ma façon de découvrir de nouveaux produits. La communauté est incroyable et les recommandations sont toujours spot-on !",
-      avatar: "👩‍💼",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
       rating: 5,
       verified: true,
       color: "from-pink-500 to-rose-500"
@@ -152,7 +180,7 @@ export default function LandingPage() {
       name: "Marc L.",
       role: "Tech Enthusiast",
       content: "L'interface est intuitive et les recommandations sont toujours pertinentes. Je recommande vivement cette plateforme !",
-      avatar: "👨‍💻",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       rating: 5,
       verified: true,
       color: "from-blue-500 to-cyan-500"
@@ -161,10 +189,36 @@ export default function LandingPage() {
       name: "Emma K.",
       role: "Maman Active",
       content: "Parfait pour organiser mes achats et découvrir des produits testés par d'autres mamans. Une vraie communauté !",
-      avatar: "👩‍👧‍👦",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       rating: 5,
       verified: true,
       color: "from-green-500 to-emerald-500"
+    }
+  ];
+
+  // Fonction pour obtenir l'image par défaut si aucune image n'est disponible
+  const getProductImage = (product: Product) => {
+    if (product.primary_image_url) {
+      return product.primary_image_url;
+    }
+    if (product.images && product.images.length > 0) {
+      return product.images[0];
+    }
+    // Image par défaut selon la catégorie
+    return "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=400&fit=crop";
+  };
+
+  // Images d'interface pour la démonstration
+  const interfaceImages = [
+    {
+      url: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=600&fit=crop",
+      title: "Interface Mobile",
+      description: "Application mobile intuitive"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
+      title: "Dashboard Web",
+      description: "Tableau de bord complet"
     }
   ];
 
@@ -391,12 +445,126 @@ export default function LandingPage() {
             </motion.button>
           </motion.div>
 
+          {/* Démonstration de produits avec images */}
+          <motion.div 
+            className="mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
+          >
+            <motion.h3 
+              className="text-2xl md:text-3xl font-bold text-white mb-8 text-center"
+              animate={heroInView ? {
+                textShadow: [
+                  "0 0 20px rgba(14, 165, 233, 0.3)",
+                  "0 0 30px rgba(14, 165, 233, 0.5)",
+                  "0 0 20px rgba(14, 165, 233, 0.3)"
+                ]
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              Découvrez nos produits tendance
+            </motion.h3>
+            
+            {loadingProducts ? (
+              <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
+                {[...Array(4)].map((_, index) => (
+                  <motion.div
+                    key={index}
+                    className="relative w-48 h-64 rounded-2xl bg-gradient-glass backdrop-blur-md border border-primary-200/20 animate-pulse"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
+                  >
+                    <div className="w-full h-full bg-gray-300 rounded-2xl" />
+                  </motion.div>
+                ))}
+              </div>
+            ) : trendingProducts.length > 0 ? (
+              <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
+                {trendingProducts.map((product, index) => (
+                  <motion.div
+                    key={product.id}
+                    className="group relative cursor-pointer"
+                    initial={{ opacity: 0, y: 20, rotateY: -15 }}
+                    animate={heroInView ? { opacity: 1, y: 0, rotateY: 0 } : { opacity: 0, y: 20, rotateY: -15 }}
+                    transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      y: -10,
+                      rotateY: 5
+                    }}
+                    style={{ perspective: "1000px" }}
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
+                    <div className="relative w-48 h-64 rounded-2xl overflow-hidden shadow-2xl bg-gradient-glass backdrop-blur-md border border-primary-200/20">
+                      <img 
+                        src={getProductImage(product)} 
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=400&fit=crop";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      
+                      {/* Badge de prix */}
+                      <div className="absolute top-3 right-3 bg-gradient-primary text-white px-2 py-1 rounded-lg text-xs font-bold">
+                        {product.price.toFixed(2)}€
+                      </div>
+                      
+                      {/* Overlay avec informations du produit */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <div className="text-sm font-semibold mb-1 line-clamp-2">{product.name}</div>
+                        <div className="flex items-center justify-between text-xs opacity-80">
+                          <span>{product.seller?.username || 'Vendeur'}</span>
+                          <div className="flex items-center space-x-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span>{product.rating_average.toFixed(1)}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-2 text-xs">
+                          <div className="flex items-center space-x-2">
+                            <Heart className="w-3 h-3 text-red-400" />
+                            <span>{product.likes_count}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <TrendingUp className="w-3 h-3 text-blue-400" />
+                            <span>{product.views_count}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Effet de brillance au hover */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        initial={{ x: "-100%" }}
+                        whileHover={{ x: "100%" }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    </div>
+                    
+                    {/* Effet de halo */}
+                    <motion.div
+                      className="absolute inset-0 w-48 h-64 bg-gradient-primary rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-blue-200">
+                <p>Aucun produit disponible pour le moment</p>
+              </div>
+            )}
+          </motion.div>
+
           {/* Stats améliorées */}
           <motion.div 
             className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.6, delay: 1.0 }}
+            transition={{ duration: 0.6, delay: 1.4 }}
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -404,7 +572,7 @@ export default function LandingPage() {
                 className="group text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
+                transition={{ duration: 0.6, delay: 1.6 + index * 0.1 }}
                 whileHover={{ 
                   scale: 1.05,
                   y: -5
@@ -570,6 +738,195 @@ export default function LandingPage() {
         </div>
       </motion.section>
 
+      {/* Interface Demo Section */}
+      <motion.section 
+        id="demo"
+        className="relative z-10 px-6 py-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 1.8 }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 2.0 }}
+          >
+            <motion.div
+              className="inline-flex items-center px-6 py-3 bg-gradient-glass-blue backdrop-blur-md border border-primary-200/30 rounded-2xl text-primary-700 text-sm font-semibold mb-6 shadow-glass"
+              animate={{
+                boxShadow: [
+                  "0 8px 32px rgba(14, 165, 233, 0.2)",
+                  "0 12px 40px rgba(14, 165, 233, 0.3)",
+                  "0 8px 32px rgba(14, 165, 233, 0.2)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Monitor className="w-4 h-4 mr-2 text-primary-600" />
+              Interface Démo
+              <Smartphone className="w-4 h-4 ml-2 text-primary-600" />
+            </motion.div>
+            
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Découvrez l'interface{' '}
+              <motion.span 
+                className="bg-gradient-primary bg-clip-text text-transparent"
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                SocialCart
+              </motion.span>
+            </h2>
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+              Une expérience utilisateur moderne et intuitive, disponible sur tous vos appareils
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Image Mobile */}
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 2.2 }}
+            >
+              <motion.div
+                className="relative mx-auto w-80 h-96 bg-gradient-glass backdrop-blur-md border border-primary-200/20 rounded-3xl p-4 shadow-2xl"
+                whileHover={{ 
+                  scale: 1.05,
+                  rotateY: 5
+                }}
+                style={{ perspective: "1000px" }}
+              >
+                <div className="w-full h-full rounded-2xl overflow-hidden">
+                  <img 
+                    src={interfaceImages[0].url} 
+                    alt={interfaceImages[0].title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                {/* Effet de brillance */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-3xl"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                />
+              </motion.div>
+              
+              {/* Effet de halo */}
+              <motion.div
+                className="absolute inset-0 w-80 h-96 bg-gradient-primary rounded-3xl mx-auto blur-2xl opacity-20"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.2, 0.3, 0.2]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+              
+              <div className="text-center mt-6">
+                <h3 className="text-xl font-bold text-white mb-2">{interfaceImages[0].title}</h3>
+                <p className="text-blue-200">{interfaceImages[0].description}</p>
+              </div>
+            </motion.div>
+
+            {/* Image Desktop */}
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 2.4 }}
+            >
+              <motion.div
+                className="relative mx-auto w-full max-w-lg h-64 bg-gradient-glass backdrop-blur-md border border-primary-200/20 rounded-3xl p-4 shadow-2xl"
+                whileHover={{ 
+                  scale: 1.05,
+                  rotateY: -5
+                }}
+                style={{ perspective: "1000px" }}
+              >
+                <div className="w-full h-full rounded-2xl overflow-hidden">
+                  <img 
+                    src={interfaceImages[1].url} 
+                    alt={interfaceImages[1].title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                {/* Effet de brillance */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-3xl"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 4 }}
+                />
+              </motion.div>
+              
+              {/* Effet de halo */}
+              <motion.div
+                className="absolute inset-0 w-full max-w-lg h-64 bg-gradient-primary rounded-3xl mx-auto blur-2xl opacity-20"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.2, 0.3, 0.2]
+                }}
+                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+              />
+              
+              <div className="text-center mt-6">
+                <h3 className="text-xl font-bold text-white mb-2">{interfaceImages[1].title}</h3>
+                <p className="text-blue-200">{interfaceImages[1].description}</p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Features de l'interface */}
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 2.6 }}
+          >
+            <motion.div
+              className="text-center group"
+              whileHover={{ y: -5 }}
+            >
+              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+                <Smartphone className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Mobile First</h3>
+              <p className="text-blue-200">Interface optimisée pour mobile avec gestes intuitifs</p>
+            </motion.div>
+
+            <motion.div
+              className="text-center group"
+              whileHover={{ y: -5 }}
+            >
+              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+                <Monitor className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Responsive Design</h3>
+              <p className="text-blue-200">Adaptation parfaite sur tous les écrans</p>
+            </motion.div>
+
+            <motion.div
+              className="text-center group"
+              whileHover={{ y: -5 }}
+            >
+              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Performance</h3>
+              <p className="text-blue-200">Chargement rapide et animations fluides</p>
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.section>
+
       {/* Testimonials Section */}
       <motion.section 
         id="testimonials"
@@ -597,18 +954,69 @@ export default function LandingPage() {
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={index}
-                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300"
+                className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 relative overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 2 + index * 0.1 }}
                 whileHover={{ scale: 1.02 }}
               >
-                <div className="text-4xl mb-4">{testimonial.avatar}</div>
-                <p className="text-blue-100 mb-6 leading-relaxed">
+                {/* Effet de brillance au hover */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.6 }}
+                />
+                
+                {/* Avatar avec image */}
+                <div className="relative mb-6">
+                  <motion.div
+                    className="w-16 h-16 rounded-full overflow-hidden mx-auto border-2 border-white/20 shadow-lg"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <img 
+                      src={testimonial.avatar} 
+                      alt={testimonial.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </motion.div>
+                  
+                  {/* Badge de vérification */}
+                  <motion.div
+                    className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                    whileHover={{ scale: 1.2 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <CheckCircle className="w-4 h-4 text-white" />
+                  </motion.div>
+                  
+                  {/* Effet de halo */}
+                  <motion.div
+                    className="absolute inset-0 w-16 h-16 bg-gradient-primary rounded-full mx-auto blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                  />
+                </div>
+                
+                {/* Étoiles de notation */}
+                <div className="flex justify-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: 2.2 + index * 0.1 + i * 0.1 }}
+                    >
+                      <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <p className="text-blue-100 mb-6 leading-relaxed text-center">
                   "{testimonial.content}"
                 </p>
-                <div>
-                  <div className="text-white font-semibold">{testimonial.name}</div>
+                
+                <div className="text-center">
+                  <div className="text-white font-semibold mb-1">{testimonial.name}</div>
                   <div className="text-blue-300 text-sm">{testimonial.role}</div>
                 </div>
               </motion.div>
