@@ -161,7 +161,7 @@ export function Badge({
   const baseClasses = 'inline-flex items-center font-medium rounded-full backdrop-blur-sm border';
   
   const variantClasses = {
-    default: 'bg-white/60 text-surface-700 border-white/30',
+    default: 'bg-white/60 text-white border-white/30',
     primary: 'bg-primary-500/20 text-primary-700 border-primary-300/50',
     secondary: 'bg-secondary-500/20 text-secondary-700 border-secondary-300/50',
     success: 'bg-green-500/20 text-green-700 border-green-300/50',

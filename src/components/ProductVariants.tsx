@@ -129,7 +129,7 @@ export function ProductVariants({
             className="text-center py-12 border-2 border-dashed border-surface-300 rounded-2xl"
           >
             <Settings className="w-12 h-12 text-surface-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-surface-700 mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Aucune variante définie
             </h3>
             <p className="text-surface-500 mb-6">
@@ -191,7 +191,7 @@ export function ProductVariants({
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Variant Name */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-surface-700">
+                    <label className="block text-sm font-semibold text-white">
                       Nom de la variante *
                     </label>
                     <input
@@ -208,7 +208,7 @@ export function ProductVariants({
                   
                   {/* Variant Options */}
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-surface-700">
+                    <label className="block text-sm font-semibold text-white">
                       Options disponibles *
                     </label>
                     <div className="space-y-2">
@@ -266,7 +266,7 @@ export function ProductVariants({
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-4 p-4 bg-surface-50 rounded-xl"
                   >
-                    <h4 className="text-sm font-semibold text-surface-700 mb-2">
+                    <h4 className="text-sm font-semibold text-white mb-2">
                       Aperçu :
                     </h4>
                     <div className="flex flex-wrap gap-2">

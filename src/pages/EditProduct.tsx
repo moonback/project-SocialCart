@@ -212,7 +212,7 @@ export default function EditProduct() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/products')}
-                className="p-2 rounded-xl bg-surface-100 text-surface-700"
+                className="p-2 rounded-xl bg-surface-100 text-white"
               >
                 <ArrowLeft className="w-5 h-5" />
               </motion.button>
@@ -265,7 +265,7 @@ export default function EditProduct() {
           <div className="space-y-4">
             {/* Product Name */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Nom du produit *
               </label>
               <input
@@ -282,7 +282,7 @@ export default function EditProduct() {
 
             {/* Price */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Prix *
               </label>
               <div className="relative">
@@ -305,7 +305,7 @@ export default function EditProduct() {
             {/* Category and Brand */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-surface-700">
+                <label className="block text-sm font-semibold text-white">
                   Catégorie
                 </label>
                 <select
@@ -323,7 +323,7 @@ export default function EditProduct() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-surface-700">
+                <label className="block text-sm font-semibold text-white">
                   Marque
                 </label>
                 <select
@@ -343,7 +343,7 @@ export default function EditProduct() {
 
             {/* Description */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Description complète *
               </label>
               <textarea
@@ -359,7 +359,7 @@ export default function EditProduct() {
 
             {/* Short Description */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Description courte
               </label>
               <textarea
@@ -394,7 +394,7 @@ export default function EditProduct() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* SKU */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Référence (SKU)
               </label>
               <div className="relative">
@@ -411,7 +411,7 @@ export default function EditProduct() {
 
             {/* Weight */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Poids (kg)
               </label>
               <div className="relative">
@@ -430,7 +430,7 @@ export default function EditProduct() {
 
             {/* Compare Price */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Prix comparatif
               </label>
               <div className="relative">
@@ -449,7 +449,7 @@ export default function EditProduct() {
 
             {/* Cost Price */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Prix de revient
               </label>
               <div className="relative">
@@ -488,7 +488,7 @@ export default function EditProduct() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Status */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Statut du produit
               </label>
               <select
@@ -505,7 +505,7 @@ export default function EditProduct() {
 
             {/* Inventory Quantity */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Quantité en stock
               </label>
               <input
@@ -529,7 +529,7 @@ export default function EditProduct() {
                   onChange={(e) => setFormData(prev => ({ ...prev, inventoryTracking: e.target.checked }))}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm font-semibold text-surface-700">Suivi d'inventaire</span>
+                <span className="text-sm font-semibold text-white">Suivi d'inventaire</span>
               </label>
               <p className="text-xs text-surface-500">Suivre automatiquement le stock</p>
             </div>
@@ -543,7 +543,7 @@ export default function EditProduct() {
                   onChange={(e) => setFormData(prev => ({ ...prev, allowBackorder: e.target.checked }))}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm font-semibold text-surface-700">Autoriser les commandes en attente</span>
+                <span className="text-sm font-semibold text-white">Autoriser les commandes en attente</span>
               </label>
               <p className="text-xs text-surface-500">Permettre les commandes même sans stock</p>
             </div>
@@ -557,7 +557,7 @@ export default function EditProduct() {
                   onChange={(e) => setFormData(prev => ({ ...prev, requiresShipping: e.target.checked }))}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm font-semibold text-surface-700">Nécessite une expédition</span>
+                <span className="text-sm font-semibold text-white">Nécessite une expédition</span>
               </label>
               <p className="text-xs text-surface-500">Produit physique nécessitant un envoi</p>
             </div>
@@ -571,7 +571,7 @@ export default function EditProduct() {
                   onChange={(e) => setFormData(prev => ({ ...prev, taxable: e.target.checked }))}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm font-semibold text-surface-700">Assujetti aux taxes</span>
+                <span className="text-sm font-semibold text-white">Assujetti aux taxes</span>
               </label>
               <p className="text-xs text-surface-500">Produit soumis à la TVA</p>
             </div>
@@ -597,7 +597,7 @@ export default function EditProduct() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Titre SEO
               </label>
               <input
@@ -612,7 +612,7 @@ export default function EditProduct() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-surface-700">
+              <label className="block text-sm font-semibold text-white">
                 Description SEO
               </label>
               <textarea

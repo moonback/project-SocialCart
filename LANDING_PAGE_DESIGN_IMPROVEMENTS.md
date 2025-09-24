@@ -38,7 +38,7 @@ bg-gradient-to-br from-primary-50 via-primary-100 to-surface-50
 ### **3. Navigation Cohérente**
 - **Background** : `bg-gradient-glass` avec `border-primary-200/20`
 - **Logo** : `bg-gradient-primary` avec `shadow-glow`
-- **Menu** : `text-surface-700` avec `hover:text-primary-600`
+- **Menu** : `text-white` avec `hover:text-primary-600`
 - **Boutons** : Design glassmorphism cohérent
 
 ### **4. Section Hero Améliorée**
@@ -49,7 +49,7 @@ bg-gradient-to-br from-primary-50 via-primary-100 to-surface-50
 
 ### **5. Statistiques Redesignées**
 - **Icônes** : `bg-gradient-primary` avec `shadow-glow`
-- **Textes** : `text-surface-900`, `text-surface-700`, `text-surface-500`
+- **Textes** : `text-surface-900`, `text-white`, `text-surface-500`
 - **Effets** : Halos et animations avec couleurs de marque
 
 ### **6. Fonctionnalités Glassmorphism**
@@ -70,7 +70,7 @@ bg-gradient-glass-blue
 
 /* Couleurs de surface */
 text-surface-900
-text-surface-700
+text-white
 text-surface-600
 text-surface-500
 

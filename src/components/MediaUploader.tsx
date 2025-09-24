@@ -158,7 +158,7 @@ export function MediaUploader({
     <div className={`space-y-6 ${className}`}>
       {/* Video Upload */}
       <div className="space-y-4">
-        <label className="block text-sm font-semibold text-surface-700">
+        <label className="block text-sm font-semibold text-white">
           Vidéo principale (optionnel)
         </label>
         
@@ -230,7 +230,7 @@ export function MediaUploader({
 
       {/* Image Upload */}
       <div className="space-y-4">
-        <label className="block text-sm font-semibold text-surface-700">
+        <label className="block text-sm font-semibold text-white">
           Images du produit
         </label>
         

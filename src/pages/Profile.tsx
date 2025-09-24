@@ -401,7 +401,7 @@ export default function Profile() {
                       </h3>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Nom complet
                           </label>
                           <input
@@ -414,7 +414,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Nom d'utilisateur
                           </label>
                           <input
@@ -425,7 +425,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Email
                           </label>
                           <input
@@ -436,7 +436,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Localisation
                           </label>
                           <input
@@ -449,7 +449,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Bio
                           </label>
                           <textarea
@@ -475,7 +475,7 @@ export default function Profile() {
                       </h3>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Points de fidélité
                           </label>
                           <div className="flex items-center space-x-2">
@@ -489,7 +489,7 @@ export default function Profile() {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Membre depuis
                           </label>
                           <input
@@ -500,7 +500,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Site web
                           </label>
                           <input
@@ -513,7 +513,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             Instagram
                           </label>
                           <input
@@ -526,7 +526,7 @@ export default function Profile() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-surface-700 mb-2">
+                          <label className="block text-sm font-semibold text-white mb-2">
                             TikTok
                           </label>
                           <input
@@ -1017,7 +1017,7 @@ export default function Profile() {
                           {achievement.title}
                         </h3>
                         <p className={`text-sm mb-3 ${
-                          achievement.earned ? 'text-surface-700' : 'text-surface-500'
+                          achievement.earned ? 'text-white' : 'text-surface-500'
                         }`}>
                           {achievement.description}
                         </p>

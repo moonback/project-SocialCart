@@ -317,7 +317,7 @@ export default function CreateProduct() {
               >
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-4">
+                    <label className="block text-sm font-semibold text-white mb-4">
                       Catégorie *
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -346,7 +346,7 @@ export default function CreateProduct() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-3">
+                    <label className="block text-sm font-semibold text-white mb-3">
                       Marque (optionnel)
                     </label>
                     <select
@@ -398,7 +398,7 @@ export default function CreateProduct() {
                   {/* Informations de base */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Nom du produit *
                       </label>
                       <input
@@ -417,7 +417,7 @@ export default function CreateProduct() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Prix *
                       </label>
                       <div className="relative">
@@ -441,7 +441,7 @@ export default function CreateProduct() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-sm font-semibold text-white mb-2">
                       Description courte
                     </label>
                     <input
@@ -454,7 +454,7 @@ export default function CreateProduct() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-sm font-semibold text-white mb-2">
                       Description complète *
                     </label>
                     <textarea
@@ -480,7 +480,7 @@ export default function CreateProduct() {
                   {/* Informations supplémentaires */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Référence (SKU)
                       </label>
                       <input
@@ -493,7 +493,7 @@ export default function CreateProduct() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Poids (kg)
                       </label>
                       <input
@@ -509,7 +509,7 @@ export default function CreateProduct() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Prix comparatif
                       </label>
                       <input
@@ -523,7 +523,7 @@ export default function CreateProduct() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Prix de revient (optionnel)
                       </label>
                       <input
@@ -540,7 +540,7 @@ export default function CreateProduct() {
                   {/* Stock et statut */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Quantité en stock
                       </label>
                       <input
@@ -553,7 +553,7 @@ export default function CreateProduct() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-surface-700 mb-2">
+                      <label className="block text-sm font-semibold text-white mb-2">
                         Statut du produit
                       </label>
                       <select
@@ -581,7 +581,7 @@ export default function CreateProduct() {
                           onChange={(e) => setFormData(prev => ({ ...prev, inventoryTracking: e.target.checked }))}
                           className="w-5 h-5 text-primary-600 rounded"
                         />
-                        <span className="text-surface-700">Suivi des stocks</span>
+                        <span className="text-white">Suivi des stocks</span>
                       </label>
 
                       <label className="flex items-center space-x-3">
@@ -591,7 +591,7 @@ export default function CreateProduct() {
                           onChange={(e) => setFormData(prev => ({ ...prev, allowBackorder: e.target.checked }))}
                           className="w-5 h-5 text-primary-600 rounded"
                         />
-                        <span className="text-surface-700">Autoriser les commandes en attente</span>
+                        <span className="text-white">Autoriser les commandes en attente</span>
                       </label>
 
                       <label className="flex items-center space-x-3">
@@ -601,7 +601,7 @@ export default function CreateProduct() {
                           onChange={(e) => setFormData(prev => ({ ...prev, requiresShipping: e.target.checked }))}
                           className="w-5 h-5 text-primary-600 rounded"
                         />
-                        <span className="text-surface-700">Nécessite une livraison</span>
+                        <span className="text-white">Nécessite une livraison</span>
                       </label>
 
                       <label className="flex items-center space-x-3">
@@ -611,7 +611,7 @@ export default function CreateProduct() {
                           onChange={(e) => setFormData(prev => ({ ...prev, taxable: e.target.checked }))}
                           className="w-5 h-5 text-primary-600 rounded"
                         />
-                        <span className="text-surface-700">Taxable</span>
+                        <span className="text-white">Taxable</span>
                       </label>
                     </div>
                   </div>
@@ -630,7 +630,7 @@ export default function CreateProduct() {
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all ${
                 currentStep === 1
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-white text-surface-700 hover:bg-gray-50 shadow-md'
+                  : 'bg-white text-white hover:bg-gray-50 shadow-md'
               }`}
             >
               <ArrowLeft className="w-5 h-5" />

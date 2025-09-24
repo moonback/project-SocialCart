@@ -49,7 +49,7 @@ export function LandingNavigation() {
               <motion.button
                 key={item.label}
                 onClick={() => scrollToSection(item.href)}
-                className="text-surface-700 hover:text-primary-600 font-medium transition-colors duration-300"
+                className="text-white hover:text-primary-600 font-medium transition-colors duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

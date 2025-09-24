@@ -259,9 +259,9 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
                   className="absolute top-18 right-18 w-12 h-12 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-xl shadow-large border border-surface-200 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-glow z-20"
                 >
                   {isInfoPanelCollapsed ? (
-                    <ChevronLeft className="w-5 h-5 text-surface-700" />
+                    <ChevronLeft className="w-5 h-5 text-white" />
                   ) : (
-                    <ChevronRight className="w-5 h-5 text-surface-700" />
+                    <ChevronRight className="w-5 h-5 text-white" />
                   )}
                 </button>
 
@@ -291,7 +291,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
                       onClick={goToPreviousProduct}
                       className="w-10 h-10 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-xl shadow border border-surface-200 flex items-center justify-center transition-all duration-200 hover:scale-105"
                     >
-                      <ChevronUp className="w-5 h-5 text-surface-700" />
+                      <ChevronUp className="w-5 h-5 text-white" />
                     </button>
                   )}
                   {currentIndex < products.length - 1 && (
@@ -299,7 +299,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
                       onClick={goToNextProduct}
                       className="w-10 h-10 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-xl shadow border border-surface-200 flex items-center justify-center transition-all duration-200 hover:scale-105"
                     >
-                      <ChevronDown className="w-5 h-5 text-surface-700" />
+                      <ChevronDown className="w-5 h-5 text-white" />
                     </button>
                   )}
                 </div>
