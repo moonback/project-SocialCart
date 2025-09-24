@@ -13,16 +13,18 @@ import {
   MoreVertical,
   UserPlus,
   Maximize,
-  X
+  X,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserAvatar } from './UserAvatar';
 import { CommentsModal } from './CommentsModal';
 import { ShareModal } from './ShareModal';
 import { Product as ProductFromProducts, ProductVariant } from '../lib/products';
-import { Product as ProductFromSupabase } from '../lib/supabase';
+import { Product as ProductFromSupabase, supabase } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { useSocial } from '../hooks/useSocial';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -50,11 +52,14 @@ export function VideoFeed({ products }: VideoFeedProps) {
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const { 
     toggleLike, 
     toggleBookmark, 
@@ -137,6 +142,78 @@ export function VideoFeed({ products }: VideoFeedProps) {
 
   const handleReport = () => {
     toast.success('Signalement envoyé');
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      if (!user) {
+        toast.error('Vous devez être connecté pour supprimer un produit');
+        return;
+      }
+
+      console.log('Suppression définitive du produit:', productId);
+      
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId)
+        .eq('seller_id', user.id);
+      
+      if (error) {
+        console.error('Erreur Supabase:', error);
+        throw error;
+      }
+      
+      toast.success('Produit supprimé définitivement');
+      setShowDeleteConfirm(false);
+      setShowActionsMenu(false);
+      
+      // Optionnel: rediriger ou actualiser la liste
+      // navigate('/');
+    } catch (error: unknown) {
+      console.error('Erreur lors de la suppression:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      toast.error('Erreur lors de la suppression du produit: ' + errorMessage);
+    }
+  };
+
+  const handleDisableProduct = async (productId: string) => {
+    try {
+      if (!user) {
+        toast.error('Vous devez être connecté pour désactiver un produit');
+        return;
+      }
+
+      console.log('Désactivation du produit:', productId);
+      
+      const { error } = await supabase
+        .from('products')
+        .update({ status: 'inactive' })
+        .eq('id', productId)
+        .eq('seller_id', user.id);
+      
+      if (error) {
+        console.error('Erreur Supabase:', error);
+        throw error;
+      }
+      
+      toast.success('Produit désactivé avec succès');
+      setShowDeleteConfirm(false);
+      setShowActionsMenu(false);
+      
+      // Optionnel: rediriger ou actualiser la liste
+      // navigate('/');
+    } catch (error: unknown) {
+      console.error('Erreur lors de la désactivation:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      toast.error('Erreur lors de la désactivation du produit: ' + errorMessage);
+    }
+  };
+
+  const openDeleteConfirm = (productId: string) => {
+    setProductToDelete(productId);
+    setShowDeleteConfirm(true);
+    setShowActionsMenu(false);
   };
 
   const toggleFullscreen = () => {
@@ -253,7 +330,50 @@ export function VideoFeed({ products }: VideoFeedProps) {
       className="h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide video-feed"
       onScroll={handleScroll}
     >
-      {products.map((product, index) => (
+      {products.length === 0 ? (
+        <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-6 p-8"
+          >
+            <div className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center mx-auto border border-white/20">
+              <svg 
+                className="w-12 h-12 text-white/60" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={1.5} 
+                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" 
+                />
+              </svg>
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-2xl font-bold text-white drop-shadow-lg">
+                Aucune vidéo disponible
+              </h3>
+              <p className="text-white/70 text-lg max-w-md mx-auto leading-relaxed">
+                Il n'y a actuellement aucun produit à afficher. 
+                Revenez plus tard pour découvrir de nouveaux contenus !
+              </p>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-white/10 backdrop-blur-md text-white rounded-2xl font-medium hover:bg-white/20 transition-all duration-300 border border-white/20 shadow-lg"
+            >
+              Actualiser
+            </motion.button>
+          </motion.div>
+        </div>
+      ) : (
+        products.map((product, index) => (
         <motion.div 
           key={product.id} 
           className="h-screen snap-start relative flex items-center justify-center bg-black group"
@@ -541,6 +661,26 @@ export function VideoFeed({ products }: VideoFeedProps) {
                             </p>
                           </div>
                         </motion.button>
+
+                        {/* Delete Button - Only show if it's the user's own product */}
+                        {user && product.user_id === user.id && (
+                          <motion.button
+                            whileHover={{ scale: 1.02, y: -2 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              openDeleteConfirm(product.id);
+                            }}
+                            className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl bg-red-500/20 backdrop-blur-md hover:bg-red-500/30 transition-all duration-300 border border-red-400/30 shadow-lg"
+                          >
+                            <div className="w-10 h-10 bg-red-500/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-red-400/30">
+                              <Trash2 className="w-5 h-5 text-red-300" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <span className="text-red-200 font-medium">Supprimer</span>
+                              <p className="text-sm text-red-300/80">Supprimer ce produit</p>
+                            </div>
+                          </motion.button>
+                        )}
                       </div>
 
                       {/* Close Button */}
@@ -748,7 +888,8 @@ export function VideoFeed({ products }: VideoFeedProps) {
             )}
           </AnimatePresence>
         </motion.div>
-      ))}
+      ))
+      )}
 
       {/* Comments Modal */}
       <CommentsModal
@@ -763,6 +904,86 @@ export function VideoFeed({ products }: VideoFeedProps) {
         isOpen={showShare}
         onClose={() => setShowShare(false)}
       />
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[99999]"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
+              className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 max-w-md w-full mx-4 border border-white/20 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col space-y-4">
+                {/* Header */}
+                <div className="text-center pb-2">
+                  <div className="w-16 h-16 bg-red-500/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 border border-red-400/30">
+                    <Trash2 className="w-8 h-8 text-red-300" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white drop-shadow-lg">Supprimer le produit</h3>
+                  <p className="text-sm text-white/80 mt-2">
+                    Que souhaitez-vous faire avec ce produit ?
+                  </p>
+                </div>
+
+                {/* Options */}
+                <div className="space-y-3">
+                  {/* Disable Option */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => productToDelete && handleDisableProduct(productToDelete)}
+                    className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl bg-blue-500/20 backdrop-blur-md hover:bg-blue-500/30 transition-all duration-300 border border-blue-400/30 shadow-lg"
+                  >
+                    <div className="w-10 h-10 bg-blue-500/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-blue-400/30">
+                      <Flag className="w-5 h-5 text-blue-300" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <span className="text-blue-200 font-medium">Désactiver temporairement</span>
+                      <p className="text-sm text-blue-300/80">Masquer le produit (récupérable plus tard)</p>
+                    </div>
+                  </motion.button>
+
+                  {/* Delete Option */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => productToDelete && handleDeleteProduct(productToDelete)}
+                    className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl bg-red-500/20 backdrop-blur-md hover:bg-red-500/30 transition-all duration-300 border border-red-400/30 shadow-lg"
+                  >
+                    <div className="w-10 h-10 bg-red-500/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-red-400/30">
+                      <Trash2 className="w-5 h-5 text-red-300" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <span className="text-red-200 font-medium">Supprimer définitivement</span>
+                      <p className="text-sm text-red-300/80">Suppression irréversible</p>
+                    </div>
+                  </motion.button>
+                </div>
+
+                {/* Cancel Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="w-full py-3 bg-white/10 backdrop-blur-md text-white/80 rounded-2xl font-medium hover:bg-white/20 transition-all duration-300 border border-white/20 shadow-lg"
+                >
+                  Annuler
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
