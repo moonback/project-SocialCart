@@ -31,10 +31,11 @@ interface VideoFeedProduct extends ProductFromProducts {
 
 interface DesktopVideoFeedProps {
   products: VideoFeedProduct[];
+  onProductDeleted?: () => void;
 }
 
 
-export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) => {
+export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, onProductDeleted }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isInfoPanelCollapsed, setIsInfoPanelCollapsed] = useState(false);
 
@@ -180,16 +181,20 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
     const success = await productService.deleteProduct(productId, user.id);
     if (success) {
       closeAllModals();
+      // Rafraîchir la liste des produits
+      onProductDeleted?.();
     }
-  }, [user, closeAllModals]);
+  }, [user, closeAllModals, onProductDeleted]);
 
   const handleDisableProduct = useCallback(async (productId: string) => {
     if (!user) return;
     const success = await productService.disableProduct(productId, user.id);
     if (success) {
       closeAllModals();
+      // Rafraîchir la liste des produits
+      onProductDeleted?.();
     }
-  }, [user, closeAllModals]);
+  }, [user, closeAllModals, onProductDeleted]);
 
   const handleReport = useCallback(() => {
     if (currentProduct) {
@@ -271,50 +276,41 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
               </div>
 
                 {/* Boutons de navigation */}
-                <div className={`absolute top-1/2 transform -translate-y-1/2 flex flex-col space-y-6 transition-all duration-300 ${
+                <div className={`absolute top-1/2 -translate-y-1/2 flex flex-col space-y-2 transition-all duration-300 ${
                   isInfoPanelCollapsed ? 'right-18' : 'right-32'
                 }`}>
-                 {currentIndex > 0 && (
-                   <button
-                     onClick={goToPreviousProduct}
-                     className="w-14 h-14 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-2xl shadow-large border border-surface-200 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-glow"
-                   >
-                     <ChevronUp className="w-7 h-7 text-surface-700" />
-                   </button>
-                 )}
-                 {currentIndex < products.length - 1 && (
-                   <button
-                     onClick={goToNextProduct}
-                     className="w-14 h-14 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-2xl shadow-large border border-surface-200 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-glow"
-                   >
-                     <ChevronDown className="w-7 h-7 text-surface-700" />
-                   </button>
-                 )}
-               </div>
+                  {currentIndex > 0 && (
+                    <button
+                      onClick={goToPreviousProduct}
+                      className="w-10 h-10 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-xl shadow border border-surface-200 flex items-center justify-center transition-all duration-200 hover:scale-105"
+                    >
+                      <ChevronUp className="w-5 h-5 text-surface-700" />
+                    </button>
+                  )}
+                  {currentIndex < products.length - 1 && (
+                    <button
+                      onClick={goToNextProduct}
+                      className="w-10 h-10 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-xl shadow border border-surface-200 flex items-center justify-center transition-all duration-200 hover:scale-105"
+                    >
+                      <ChevronDown className="w-5 h-5 text-surface-700" />
+                    </button>
+                  )}
+                </div>
 
                 {/* Statistiques de likes sur la vidéo/image */}
-                <div className={`absolute bottom-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200 transition-all duration-300 ${
-                  isInfoPanelCollapsed ? 'left-18' : 'left-18'
-                }`}>
-                 <div className="flex items-center space-x-4">
-                   <Heart className={`w-7 h-7 ${isLiked(currentProduct.id) ? 'text-red-500 fill-current' : 'text-surface-600'} drop-shadow-sm`} />
-                   <span className="text-surface-900 font-display font-bold text-xl">
-                     {currentProduct.likes_count}
-                   </span>
-                 </div>
-               </div>
+                <div className="absolute bottom-18 left-18 bg-glass-white backdrop-blur-md rounded-2xl px-3 py-2 shadow-large border border-surface-200 flex items-center space-x-2 transition-all duration-300">
+                  <Heart className={`w-5 h-5 ${isLiked(currentProduct.id) ? 'text-red-500 fill-current' : 'text-surface-600'}`} />
+                  <span className="text-white font-bold text-base">{currentProduct.likes_count}</span>
+                </div>
 
                 {/* Indicateur de navigation */}
-                <div className={`absolute bottom-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200 transition-all duration-300 ${
+                <div className={`absolute bottom-18 bg-glass-white backdrop-blur-md rounded-xl px-3 py-2 shadow-large border border-surface-200 transition-all duration-300 ${
                   isInfoPanelCollapsed ? 'right-18' : 'right-32'
                 }`}>
-                 <div className="flex items-center space-x-3">
-                   <span className="text-surface-600 text-sm font-inter">Produit</span>
-                   <span className="text-surface-900 font-display font-bold text-lg">
-                     {currentIndex + 1} / {products.length}
-                   </span>
-                 </div>
-               </div>
+                  <span className="text-white text-xs font-inter">
+                    {currentIndex + 1} / {products.length}
+                  </span>
+                </div>
              </div>
 
           </motion.div>

@@ -15,16 +15,17 @@ interface VideoFeedProduct extends ProductFromProducts {
 
 interface AdaptiveVideoFeedProps {
   products: VideoFeedProduct[];
+  onProductDeleted?: () => void;
 }
 
-export const AdaptiveVideoFeed: React.FC<AdaptiveVideoFeedProps> = ({ products }) => {
+export const AdaptiveVideoFeed: React.FC<AdaptiveVideoFeedProps> = ({ products, onProductDeleted }) => {
   const { isDesktop } = useScreenSize();
 
   // Sur desktop (>= 1024px), utiliser le feed desktop avec sidebar pour le choix des produits
   if (isDesktop) {
-    return <DesktopVideoFeed products={products} />;
+    return <DesktopVideoFeed products={products} onProductDeleted={onProductDeleted} />;
   }
 
   // Sur mobile/tablette, utiliser le feed mobile classique
-  return <VideoFeed products={products} />;
+  return <VideoFeed products={products} onProductDeleted={onProductDeleted} />;
 };

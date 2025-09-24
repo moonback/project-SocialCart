@@ -7,66 +7,69 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const products = await ProductService.getProducts();
-        
-        // Convertir les produits de la BDD vers le format attendu par VideoFeed
-        const formattedProducts = products.map(product => ({
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          image_url: product.primary_image_url || (product.images && product.images[0]) || '',
-          images: product.images || [],
-          video_url: product.video_url || undefined,
-          variants: [], // Les variantes sont stockées dans les tags
-          likes_count: product.likes_count || 0,
-          seller_id: product.seller_id,
-          user: {
-            id: product.seller_id,
-            email: product.seller?.email || 'user@example.com',
-            username: product.seller?.username || 'Utilisateur',
-            loyalty_points: product.seller?.loyalty_points || 0,
-            created_at: product.created_at,
-            avatar_url: product.seller?.avatar_url || undefined,
-          },
+  const loadProducts = async () => {
+    try {
+      const products = await ProductService.getProducts();
+      
+      // Convertir les produits de la BDD vers le format attendu par VideoFeed
+      const formattedProducts = products.map(product => ({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image_url: product.primary_image_url || (product.images && product.images[0]) || '',
+        images: product.images || [],
+        video_url: product.video_url || undefined,
+        variants: [], // Les variantes sont stockées dans les tags
+        likes_count: product.likes_count || 0,
+        seller_id: product.seller_id,
+        user: {
+          id: product.seller_id,
+          email: product.seller?.email || 'user@example.com',
+          username: product.seller?.username || 'Utilisateur',
+          loyalty_points: product.seller?.loyalty_points || 0,
           created_at: product.created_at,
-        }));
-        
-        setProducts(formattedProducts);
-      } catch (error) {
-        console.error('Error loading products:', error);
-        // En cas d'erreur, utiliser des données mockées
-        const mockProducts = [
-          {
+          avatar_url: product.seller?.avatar_url || undefined,
+        },
+        created_at: product.created_at,
+      }));
+      
+      setProducts(formattedProducts);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      // En cas d'erreur, utiliser des données mockées
+      const mockProducts = [
+        {
+          id: '1',
+          name: 'Écouteurs Sans Fil Pro',
+          description: 'Qualité sonore exceptionnelle avec réduction de bruit active 🎧 #tech #audio #musique',
+          price: 129.99,
+          image_url: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          images: ['https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'],
+          variants: [],
+          likes_count: 1234,
+          seller_id: '1',
+          user: {
             id: '1',
-            name: 'Écouteurs Sans Fil Pro',
-            description: 'Qualité sonore exceptionnelle avec réduction de bruit active 🎧 #tech #audio #musique',
-            price: 129.99,
-            image_url: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-            images: ['https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'],
-            variants: [],
-            likes_count: 1234,
-            seller_id: '1',
-            user: {
-              id: '1',
-              email: 'user@example.com',
-              username: 'techguru',
-              loyalty_points: 500,
-              created_at: '2024-01-01',
-            },
+            email: 'user@example.com',
+            username: 'techguru',
+            loyalty_points: 500,
             created_at: '2024-01-01',
-          }
-        ];
-        setProducts(mockProducts);
-      } finally {
-        setLoading(false);
-      }
+          },
+          created_at: '2024-01-01',
+        }
+      ];
+      setProducts(mockProducts);
+    }
+  };
+
+  useEffect(() => {
+    const initializeProducts = async () => {
+      await loadProducts();
+      setLoading(false);
     };
 
-    loadProducts();
+    initializeProducts();
   }, []);
 
   if (loading) {
@@ -106,5 +109,5 @@ export default function Home() {
     );
   }
 
-  return <AdaptiveVideoFeed products={products} />;
+  return <AdaptiveVideoFeed products={products} onProductDeleted={loadProducts} />;
 }

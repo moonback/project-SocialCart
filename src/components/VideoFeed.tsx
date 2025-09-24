@@ -31,9 +31,10 @@ interface VideoFeedProduct extends ProductFromProducts {
 
 interface VideoFeedProps {
   products: VideoFeedProduct[];
+  onProductDeleted?: () => void;
 }
 
-export function VideoFeed({ products }: VideoFeedProps) {
+export function VideoFeed({ products, onProductDeleted }: VideoFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -144,8 +145,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
     const success = await productService.deleteProduct(productId, user.id);
     if (success) {
       closeAllModals();
+      // Rafraîchir la liste des produits
+      onProductDeleted?.();
     }
-  }, [user, closeAllModals]);
+  }, [user, closeAllModals, onProductDeleted]);
 
   const handleDisableProduct = useCallback(async (productId: string) => {
     if (!user) return;
@@ -153,8 +156,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
     const success = await productService.disableProduct(productId, user.id);
     if (success) {
       closeAllModals();
+      // Rafraîchir la liste des produits
+      onProductDeleted?.();
     }
-  }, [user, closeAllModals]);
+  }, [user, closeAllModals, onProductDeleted]);
 
   const handleReport = useCallback(() => {
     if (currentProduct) {
