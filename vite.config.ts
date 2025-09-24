@@ -27,6 +27,10 @@ export default defineConfig({
   base: '/',
   server: {
     port: 3000,
-    host: true
+    host: true,
+    // S'assurer que les fichiers statiques sont servis correctement
+    fs: {
+      strict: false
+    }
   }
 });

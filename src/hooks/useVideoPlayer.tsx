@@ -23,7 +23,7 @@ export function useVideoPlayer(): VideoPlayerState & VideoPlayerActions & {
   videoRefs: React.MutableRefObject<{ [key: string]: HTMLVideoElement | null }>;
 } {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [autoPlay, setAutoPlay] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [showControls, setShowControls] = useState(false);
@@ -88,9 +88,21 @@ export function useVideoPlayer(): VideoPlayerState & VideoPlayerActions & {
     if (autoPlay) {
       const video = videoRefs.current[productId];
       if (video && video.paused) {
+        // Essayer de jouer la vidéo
         video.play().catch((error) => {
-          if (error.name !== 'AbortError') {
+          if (error.name === 'NotAllowedError') {
+            // L'autoplay est bloqué, on mute la vidéo et on réessaie
+            video.muted = true;
+            setIsMuted(true);
+            video.play().catch((retryError) => {
+              if (retryError.name !== 'AbortError') {
+                console.warn('Autoplay bloqué même en mode muet:', retryError);
+                setIsPlaying(false);
+              }
+            });
+          } else if (error.name !== 'AbortError') {
             console.error('Erreur de lecture vidéo:', error);
+            setIsPlaying(false);
           }
         });
         setIsPlaying(true);
