@@ -28,6 +28,7 @@ import { UserAvatar } from '../UserAvatar';
 import { ProductCard } from '../ProductCard';
 import { StatsPanel } from '../VideoFeed/StatsPanel';
 import { RecommendationsPanel } from '../VideoFeed/RecommendationsPanel';
+import { getCategoryName, getBrandName } from '../../lib/categories';
 
 interface DesktopProductDetailProps {
   product: Product;
@@ -318,7 +319,14 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                   
                   <div className="text-right">
                     <div className="text-sm text-gray-500">Stock disponible</div>
-                    <div className="font-semibold text-green-600">12 unités</div>
+                    <div className={`font-semibold ${
+                      !product.inventory_tracking ? 'text-blue-600' :
+                      (product.inventory_quantity || 0) > 10 ? 'text-green-600' : 
+                      (product.inventory_quantity || 0) > 0 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {!product.inventory_tracking ? 'Illimité' :
+                       (product.inventory_quantity || 0) > 0 ? `${product.inventory_quantity} unités` : 'Rupture de stock'}
+                    </div>
                   </div>
                 </div>
 
@@ -402,18 +410,98 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                       
                       {activeTab === 'specifications' && (
                         <div className="space-y-3">
-                          <div className="flex justify-between py-2 border-b border-gray-100">
-                            <span className="text-gray-600">Référence</span>
-                            <span className="font-medium">{product.sku || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between py-2 border-b border-gray-100">
-                            <span className="text-gray-600">Poids</span>
-                            <span className="font-medium">{product.weight ? `${product.weight} kg` : 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between py-2 border-b border-gray-100">
-                            <span className="text-gray-600">Catégorie</span>
-                            <span className="font-medium">{product.category || 'N/A'}</span>
-                          </div>
+                          {/* Vérifier s'il y a des spécifications à afficher */}
+                          {!product.sku && !product.weight && !product.dimensions && !product.category_id && !product.brand_id && !product.tags?.length ? (
+                            <div className="text-center py-8 text-gray-500">
+                              <Info className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                              <p>Aucune caractéristique technique disponible</p>
+                            </div>
+                          ) : (
+                            <>
+                              {product.sku && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Référence</span>
+                              <span className="font-medium">{product.sku}</span>
+                            </div>
+                          )}
+                          {product.weight && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Poids</span>
+                              <span className="font-medium">{product.weight} kg</span>
+                            </div>
+                          )}
+                          {product.dimensions && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Dimensions</span>
+                              <span className="font-medium">{product.dimensions}</span>
+                            </div>
+                          )}
+                          {product.category_id && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Catégorie</span>
+                              <span className="font-medium">{getCategoryName(product.category_id)}</span>
+                            </div>
+                          )}
+                          {product.brand_id && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Marque</span>
+                              <span className="font-medium">{getBrandName(product.brand_id)}</span>
+                            </div>
+                          )}
+                          {product.status && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Statut</span>
+                              <span className={`font-medium capitalize ${
+                                product.status === 'active' ? 'text-green-600' : 'text-gray-600'
+                              }`}>
+                                {product.status === 'active' ? 'Disponible' : product.status}
+                              </span>
+                            </div>
+                          )}
+                          {typeof product.inventory_quantity === 'number' && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Stock</span>
+                              <span className={`font-medium ${
+                                product.inventory_quantity > 10 ? 'text-green-600' : 
+                                product.inventory_quantity > 0 ? 'text-yellow-600' : 'text-red-600'
+                              }`}>
+                                {product.inventory_quantity > 0 ? `${product.inventory_quantity} unités` : 'Rupture de stock'}
+                              </span>
+                            </div>
+                          )}
+                          {product.tags && product.tags.length > 0 && (
+                            <div className="py-2 border-b border-gray-100">
+                              <span className="text-gray-600 block mb-2">Tags</span>
+                              <div className="flex flex-wrap gap-1">
+                                {product.tags.map((tag, index) => (
+                                  <span 
+                                    key={index}
+                                    className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {product.requires_shipping !== undefined && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Livraison requise</span>
+                              <span className="font-medium">
+                                {product.requires_shipping ? 'Oui' : 'Non'}
+                              </span>
+                            </div>
+                          )}
+                          {product.taxable !== undefined && (
+                            <div className="flex justify-between py-2 border-b border-gray-100">
+                              <span className="text-gray-600">Taxable</span>
+                              <span className="font-medium">
+                                {product.taxable ? 'Oui' : 'Non'}
+                              </span>
+                            </div>
+                          )}
+                            </>
+                          )}
                         </div>
                       )}
                       
