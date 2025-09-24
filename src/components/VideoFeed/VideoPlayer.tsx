@@ -5,7 +5,6 @@ import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 interface VideoPlayerProps {
   videoUrl?: string;
   imageUrl: string;
-  productId: string;
   productName: string;
   isPlaying: boolean;
   isMuted: boolean;
@@ -26,7 +25,6 @@ interface VideoPlayerProps {
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   videoUrl,
   imageUrl,
-  productId,
   productName,
   isPlaying,
   isMuted,
@@ -120,7 +118,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <img
           src={imageUrl}
           alt={productName}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105
+            sm:object-contain sm:h-auto sm:max-h-[60vh] sm:mx-auto"
+          style={{
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            width: '100%',
+            height: '100%',
+            objectFit: window.innerWidth < 640 ? 'cover' : 'contain'
+          }}
         />
       )}
       

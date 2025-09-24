@@ -1,15 +1,12 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronUp, ChevronDown, Grid, List, Filter, Search, Maximize2 } from 'lucide-react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Heart, ChevronUp, ChevronDown } from 'lucide-react';
 import { VideoPlayer } from './VideoPlayer';
 import { ActionButtons } from './ActionButtons';
-import { ProductInfo } from './ProductInfo';
 import { ActionsMenu } from './ActionsMenu';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { InfoPanel } from './InfoPanel';
 import { EmptyState } from './EmptyState';
-import { StatsPanel } from './StatsPanel';
-import { RecommendationsPanel } from './RecommendationsPanel';
 import { CommentsModal } from '../CommentsModal';
 import { ShareModal } from '../ShareModal';
 import { UserAvatar } from '../UserAvatar';
@@ -37,14 +34,9 @@ interface DesktopVideoFeedProps {
   products: VideoFeedProduct[];
 }
 
-type ViewMode = 'grid' | 'list' | 'focus';
 
 export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Hooks
   const { addToCart } = useCart();
@@ -90,50 +82,69 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
     closeAllModals,
   } = useVideoFeedModals();
 
-  // Produits filtrés
-  const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const matchesSearch = searchTerm === '' || 
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.user.username.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = selectedCategory === 'all' || 
-        product.category === selectedCategory;
-      
-      return matchesSearch && matchesCategory;
-    });
-  }, [products, searchTerm, selectedCategory]);
-
   const currentProduct = useMemo(() => 
-    filteredProducts[currentIndex], 
-    [filteredProducts, currentIndex]
+    products[currentIndex], 
+    [products, currentIndex]
   );
 
-  // Categories disponibles
-  const categories = useMemo(() => {
-    const cats = new Set(products.map(p => p.category).filter(Boolean));
-    return ['all', ...Array.from(cats)];
-  }, [products]);
-
-  // Handlers
+  // Handlers pour la navigation
   const handleProductSelect = useCallback((index: number) => {
     pauseAllVideos();
     setCurrentIndex(index);
-    if (filteredProducts[index]?.video_url) {
+    if (products[index]?.video_url) {
       setTimeout(() => {
-        playVideo(filteredProducts[index].id);
+        playVideo(products[index].id);
       }, 100);
     }
-    recordView(filteredProducts[index].id);
-  }, [filteredProducts, pauseAllVideos, playVideo, recordView]);
+    recordView(products[index].id);
+  }, [products, pauseAllVideos, playVideo, recordView]);
 
-  const handleRecommendationSelect = useCallback((productId: string) => {
-    const index = filteredProducts.findIndex(p => p.id === productId);
-    if (index !== -1) {
-      handleProductSelect(index);
+  const goToNextProduct = useCallback(() => {
+    if (currentIndex < products.length - 1) {
+      handleProductSelect(currentIndex + 1);
     }
-  }, [filteredProducts, handleProductSelect]);
+  }, [currentIndex, products.length, handleProductSelect]);
+
+  const goToPreviousProduct = useCallback(() => {
+    if (currentIndex > 0) {
+      handleProductSelect(currentIndex - 1);
+    }
+  }, [currentIndex, handleProductSelect]);
+
+  // Gestion du scroll pour changer de produit
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY > 0) {
+      // Scroll vers le bas = produit suivant
+      goToNextProduct();
+    } else {
+      // Scroll vers le haut = produit précédent
+      goToPreviousProduct();
+    }
+  }, [goToNextProduct, goToPreviousProduct]);
+
+  // Gestion des événements de scroll et clavier
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        goToPreviousProduct();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        goToNextProduct();
+      }
+    };
+
+    // Ajouter les événements
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Nettoyer les événements
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleWheel, goToNextProduct, goToPreviousProduct]);
 
   const handleBuyNow = useCallback((product: VideoFeedProduct) => {
     const productForCart: ProductFromSupabase = {
@@ -186,186 +197,29 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
     }
   }, [currentProduct]);
 
-  if (!filteredProducts.length) {
+
+  if (!products.length) {
     return <EmptyState />;
   }
 
   return (
-    <div className="h-screen flex bg-gray-50">
-      {/* Sidebar gauche - Liste des produits */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        {/* Header avec recherche et filtres */}
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Rechercher des produits..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded-lg">
-              <Filter className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Mode de vue */}
-          <div className="flex items-center space-x-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <Grid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('focus')}
-              className={`p-2 rounded ${viewMode === 'focus' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <Maximize2 className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Catégories */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full mt-3 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>
-                {cat === 'all' ? 'Toutes les catégories' : cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Liste des produits */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin">
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-2 gap-2 p-2">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  onClick={() => handleProductSelect(index)}
-                  className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                    index === currentIndex 
-                      ? 'border-blue-500 shadow-lg' 
-                      : 'border-transparent hover:border-gray-300'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="relative aspect-square">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                    {product.video_url && (
-                      <div className="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center">
-                        <div className="w-0 h-0 border-l-[6px] border-l-white border-y-[3px] border-y-transparent ml-0.5" />
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                      <p className="text-white text-xs font-medium truncate">{product.name}</p>
-                      <p className="text-white/80 text-xs">€{product.price}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-2 p-2">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  onClick={() => handleProductSelect(index)}
-                  className={`cursor-pointer rounded-lg p-3 border-2 transition-all ${
-                    index === currentIndex 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-transparent hover:bg-gray-50'
-                  }`}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <div className="flex space-x-3">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 truncate">{product.name}</h3>
-                      <p className="text-sm text-gray-500 truncate">{product.description}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="font-semibold text-blue-600">€{product.price}</span>
-                        <div className="flex items-center space-x-1">
-                          <UserAvatar 
-                            avatarUrl={product.user.avatar_url}
-                            username={product.user.username}
-                            size="sm"
-                            className="w-5 h-5"
-                          />
-                          <span className="text-xs text-gray-500">@{product.user.username}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Navigation */}
-        <div className="p-4 border-t border-gray-200 flex justify-between items-center">
-          <button
-            onClick={() => handleProductSelect(Math.max(0, currentIndex - 1))}
-            disabled={currentIndex === 0}
-            className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronUp className="w-5 h-5" />
-          </button>
-          <span className="text-sm text-gray-500">
-            {currentIndex + 1} / {filteredProducts.length}
-          </span>
-          <button
-            onClick={() => handleProductSelect(Math.min(filteredProducts.length - 1, currentIndex + 1))}
-            disabled={currentIndex === filteredProducts.length - 1}
-            className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronDown className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+    <div className="h-screen flex bg-surface-50 font-inter">
 
       {/* Zone principale - Vidéo/Produit */}
-      <div className="flex-1 relative bg-black">
+      <div className="flex-1 relative bg-white">
         {currentProduct && (
           <motion.div
             key={currentProduct.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="h-full flex"
+            className="fixed top-16 left-0 right-96 bottom-0 bg-white flex items-center justify-center"
           >
-            {/* Zone vidéo/image */}
-            <div className="flex-1 relative">
+             {/* Zone vidéo/image - Centrée avec fond blanc */}
+             <div className="relative w-full h-full flex items-center justify-center bg-white">
               <VideoPlayer
                 videoUrl={currentProduct.video_url}
                 imageUrl={currentProduct.image_url}
-                productId={currentProduct.id}
                 productName={currentProduct.name}
                 isPlaying={isPlaying}
                 isMuted={isMuted}
@@ -386,7 +240,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
               />
 
               {/* Boutons d'action flottants */}
-              <div className="absolute top-4 right-4 flex flex-col space-y-2">
+               <div className="absolute top-18 right-18 flex flex-col space-y-4">
                 <ActionButtons
                   productId={currentProduct.id}
                   userId={currentProduct.user_id}
@@ -399,27 +253,72 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                   onNavigateToProfile={() => navigate('/profile')}
                 />
               </div>
+
+               {/* Boutons de navigation */}
+               <div className="absolute top-1/2 right-18 transform -translate-y-1/2 flex flex-col space-y-6">
+                 {currentIndex > 0 && (
+                   <button
+                     onClick={goToPreviousProduct}
+                     className="w-14 h-14 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-2xl shadow-large border border-surface-200 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-glow"
+                   >
+                     <ChevronUp className="w-7 h-7 text-surface-700" />
+                   </button>
+                 )}
+                 {currentIndex < products.length - 1 && (
+                   <button
+                     onClick={goToNextProduct}
+                     className="w-14 h-14 bg-glass-white hover:bg-glass-white-strong backdrop-blur-md rounded-2xl shadow-large border border-surface-200 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-glow"
+                   >
+                     <ChevronDown className="w-7 h-7 text-surface-700" />
+                   </button>
+                 )}
+               </div>
+
+               {/* Statistiques de likes sur la vidéo/image */}
+               <div className="absolute bottom-18 left-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200">
+                 <div className="flex items-center space-x-4">
+                   <Heart className={`w-7 h-7 ${isLiked(currentProduct.id) ? 'text-red-500 fill-current' : 'text-surface-600'} drop-shadow-sm`} />
+                   <span className="text-surface-900 font-display font-bold text-xl">
+                     {currentProduct.likes_count}
+                   </span>
+                 </div>
+               </div>
+
+               {/* Indicateur de navigation */}
+               <div className="absolute bottom-18 right-18 bg-glass-white backdrop-blur-md rounded-2xl px-6 py-4 shadow-large border border-surface-200">
+                 <div className="flex items-center space-x-3">
+                   <span className="text-surface-600 text-sm font-inter">Produit</span>
+                   <span className="text-surface-900 font-display font-bold text-lg">
+                     {currentIndex + 1} / {products.length}
+                   </span>
+                 </div>
+               </div>
+             </div>
+
+          </motion.div>
+        )}
             </div>
 
-            {/* Panneau d'informations à droite */}
-            <div className="w-96 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
+      {/* Panneau d'informations à droite - Fixed */}
+      {currentProduct && (
+        <div className="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10">
               {/* Informations produit */}
-              <div className="p-6 border-b border-gray-200">
+          <div className="p-6 border-b border-surface-200">
                 <div className="flex items-center space-x-3 mb-4">
                   <UserAvatar 
                     avatarUrl={currentProduct.user.avatar_url}
                     username={currentProduct.user.username}
                     size="lg"
-                    className="w-12 h-12"
+                    className="w-10 h-10"
                   />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">@{currentProduct.user.username}</h3>
+                    <h3 className="font-display font-medium text-surface-900 text-sm">@{currentProduct.user.username}</h3>
                     <button
                       onClick={() => toggleFollow(currentProduct.user_id)}
-                      className={`text-sm px-3 py-1 rounded-full transition-all ${
+                      className={`text-xs px-3 py-1.5 rounded-xl transition-all font-inter ${
                         isFollowing(currentProduct.user_id)
-                          ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'bg-surface-200 text-surface-700 hover:bg-surface-300'
+                          : 'bg-primary-600 text-white hover:bg-primary-700 shadow-medium'
                       }`}
                     >
                       {isFollowing(currentProduct.user_id) ? 'Suivi' : 'Suivre'}
@@ -427,28 +326,30 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                   </div>
                 </div>
 
-                <h2 className="text-xl font-bold text-gray-900 mb-2">{currentProduct.name}</h2>
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                  {currentProduct.description}
+                <h2 className="text-base font-display font-semibold text-surface-900 mb-3">{currentProduct.name}</h2>
+                <p className="text-surface-600 text-sm mb-4 leading-relaxed font-inter">
+                  {currentProduct.description.length > 150 
+                    ? `${currentProduct.description.substring(0, 150)}...` 
+                    : currentProduct.description}
                 </p>
 
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-bold text-blue-600">€{currentProduct.price}</span>
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <span className="text-xl font-display font-bold text-primary-600">€{currentProduct.price}</span>
+                  <div className="flex items-center space-x-3 text-xs text-surface-500 font-inter">
                     <span>{currentProduct.likes_count} likes</span>
                   </div>
                 </div>
 
-                <div className="flex space-x-2">
+                <div className="flex space-x-4">
                   <button
                     onClick={() => handleBuyNow(currentProduct)}
-                    className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    className="flex-1 bg-primary-600 text-white py-3 rounded-2xl font-display font-semibold hover:bg-primary-700 transition-all duration-300 shadow-medium hover:shadow-large"
                   >
                     Acheter maintenant
                   </button>
                   <button
                     onClick={() => navigate(`/product/${currentProduct.id}`)}
-                    className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-3 border border-surface-300 text-surface-700 rounded-2xl hover:bg-surface-50 transition-all duration-300 font-inter"
                   >
                     Voir détails
                   </button>
@@ -456,42 +357,22 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
               </div>
 
               {/* Contenu scrollable */}
-              <div className="flex-1 overflow-y-auto scrollbar-thin">
-                {/* Statistiques du produit */}
-                <div className="p-4 border-b border-gray-200">
-                  <StatsPanel
-                    product={currentProduct}
-                    isLiked={isLiked(currentProduct.id)}
-                    viewersCount={Math.floor(Math.random() * 100) + 50} // Simulation de viewers en temps réel
-                  />
-                </div>
-
-                {/* Recommandations */}
-                <div className="p-4 border-b border-gray-200">
-                  <RecommendationsPanel
-                    currentProduct={currentProduct}
-                    allProducts={products}
-                    onProductSelect={handleRecommendationSelect}
-                  />
-                </div>
-
+          <div className="flex-1 overflow-y-auto scrollbar-thin p-6">
                 {/* Zone de commentaires */}
-                <div className="p-4">
+            <div className="mb-6">
                   <button
                     onClick={() => setShowComments(true)}
-                    className="w-full p-4 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors"
+                className="w-full p-4 border border-surface-200 rounded-2xl text-surface-500 hover:bg-surface-50 transition-all duration-300 font-inter"
                   >
                     Voir les commentaires
                   </button>
                 </div>
 
                 {/* Espace supplémentaire pour le scroll */}
-                <div className="h-20"></div>
+            <div className="h-32"></div>
               </div>
             </div>
-          </motion.div>
         )}
-      </div>
 
       {/* Modales */}
       <ActionsMenu

@@ -21,7 +21,7 @@ interface AdaptiveVideoFeedProps {
 export const AdaptiveVideoFeed: React.FC<AdaptiveVideoFeedProps> = ({ products }) => {
   const { isDesktop } = useScreenSize();
 
-  // Sur desktop (>= 1024px), utiliser le feed desktop optimisé
+  // Sur desktop (>= 1024px), utiliser le feed desktop avec sidebar pour le choix des produits
   if (isDesktop) {
     return <DesktopVideoFeed products={products} />;
   }
