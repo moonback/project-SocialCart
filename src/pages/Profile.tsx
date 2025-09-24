@@ -333,164 +333,164 @@ export default function Profile() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="card-glass p-6"
+                className="card-glass p-4"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-surface-900">Informations du compte</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-surface-900">Compte</h2>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsEditing(!isEditing)}
-                    className="btn-secondary px-4 py-2 flex items-center space-x-2"
+                    className="btn-secondary px-3 py-1.5 flex items-center space-x-1.5 text-sm"
                   >
                     {isEditing ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                     <span>{isEditing ? 'Annuler' : 'Modifier'}</span>
                   </motion.button>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Nom complet
                     </label>
                     <input
                       type="text"
                       value={isEditing ? editingFields.full_name : (profile?.full_name || '')}
-                      onChange={(e) => setEditingFields(prev => ({ ...prev, full_name: e.target.value }))}
-                      className="input w-full"
+                      onChange={e => setEditingFields(prev => ({ ...prev, full_name: e.target.value }))}
+                      className="input w-full text-sm"
                       readOnly={!isEditing}
-                      placeholder="Votre nom complet"
+                      placeholder="Nom complet"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Nom d'utilisateur
                     </label>
                     <input
                       type="text"
                       value={user.username}
-                      className="input w-full"
+                      className="input w-full text-sm"
                       readOnly
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Email
                     </label>
                     <input
                       type="email"
                       value={user.email}
-                      className="input w-full"
+                      className="input w-full text-sm"
                       readOnly
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
-                      Date d'inscription
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
+                      Inscrit le
                     </label>
                     <input
                       type="text"
                       value={formatDate(profile?.created_at || user.created_at)}
-                      className="input w-full"
+                      className="input w-full text-sm"
                       readOnly
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
-                      Points de fidélité
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
+                      Points
                     </label>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1.5">
                       <input
                         type="text"
                         value={(profile?.loyalty_points || 0).toLocaleString()}
-                        className="input w-full"
+                        className="input w-full text-sm"
                         readOnly
                       />
-                      <Star className="w-5 h-5 text-yellow-500" />
+                      <Star className="w-4 h-4 text-yellow-500" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Localisation
                     </label>
                     <input
                       type="text"
                       value={isEditing ? editingFields.location : (profile?.location || '')}
-                      onChange={(e) => setEditingFields(prev => ({ ...prev, location: e.target.value }))}
-                      className="input w-full"
+                      onChange={e => setEditingFields(prev => ({ ...prev, location: e.target.value }))}
+                      className="input w-full text-sm"
                       readOnly={!isEditing}
-                      placeholder="Votre ville, pays"
+                      placeholder="Ville, pays"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Bio
                     </label>
                     <textarea
                       value={isEditing ? editingFields.bio : (profile?.bio || '')}
-                      onChange={(e) => setEditingFields(prev => ({ ...prev, bio: e.target.value }))}
-                      className="input w-full h-24 resize-none"
+                      onChange={e => setEditingFields(prev => ({ ...prev, bio: e.target.value }))}
+                      className="input w-full h-16 resize-none text-sm"
                       readOnly={!isEditing}
-                      placeholder="Parlez-nous de vous..."
+                      placeholder="À propos de vous..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Site web
                     </label>
                     <input
                       type="url"
                       value={isEditing ? editingFields.website_url : (profile?.website_url || '')}
-                      onChange={(e) => setEditingFields(prev => ({ ...prev, website_url: e.target.value }))}
-                      className="input w-full"
+                      onChange={e => setEditingFields(prev => ({ ...prev, website_url: e.target.value }))}
+                      className="input w-full text-sm"
                       readOnly={!isEditing}
-                      placeholder="https://votre-site.com"
+                      placeholder="https://site.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       Instagram
                     </label>
                     <input
                       type="text"
                       value={isEditing ? editingFields.instagram_handle : (profile?.instagram_handle || '')}
-                      onChange={(e) => setEditingFields(prev => ({ ...prev, instagram_handle: e.target.value }))}
-                      className="input w-full"
+                      onChange={e => setEditingFields(prev => ({ ...prev, instagram_handle: e.target.value }))}
+                      className="input w-full text-sm"
                       readOnly={!isEditing}
-                      placeholder="@votre_instagram"
+                      placeholder="@instagram"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-surface-700 mb-2">
+                    <label className="block text-xs font-semibold text-surface-700 mb-1">
                       TikTok
                     </label>
                     <input
                       type="text"
                       value={isEditing ? editingFields.tiktok_handle : (profile?.tiktok_handle || '')}
-                      onChange={(e) => setEditingFields(prev => ({ ...prev, tiktok_handle: e.target.value }))}
-                      className="input w-full"
+                      onChange={e => setEditingFields(prev => ({ ...prev, tiktok_handle: e.target.value }))}
+                      className="input w-full text-sm"
                       readOnly={!isEditing}
-                      placeholder="@votre_tiktok"
+                      placeholder="@tiktok"
                     />
                   </div>
                 </div>
 
                 {isEditing && (
-                  <div className="flex items-center space-x-3 mt-6 pt-6 border-t border-surface-200">
+                  <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-surface-200">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleSaveProfile}
-                      className="btn-primary px-6 py-2 flex items-center space-x-2"
+                      className="btn-primary px-4 py-1.5 flex items-center space-x-1.5 text-sm"
                     >
                       <Check className="w-4 h-4" />
-                      <span>Sauvegarder</span>
+                      <span>Sauver</span>
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleCancelEdit}
-                      className="btn-secondary px-6 py-2 flex items-center space-x-2"
+                      className="btn-secondary px-4 py-1.5 flex items-center space-x-1.5 text-sm"
                     >
                       <X className="w-4 h-4" />
                       <span>Annuler</span>

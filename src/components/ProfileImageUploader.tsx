@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Upload, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { Camera, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
@@ -181,13 +181,16 @@ export function ProfileImageUploader({
 
       {/* Camera Button */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.12, rotate: 6 }}
+        whileTap={{ scale: 0.92, rotate: -6 }}
         onClick={handleClick}
         disabled={isUploading}
-        className="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-2xl shadow-large flex items-center justify-center hover:bg-surface-50 transition-colors disabled:opacity-50"
+        aria-label="Changer la photo de profil"
+        title="Changer la photo de profil"
+        className="absolute -bottom-3 -left-3 w-14 h-14 bg-gradient-to-br from-blue-100 via-white to-surface-50 rounded-2xl shadow-xl flex items-center justify-center border-2 border-white hover:bg-blue-50 transition-all duration-150 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
       >
-        <Camera className="w-5 h-5 text-surface-600" />
+        <Camera className="w-6 h-6 text-blue-700" />
+        <span className="sr-only">Changer la photo de profil</span>
       </motion.button>
 
       {/* Hidden File Input */}

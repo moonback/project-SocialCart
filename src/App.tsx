@@ -32,37 +32,24 @@ function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center space-y-6 relative z-10"
+        className="text-center space-y-4 relative z-10"
       >
         <motion.div
-          className="w-20 h-20 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center mx-auto shadow-glass border border-white/30"
-          animate={{ 
-            rotate: [0, 360],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ 
-            rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-            scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          }}
+          className="w-16 h-16 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center mx-auto"
+          animate={{ rotate: [0, 360] }}
+          transition={{ rotate: { duration: 2, repeat: Infinity, ease: "linear" } }}
         >
-          <span className="text-white font-bold text-2xl">SC</span>
+          <span className="text-white font-bold text-xl">SC</span>
         </motion.div>
-        
-        <div className="space-y-3">
-          <h2 className="text-white text-2xl font-bold">{message}</h2>
-          <p className="text-white/80 text-lg">Préparation de votre expérience</p>
-        </div>
-        
-        <div className="w-64 h-2 bg-white/20 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-white/40 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 2, ease: "easeOut" }}
-          />
-        </div>
+        <h2 className="text-white text-xl font-semibold">{message}</h2>
+        <motion.div
+          className="w-40 h-1 bg-white/30 rounded-full mx-auto overflow-hidden"
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+        />
       </motion.div>
     </div>
   );
