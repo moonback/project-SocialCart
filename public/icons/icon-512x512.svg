@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="url(#gradient)"/>
+  
+  <!-- Shopping cart icon -->
+  <g transform="translate(128, 128)">
+    <!-- Cart body -->
+    <path d="M256 64C256 28.65 227.35 0 192 0C156.65 0 128 28.65 128 64C128 99.35 156.65 128 192 128C227.35 128 256 99.35 256 64Z" fill="white" opacity="0.9"/>
+    
+    <!-- Cart handle -->
+    <path d="M64 96H192C220.8 96 245.6 115.2 250.4 142.4L256 192H320C348.8 192 373.6 211.2 378.4 238.4L384 288H128L64 96Z" fill="white" opacity="0.9"/>
+    
+    <!-- Cart wheels -->
+    <circle cx="96" cy="320" r="24" fill="white" opacity="0.9"/>
+    <circle cx="224" cy="320" r="24" fill="white" opacity="0.9"/>
+    
+    <!-- Social elements -->
+    <circle cx="160" cy="160" r="8" fill="white" opacity="0.7"/>
+    <circle cx="192" cy="160" r="8" fill="white" opacity="0.7"/>
+    <circle cx="224" cy="160" r="8" fill="white" opacity="0.7"/>
+  </g>
+</svg>

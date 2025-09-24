@@ -101,13 +101,13 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                 </motion.button>
 
                 {/* Stories des utilisateurs suivis */}
-                {Object.values(storiesBySeller).map(({ seller, stories: sellerStories }) => {
+                {Object.values(storiesBySeller).map(({ seller, stories: sellerStories }, index) => {
                   const hasUnviewedStories = sellerStories.some(story => !story.is_viewed);
                   const latestStory = sellerStories[0]; // Stories triées par date décroissante
 
                   return (
                     <motion.button
-                      key={seller.id}
+                      key={`seller-${seller.id}-${index}`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleStoryClick(
