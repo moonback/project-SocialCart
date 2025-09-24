@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { CommentsModal } from './CommentsModal';
 import { ShareModal } from './ShareModal';
@@ -12,13 +12,15 @@ import { useVideoFeedModals } from '../hooks/useVideoFeedModals';
 import { useVideoFeedScroll } from '../hooks/useVideoFeedScroll';
 import { useNavigate } from 'react-router-dom';
 import { productService } from '../services/productService';
-import { VideoPlayer } from './VideoFeed/VideoPlayer';
-import { ActionButtons } from './VideoFeed/ActionButtons';
-import { ProductInfo } from './VideoFeed/ProductInfo';
-import { ActionsMenu } from './VideoFeed/ActionsMenu';
-import { DeleteConfirmModal } from './VideoFeed/DeleteConfirmModal';
-import { InfoPanel } from './VideoFeed/InfoPanel';
-import { EmptyState } from './VideoFeed/EmptyState';
+import {
+  VideoPlayer,
+  ActionButtons,
+  ProductInfo,
+  ActionsMenu,
+  DeleteConfirmModal,
+  InfoPanel,
+  EmptyState,
+} from './VideoFeed';
 
 interface VideoFeedProduct extends ProductFromProducts {
   image_url: string;
@@ -107,7 +109,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showActionsMenu, setShowActionsMenu]);
+  }, [showActionsMenu]);
 
   // Fonction mémorisée pour enregistrer une vue
   const handleRecordView = useCallback((productId: string) => {
@@ -216,6 +218,7 @@ export function VideoFeed({ products }: VideoFeedProps) {
     <div 
       ref={containerRef}
       className="h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide video-feed"
+      onScroll={onScroll}
     >
       {products.map((product, index) => (
         <motion.div 
