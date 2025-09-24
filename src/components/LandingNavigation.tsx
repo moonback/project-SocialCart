@@ -24,7 +24,7 @@ export function LandingNavigation() {
 
   return (
     <motion.nav 
-      className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20"
+      className="fixed top-0 left-0 right-0 z-50 bg-gradient-glass backdrop-blur-md border-b border-primary-200/20 shadow-glass"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -37,10 +37,10 @@ export function LandingNavigation() {
             onClick={() => scrollToSection('#hero')}
             whileHover={{ scale: 1.05 }}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow">
               <span className="text-white font-bold text-lg">SC</span>
             </div>
-            <span className="text-white text-xl font-bold">SocialCart</span>
+            <span className="text-surface-900 text-xl font-bold">SocialCart</span>
           </motion.div>
 
           {/* Desktop Menu */}
@@ -49,7 +49,7 @@ export function LandingNavigation() {
               <motion.button
                 key={item.label}
                 onClick={() => scrollToSection(item.href)}
-                className="text-white/90 hover:text-white font-medium transition-colors duration-300"
+                className="text-surface-700 hover:text-primary-600 font-medium transition-colors duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -64,7 +64,7 @@ export function LandingNavigation() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/auth')}
-              className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-semibold hover:bg-white/20 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-glass backdrop-blur-md border border-primary-200/30 rounded-xl text-primary-700 font-semibold hover:bg-gradient-glass-blue transition-all duration-300 shadow-glass"
             >
               Se connecter
             </motion.button>
@@ -73,7 +73,7 @@ export function LandingNavigation() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/auth')}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 flex items-center space-x-2 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-primary text-white font-semibold rounded-xl shadow-glow flex items-center space-x-2 transition-all duration-300"
             >
               <span>Commencer</span>
               <ArrowRight className="w-4 h-4" />
