@@ -341,6 +341,46 @@ export class ProductService {
     }
   }
 
+  // Récupérer les produits de l'utilisateur connecté
+  static async getUserProducts(): Promise<Product[]> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Utilisateur non authentifié');
+      }
+
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          seller:users!products_seller_id_fkey(
+            id,
+            username,
+            avatar_url,
+            email,
+            loyalty_points,
+            is_seller,
+            is_verified,
+            created_at,
+            updated_at
+          )
+        `)
+        .eq('seller_id', user.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching user products:', error);
+        throw new Error('Erreur lors de la récupération de vos produits');
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getUserProducts:', error);
+      throw error;
+    }
+  }
+
   // Incrémenter le compteur de vues
   static async incrementViews(id: string): Promise<void> {
     try {
