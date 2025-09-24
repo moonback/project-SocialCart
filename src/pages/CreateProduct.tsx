@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Package,
   DollarSign,
   AlertCircle,
   ArrowLeft,
@@ -11,9 +10,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { MediaUploader } from '../components/MediaUploader';
+import { ImageAnalysisPanel } from '../components/ImageAnalysisPanel';
 import { ProductVariants } from '../components/ProductVariants';
 import { ProductService, CreateProductData } from '../lib/products';
 import { getCategoryId, getBrandId } from '../lib/categories';
+import { ProductAnalysisResult } from '../lib/gemini';
 import toast from 'react-hot-toast';
 
 interface ProductVariant {
@@ -78,6 +79,7 @@ export default function CreateProduct() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showAnalysisPanel, setShowAnalysisPanel] = useState(false);
 
   const categories = [
     { value: 'electronics', label: 'Électronique', icon: '📱' },
@@ -116,6 +118,33 @@ export default function CreateProduct() {
 
   const handleVariantsChange = (variants: ProductVariant[]) => {
     setFormData(prev => ({ ...prev, variants }));
+  };
+
+  const handleAnalyzeImages = (files: File[]) => {
+    if (files.length > 0) {
+      setShowAnalysisPanel(true);
+    }
+  };
+
+  const handleApplyAnalysis = (result: ProductAnalysisResult) => {
+    setFormData(prev => ({
+      ...prev,
+      name: result.name || prev.name,
+      description: result.description || prev.description,
+      shortDescription: result.shortDescription || prev.shortDescription,
+      category: result.category || prev.category,
+      brand: result.brand || prev.brand,
+      price: result.price ? result.price.toString() : prev.price
+    }));
+    
+    // Si une catégorie a été détectée, passer à l'étape suivante
+    if (result.category && currentStep === 1) {
+      setTimeout(() => {
+        nextStep();
+      }, 500);
+    }
+    
+    toast.success('Informations appliquées avec succès!');
   };
 
   // Fonctions de navigation des étapes
@@ -234,18 +263,7 @@ export default function CreateProduct() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8"
         >
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              className="w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center mx-auto shadow-glow"
-            >
-              <Package className="w-10 h-10 text-white" />
-            </motion.div>
-            <h1 className="text-display text-4xl text-gradient">Créer un produit</h1>
-            <p className="text-surface-600 text-lg">Partagez vos produits avec la communauté</p>
-          </div>
+          
 
           {/* Indicateur d'étapes */}
           <div className="flex items-center justify-center space-x-4 mb-8">
@@ -350,6 +368,7 @@ export default function CreateProduct() {
                 <MediaUploader
                   onFilesChange={handleMediaFilesChange}
                   onVideoChange={handleVideoChange}
+                  onAnalyzeImages={handleAnalyzeImages}
                   maxFiles={8}
                   maxFileSize={10}
                   acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
@@ -664,6 +683,14 @@ export default function CreateProduct() {
           )}
         </motion.div>
       </div>
+
+      {/* Panel d'analyse IA */}
+      <ImageAnalysisPanel
+        imageFiles={formData.mediaFiles}
+        onApplyAnalysis={handleApplyAnalysis}
+        onClose={() => setShowAnalysisPanel(false)}
+        isOpen={showAnalysisPanel}
+      />
     </div>
   );
 }
