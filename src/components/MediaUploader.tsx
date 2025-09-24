@@ -11,12 +11,14 @@ import {
   Video,
   AlertCircle,
   CheckCircle,
-  Loader
+  Loader,
+  Sparkles
 } from 'lucide-react';
 
 interface MediaUploaderProps {
   onFilesChange: (files: File[]) => void;
   onVideoChange: (video: File | null) => void;
+  onAnalyzeImages?: (files: File[]) => void;
   maxFiles?: number;
   maxFileSize?: number; // in MB
   acceptedTypes?: string[];
@@ -28,6 +30,7 @@ interface MediaUploaderProps {
 export function MediaUploader({
   onFilesChange,
   onVideoChange,
+  onAnalyzeImages,
   maxFiles = 10,
   maxFileSize = 10,
   acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'],
@@ -303,9 +306,26 @@ export function MediaUploader({
 
         {/* File Info */}
         {files.length > 0 && (
-          <div className="flex items-center space-x-2 text-sm text-surface-600">
-            <CheckCircle className="w-4 h-4 text-green-500" />
-            <span>{files.length} fichier{files.length > 1 ? 's' : ''} sélectionné{files.length > 1 ? 's' : ''}</span>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2 text-sm text-surface-600">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              <span>{files.length} fichier{files.length > 1 ? 's' : ''} sélectionné{files.length > 1 ? 's' : ''}</span>
+            </div>
+            
+            {/* Analyse IA Button */}
+            {onAnalyzeImages && (
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onAnalyzeImages(files)}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2"
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Analyser avec l'IA</span>
+              </motion.button>
+            )}
           </div>
         )}
       </div>

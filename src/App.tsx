@@ -19,6 +19,7 @@ const CreateProduct = lazy(() => import('./pages/CreateProduct'));
 const ProductManagement = lazy(() => import('./pages/ProductManagement'));
 const EditProduct = lazy(() => import('./pages/EditProduct'));
 const Settings = lazy(() => import('./pages/Settings'));
+const TestGemini = lazy(() => import('./pages/TestGemini'));
 
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
@@ -137,6 +138,7 @@ function AppRoutes() {
               <Settings />
             </ProtectedRoute>
           } />
+          <Route path="test-gemini" element={<TestGemini />} />
         </Route>
       </Routes>
     </Suspense>
