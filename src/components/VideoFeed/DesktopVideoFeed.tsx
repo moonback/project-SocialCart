@@ -315,10 +315,10 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                     <h3 className="font-display font-medium text-surface-900 text-sm">@{currentProduct.user.username}</h3>
                     <button
                       onClick={() => toggleFollow(currentProduct.user_id)}
-                      className={`text-xs px-3 py-1.5 rounded-xl transition-all font-inter ${
+                      className={`text-xs px-2 py-1 rounded-lg transition-all font-inter ${
                         isFollowing(currentProduct.user_id)
-                          ? 'bg-surface-200 text-surface-700 hover:bg-surface-300'
-                          : 'bg-primary-600 text-white hover:bg-primary-700 shadow-medium'
+                          ? 'bg-surface-100 text-surface-600 hover:bg-surface-200'
+                          : 'bg-primary-500 text-white hover:bg-primary-600 shadow-soft'
                       }`}
                     >
                       {isFollowing(currentProduct.user_id) ? 'Suivi' : 'Suivre'}
@@ -340,16 +340,16 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
                   </div>
                 </div>
 
-                <div className="flex space-x-4">
+                <div className="flex space-x-3">
                   <button
                     onClick={() => handleBuyNow(currentProduct)}
-                    className="flex-1 bg-primary-600 text-white py-3 rounded-2xl font-display font-semibold hover:bg-primary-700 transition-all duration-300 shadow-medium hover:shadow-large"
+                    className="flex-1 bg-primary-500 text-white py-2.5 rounded-xl font-display font-medium hover:bg-primary-600 transition-all duration-300 shadow-soft hover:shadow-medium text-sm"
                   >
                     Acheter maintenant
                   </button>
                   <button
                     onClick={() => navigate(`/product/${currentProduct.id}`)}
-                    className="px-4 py-3 border border-surface-300 text-surface-700 rounded-2xl hover:bg-surface-50 transition-all duration-300 font-inter"
+                    className="px-3 py-2.5 border border-surface-200 text-surface-600 rounded-xl hover:bg-surface-50 hover:border-surface-300 transition-all duration-300 font-inter text-sm"
                   >
                     Voir détails
                   </button>
@@ -362,7 +362,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products }) 
             <div className="mb-6">
                   <button
                     onClick={() => setShowComments(true)}
-                className="w-full p-4 border border-surface-200 rounded-2xl text-surface-500 hover:bg-surface-50 transition-all duration-300 font-inter"
+                    className="w-full p-3 border border-surface-200 rounded-xl text-surface-500 hover:bg-surface-50 hover:border-surface-300 transition-all duration-300 font-inter text-sm"
                   >
                     Voir les commentaires
                   </button>
