@@ -4,7 +4,7 @@ import { DesktopVideoFeed } from './VideoFeed/DesktopVideoFeed';
 import { useScreenSize } from '../hooks/useScreenSize';
 import { Product as ProductFromProducts, ProductVariant } from '../lib/products';
 
-interface VideoFeedProduct extends ProductFromProducts {
+export interface VideoFeedProduct extends ProductFromProducts {
   image_url: string;
   user: {
     username: string;

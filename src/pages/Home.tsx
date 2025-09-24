@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { AdaptiveVideoFeed } from '../components/AdaptiveVideoFeed';
-import { ProductService, Product } from '../lib/products';
+import { AdaptiveVideoFeed, VideoFeedProduct } from '../components/AdaptiveVideoFeed';
+import { ProductService, ProductVariant } from '../lib/products';
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<VideoFeedProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadProducts = async () => {
@@ -12,54 +12,20 @@ export default function Home() {
       const products = await ProductService.getProducts();
       
       // Convertir les produits de la BDD vers le format attendu par VideoFeed
-      const formattedProducts = products.map(product => ({
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
+      const formattedProducts: VideoFeedProduct[] = products.map(product => ({
+        ...product,
         image_url: product.primary_image_url || (product.images && product.images[0]) || '',
-        images: product.images || [],
-        video_url: product.video_url || undefined,
-        variants: [], // Les variantes sont stockées dans les tags
-        likes_count: product.likes_count || 0,
-        seller_id: product.seller_id,
         user: {
-          id: product.seller_id,
-          email: product.seller?.email || 'user@example.com',
           username: product.seller?.username || 'Utilisateur',
-          loyalty_points: product.seller?.loyalty_points || 0,
-          created_at: product.created_at,
           avatar_url: product.seller?.avatar_url || undefined,
         },
-        created_at: product.created_at,
+        variants: [] as ProductVariant[], // Les variantes sont stockées dans les tags
       }));
       
       setProducts(formattedProducts);
     } catch (error) {
       console.error('Error loading products:', error);
-      // En cas d'erreur, utiliser des données mockées
-      const mockProducts = [
-        {
-          id: '1',
-          name: 'Écouteurs Sans Fil Pro',
-          description: 'Qualité sonore exceptionnelle avec réduction de bruit active 🎧 #tech #audio #musique',
-          price: 129.99,
-          image_url: 'https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-          images: ['https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'],
-          variants: [],
-          likes_count: 1234,
-          seller_id: '1',
-          user: {
-            id: '1',
-            email: 'user@example.com',
-            username: 'techguru',
-            loyalty_points: 500,
-            created_at: '2024-01-01',
-          },
-          created_at: '2024-01-01',
-        }
-      ];
-      setProducts(mockProducts);
+      setProducts([]);
     }
   };
 
@@ -94,7 +60,6 @@ export default function Home() {
           </motion.div>
           <div className="space-y-2">
             <h2 className="text-white text-xl font-semibold">Chargement...</h2>
-            <p className="text-white/70">Préparation de votre expérience shopping</p>
           </div>
           <div className="w-48 h-1 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
             <motion.div
