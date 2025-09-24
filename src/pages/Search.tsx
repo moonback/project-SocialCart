@@ -173,20 +173,36 @@ export default function Search() {
           </>
         )}
 
-        {/* Popular Searches */}
+        {/* Question d'engagement */}
         {!query && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Popular Searches</h3>
-            <div className="flex flex-wrap gap-2">
-              {['Earbuds', 'Smart Watch', 'Phone Case', 'Coffee', 'Skincare', 'Fitness'].map((term) => (
-                <button
-                  key={term}
-                  onClick={() => setQuery(term)}
-                  className="px-4 py-2 bg-white rounded-full text-sm hover:bg-gray-50 transition-colors"
-                >
-                  {term}
-                </button>
-              ))}
+          <div className="space-y-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-gradient-to-r from-primary-500 to-blue-600 rounded-2xl p-6 text-center shadow-lg"
+            >
+              <h3 className="text-xl font-bold text-white mb-2">
+                Qu'aimerais-tu regarder comme produit sur SocialCart ?
+              </h3>
+              <p className="text-white/80 text-sm mb-4">
+                Découvre des produits tendance et trouve ton coup de cœur !
+              </p>
+            </motion.div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-gray-900">Recherches populaires</h3>
+              <div className="flex flex-wrap gap-2">
+                {['Écouteurs', 'Montre connectée', 'Coque téléphone', 'Café', 'Soins visage', 'Fitness', 'Mode', 'Tech', 'Déco'].map((term) => (
+                  <button
+                    key={term}
+                    onClick={() => setQuery(term)}
+                    className="px-4 py-2 bg-white rounded-full text-sm hover:bg-gray-50 transition-colors shadow-sm"
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

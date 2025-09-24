@@ -25,13 +25,14 @@ export const EmptyState: React.FC = () => {
             />
           </svg>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h3 className="text-2xl font-bold text-white drop-shadow-lg">
-            Aucune vidéo disponible
+            Qu'aimerais-tu regarder comme produit sur SocialCart ?
           </h3>
-          <p className="text-white/70 text-lg max-w-md mx-auto leading-relaxed">
-            Il n'y a actuellement aucun produit à afficher. 
-            Revenez plus tard pour découvrir de nouveaux contenus !
+          <p className="text-white/80 text-lg max-w-md mx-auto leading-relaxed">
+            Il n'y a actuellement aucun produit à afficher, mais nous préparons 
+            de superbes contenus pour toi ! Revenez plus tard pour découvrir 
+            des produits tendance.
           </p>
         </div>
         <motion.button
