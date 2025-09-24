@@ -22,6 +22,7 @@ import { Product as ProductFromSupabase, ProductVariant as ProductVariantFromSup
 
 interface VideoFeedProduct extends ProductFromProducts {
   image_url: string;
+  compare_price?: number;
   user: {
     username: string;
     avatar_url?: string;
@@ -402,11 +403,34 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
                 </p>
 
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xl font-display font-bold text-primary-600">€{currentProduct.price}</span>
+                  <div className="flex flex-col">
+                    <span className="text-xl font-display font-bold text-primary-600">€{currentProduct.price}</span>
+                    {/* Prix de comparaison et économies */}
+                    {currentProduct.compare_price && currentProduct.compare_price > currentProduct.price && (
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-surface-400 line-through">€{currentProduct.compare_price}</span>
+                        <span className="text-xs bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-1 rounded-full font-semibold">
+                          -{Math.round((1 - currentProduct.price / currentProduct.compare_price) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex items-center space-x-3 text-xs text-surface-500 font-inter">
                     <span>{currentProduct.likes_count} likes</span>
                   </div>
                 </div>
+                
+                {/* Économies totales */}
+                {currentProduct.compare_price && currentProduct.compare_price > currentProduct.price && (
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">💰</span>
+                      <span className="text-sm font-semibold text-green-700">
+                        Économisez €{(currentProduct.compare_price - currentProduct.price).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Boutons d'action compacts */}
                 <div className="mb-4">

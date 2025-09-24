@@ -92,7 +92,7 @@ export default function ProductDetail() {
             video_url: dbProduct.video_url || undefined,
             variants: [], // Les variantes sont stockées dans les tags
             likes_count: dbProduct.likes_count || 0,
-            user_id: dbProduct.seller_id,
+            seller_id: dbProduct.seller_id,
             user: dbProduct.seller ? {
               id: dbProduct.seller.id,
               email: dbProduct.seller.email,
@@ -157,7 +157,7 @@ export default function ProductDetail() {
               { id: '2', name: 'Taille', options: ['Standard', 'Grand'] }
             ],
             likes_count: 1234,
-            user_id: '1',
+            seller_id: '1',
             user: {
               id: '1',
               email: 'user@example.com',
@@ -187,7 +187,7 @@ export default function ProductDetail() {
           images: p.images || [],
           variants: [],
           likes_count: p.likes_count || 0,
-          user_id: p.seller_id,
+          seller_id: p.seller_id,
           user: p.seller ? {
             id: p.seller.id,
             email: p.seller.email,
@@ -502,15 +502,20 @@ export default function ProductDetail() {
                 transition={{ duration: 0.2 }}
               />
               
-              {/* Badge de Réduction */}
+              {/* Badge de Réduction Amélioré */}
               {calculateDiscount() > 0 && (
                 <div className="absolute top-4 left-4">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg"
+                    initial={{ scale: 0, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl border-2 border-white"
                   >
-                    -{calculateDiscount()}%
+                    <div className="flex items-center space-x-1">
+                      <span className="text-lg">🔥</span>
+                      <span>-{calculateDiscount()}%</span>
+                    </div>
+                    <div className="text-xs opacity-90">PROMO</div>
                   </motion.div>
                 </div>
               )}
@@ -588,32 +593,47 @@ export default function ProductDetail() {
                 </div>
               </div>
               
-              {/* Prix avec Animation */}
+              {/* Prix avec Animation Améliorée */}
               <div className="text-right">
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center space-x-2"
+                  className="flex flex-col items-end space-y-1"
                 >
+                  {/* Prix actuel */}
                   <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                     {formatPrice(product.price)}
                   </span>
+                  
+                  {/* Prix de comparaison et économies */}
+                  {product.compare_price && product.compare_price > product.price && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex flex-col items-end space-y-1"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg text-gray-400 line-through">
+                          {formatPrice(product.compare_price)}
+                        </span>
+                        <motion.span 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                          className="text-sm bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full font-bold shadow-lg"
+                        >
+                          -{calculateDiscount()}%
+                        </motion.span>
+                      </div>
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg px-3 py-1">
+                        <span className="text-sm font-semibold text-green-700">
+                          Économisez {formatPrice(product.compare_price - product.price)}
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
                 </motion.div>
-                
-                {product.compare_price && product.compare_price > product.price && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center space-x-2 mt-1"
-                  >
-                    <p className="text-sm text-gray-500 line-through">
-                      {formatPrice(product.compare_price)}
-                    </p>
-                    <span className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded-full font-semibold">
-                      -{calculateDiscount()}%
-                    </span>
-                  </motion.div>
-                )}
               </div>
             </div>
             
@@ -783,18 +803,38 @@ export default function ProductDetail() {
                 </motion.button>
               </div>
               
-              {/* Prix Total */}
+              {/* Prix Total Amélioré */}
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-100">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-gray-700">Total</span>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    {formatPrice(product.price * quantity)}
-                  </span>
+                  <div className="text-right">
+                    <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                      {formatPrice(product.price * quantity)}
+                    </span>
+                    {product.compare_price && product.compare_price > product.price && (
+                      <div className="text-sm text-gray-400 line-through">
+                        {formatPrice(product.compare_price * quantity)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {quantity > 1 && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    Économisez {formatPrice(product.price * (quantity - 1))} en achetant plusieurs unités
-                  </p>
+                
+                {/* Économies totales */}
+                {(quantity > 1 || (product.compare_price && product.compare_price > product.price)) && (
+                  <div className="space-y-1">
+                    {quantity > 1 && (
+                      <p className="text-sm text-gray-600">
+                        Économisez {formatPrice(product.price * (quantity - 1))} en achetant plusieurs unités
+                      </p>
+                    )}
+                    {product.compare_price && product.compare_price > product.price && (
+                      <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-2 border border-green-200">
+                        <p className="text-sm font-semibold text-green-700">
+                          💰 Économie totale : {formatPrice((product.compare_price - product.price) * quantity)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

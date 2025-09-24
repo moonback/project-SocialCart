@@ -294,17 +294,29 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
                 </div>
               </div>
 
-              {/* Prix */}
+              {/* Prix Amélioré */}
               <div className="bg-white rounded-xl p-6 border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">€{finalPrice.toFixed(2)}</div>
+                  <div className="flex-1">
+                    {/* Prix actuel */}
+                    <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                      €{finalPrice.toFixed(2)}
+                    </div>
+                    
+                    {/* Prix de comparaison et économies */}
                     {product.compare_price && product.compare_price > finalPrice && (
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-lg text-gray-500 line-through">€{product.compare_price}</span>
-                        <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full font-semibold">
-                          -{Math.round((1 - finalPrice / product.compare_price) * 100)}%
-                        </span>
+                      <div className="mt-2 space-y-2">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg text-gray-400 line-through">€{product.compare_price.toFixed(2)}</span>
+                          <span className="text-sm bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full font-bold shadow-lg">
+                            -{Math.round((1 - finalPrice / product.compare_price) * 100)}%
+                          </span>
+                        </div>
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg px-3 py-2 w-fit">
+                          <span className="text-sm font-semibold text-green-700">
+                            💰 Économisez €{(product.compare_price - finalPrice).toFixed(2)}
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
