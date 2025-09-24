@@ -173,10 +173,14 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
       {/* Barre de progression */}
       <div className="absolute top-4 left-4 right-4 z-10">
         <div className="flex space-x-1">
-          {stories.map((_, index) => (
+          {stories.map((story, index) => (
             <div key={index} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-white rounded-full"
+                className={`h-full rounded-full transition-all duration-300 ${
+                  story.is_viewed 
+                    ? 'bg-white/60' // Stories vues : plus transparent
+                    : 'bg-white'   // Stories non vues : opaque
+                }`}
                 initial={{ width: 0 }}
                 animate={{ 
                   width: index < currentStoryIndex ? '100%' : 
@@ -206,10 +210,18 @@ export function StoriesFeed({ onClose, initialStoryIndex = 0 }: StoriesFeedProps
             )}
           </div>
           <div>
-            <p className="text-white font-semibold text-sm">{currentStory.seller_username}</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-white font-semibold text-sm">{currentStory.seller_username}</p>
+              {currentStory.is_viewed && (
+                <div className="w-2 h-2 bg-white/60 rounded-full" title="Story vue" />
+              )}
+            </div>
             <div className="flex items-center space-x-2 text-white/70 text-xs">
               <Clock className="w-3 h-3" />
               <span>{StoryService.formatTimeRemaining(timeRemaining)}</span>
+              {currentStory.is_viewed && (
+                <span className="text-white/50">• Vu</span>
+              )}
             </div>
           </div>
         </div>

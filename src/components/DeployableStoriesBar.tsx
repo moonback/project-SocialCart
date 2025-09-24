@@ -103,6 +103,8 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                 {/* Stories des utilisateurs suivis */}
                 {Object.values(storiesBySeller).map(({ seller, stories: sellerStories }, index) => {
                   const hasUnviewedStories = sellerStories.some(story => !story.is_viewed);
+                  const viewedStoriesCount = sellerStories.filter(story => story.is_viewed).length;
+                  const totalStoriesCount = sellerStories.length;
                   const latestStory = sellerStories[0]; // Stories triées par date décroissante
 
                   return (
@@ -117,20 +119,24 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
                     >
                       <div className="relative">
                         {/* Avatar avec bordure colorée si stories non vues */}
-                        <div className={`w-16 h-16 rounded-full p-0.5 ${
+                        <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
                           hasUnviewedStories 
-                            ? 'bg-gradient-to-br from-primary-500 to-primary-600' 
-                            : 'bg-gray-200'
+                            ? 'bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg' 
+                            : 'bg-gray-300 shadow-sm'
                         }`}>
                           <div className="w-full h-full rounded-full overflow-hidden bg-white p-0.5">
                             {seller.avatar_url ? (
                               <img
                                 src={seller.avatar_url}
                                 alt={seller.username}
-                                className="w-full h-full object-cover rounded-full"
+                                className={`w-full h-full object-cover rounded-full transition-all duration-300 ${
+                                  hasUnviewedStories ? 'brightness-100' : 'brightness-75'
+                                }`}
                               />
                             ) : (
-                              <div className="w-full h-full bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                              <div className={`w-full h-full bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-300 ${
+                                hasUnviewedStories ? 'brightness-100' : 'brightness-75'
+                              }`}>
                                 {seller.username.charAt(0).toUpperCase()}
                               </div>
                             )}
@@ -139,32 +145,68 @@ export function DeployableStoriesBar({ isOpen, onClose, onCreateStory }: Deploya
 
                         {/* Indicateur de temps restant */}
                         {latestStory && (
-                          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
-                            <Clock className="w-3 h-3 text-primary-600" />
+                          <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${
+                            hasUnviewedStories 
+                              ? 'bg-white' 
+                              : 'bg-gray-200'
+                          }`}>
+                            <Clock className={`w-3 h-3 transition-colors duration-300 ${
+                              hasUnviewedStories 
+                                ? 'text-primary-600' 
+                                : 'text-gray-500'
+                            }`} />
                           </div>
                         )}
 
-                        {/* Badge nombre de stories */}
-                        {sellerStories.length > 1 && (
-                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                            {sellerStories.length}
+                        {/* Badge nombre de stories avec état de visualisation */}
+                        {totalStoriesCount > 1 && (
+                          <div className={`absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
+                            hasUnviewedStories 
+                              ? 'bg-red-500' 
+                              : 'bg-gray-400'
+                          }`}>
+                            {totalStoriesCount}
+                          </div>
+                        )}
+
+                        {/* Indicateur de progression des stories vues */}
+                        {totalStoriesCount > 1 && (
+                          <div className="absolute -bottom-1 left-0 w-full h-1 bg-white/30 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-white transition-all duration-500 ease-out"
+                              style={{ 
+                                width: `${(viewedStoriesCount / totalStoriesCount) * 100}%` 
+                              }}
+                            />
                           </div>
                         )}
                       </div>
 
                       <div className="text-center">
-                        <span className="text-xs text-gray-600 font-medium block truncate max-w-16">
+                        <span className={`text-xs font-medium block truncate max-w-16 transition-colors duration-300 ${
+                          hasUnviewedStories 
+                            ? 'text-gray-800' 
+                            : 'text-gray-500'
+                        }`}>
                           {seller.username}
                         </span>
                         {latestStory && (
-                          <span className="text-xs text-gray-400">
+                          <span className={`text-xs transition-colors duration-300 ${
+                            hasUnviewedStories 
+                              ? 'text-gray-500' 
+                              : 'text-gray-400'
+                          }`}>
                             {StoryService.formatTimeRemaining(
                               StoryService.getTimeUntilExpiration(latestStory)
                             )}
                           </span>
                         )}
-                        <span className="text-xs text-primary-600 font-medium mt-1 block">
-                          Cliquez pour voir
+                        <span className={`text-xs font-medium mt-1 block transition-colors duration-300 ${
+                          hasUnviewedStories 
+                            ? 'text-primary-600' 
+                            : 'text-gray-400'
+                        }`}>
+                          {hasUnviewedStories ? 'Nouveau' : 'Vu'}
                         </span>
                       </div>
                     </motion.button>
