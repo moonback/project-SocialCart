@@ -104,6 +104,20 @@ export function ProductCard({
           </motion.div>
         </div>
 
+        {/* Discount Badge */}
+        {product.compare_price && product.compare_price > product.price && (
+          <div className="absolute top-3 left-16">
+            <motion.div
+              initial={{ scale: 0, rotate: -10 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white"
+            >
+              -{Math.round((1 - product.price / product.compare_price) * 100)}%
+            </motion.div>
+          </div>
+        )}
+
         {/* Quick Add Button */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -128,6 +142,24 @@ export function ProductCard({
           <h3 className="font-semibold text-surface-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
             {product.name}
           </h3>
+          
+          {/* Prix avec compare_price */}
+          <div className="flex items-center space-x-2">
+            <span className="text-lg font-bold text-primary-600">
+              ${product.price}
+            </span>
+            {product.compare_price && product.compare_price > product.price && (
+              <>
+                <span className="text-sm text-gray-400 line-through">
+                  ${product.compare_price}
+                </span>
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
+                  Économisez ${(product.compare_price - product.price).toFixed(2)}
+                </span>
+              </>
+            )}
+          </div>
+          
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <ProductUserAvatar 
