@@ -14,7 +14,6 @@ const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Payment = lazy(() => import('./pages/Payment'));
 const Auth = lazy(() => import('./pages/Auth'));
-const LiveShopping = lazy(() => import('./pages/LiveShopping'));
 const CreateProduct = lazy(() => import('./pages/CreateProduct'));
 const ProductManagement = lazy(() => import('./pages/ProductManagement'));
 const EditProduct = lazy(() => import('./pages/EditProduct'));
@@ -131,7 +130,6 @@ function AppRoutes() {
               <Payment />
             </ProtectedRoute>
           } />
-          <Route path="live" element={<LiveShopping />} />
           <Route path="settings" element={
             <ProtectedRoute>
               <Settings />
