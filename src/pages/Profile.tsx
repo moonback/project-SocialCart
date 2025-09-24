@@ -22,6 +22,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ProfileImageUploader } from '../components/ProfileImageUploader';
+import { UploadDebugger } from '../components/UploadDebugger';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -41,6 +42,7 @@ export default function Profile() {
     location.state?.showOrders ? 'orders' : 'profile'
   );
   const [isEditing, setIsEditing] = useState(false);
+  const [showUploadDebugger, setShowUploadDebugger] = useState(false);
   const [editingFields, setEditingFields] = useState({
     full_name: '',
     bio: '',
@@ -195,7 +197,7 @@ export default function Profile() {
                         updateProfile({ avatar_url: url });
                       }
                     }}
-                    userId={user.id}
+                    userId={user?.id || ''}
                   />
                   {/* Badge de vérification */}
                   {profile?.is_verified && (
@@ -204,6 +206,17 @@ export default function Profile() {
                     </div>
                   )}
                 </div>
+                
+                {/* Bouton de débogage upload */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowUploadDebugger(true)}
+                  className="mt-4 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-xl text-sm font-medium hover:bg-white/30 transition-all flex items-center space-x-2 mx-auto"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Diagnostic Upload</span>
+                </motion.button>
               </motion.div>
 
               {/* Profile Info */}
@@ -1063,6 +1076,13 @@ export default function Profile() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Upload Debugger Modal */}
+      <AnimatePresence>
+        {showUploadDebugger && (
+          <UploadDebugger onClose={() => setShowUploadDebugger(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

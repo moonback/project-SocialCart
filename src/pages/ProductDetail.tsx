@@ -13,6 +13,7 @@ import {
   Plus,
   Bookmark,
   Flag,
+  Package,
   ShieldCheck,
   Play
 } from 'lucide-react';
@@ -24,6 +25,7 @@ import { ProductCard } from '../components/ProductCard';
 import { ProductService } from '../lib/products';
 import { getCategoryName, getBrandName } from '../lib/categories';
 import { UserAvatar } from '../components/UserAvatar';
+import { ProductStories } from '../components/ProductStories';
 import toast from 'react-hot-toast';
 
 // Résout une URL d'avatar : si c'est un chemin de stockage, retourne l'URL publique
@@ -174,10 +176,15 @@ export default function ProductDetail() {
         }
 
         // Charger des suggestions
-        const allProducts = await ProductService.getProducts();
-        const otherProducts = allProducts.filter(p => p.id !== id).slice(0, 2);
+        console.log('Chargement des suggestions...');
+        const suggestedProducts = await ProductService.getSuggestedProducts(
+          product?.category_id, 
+          id, 
+          4
+        );
+        console.log('Produits suggérés récupérés:', suggestedProducts.length);
         
-        const convertedSuggestions: Product[] = otherProducts.map(p => ({
+        const convertedSuggestions: Product[] = suggestedProducts.map(p => ({
           id: p.id,
           name: p.name,
           description: p.description,
@@ -786,23 +793,57 @@ export default function ProductDetail() {
           </motion.div>
 
           {/* Suggestions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="space-y-4"
-          >
-            <h3 className="font-semibold text-gray-900">Produits similaires</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {suggestions.map((suggestion) => (
-                <ProductCard key={suggestion.id} product={suggestion} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
+          {suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900">Produits similaires</h3>
+                <span className="text-sm text-gray-500">{suggestions.length} produit{suggestions.length > 1 ? 's' : ''}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {suggestions.map((suggestion) => (
+                  <ProductCard key={suggestion.id} product={suggestion} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Message si aucune suggestion */}
+          {suggestions.length === 0 && !loading && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-center py-8"
+            >
+              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Package className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500">Aucun produit similaire trouvé</p>
+            </motion.div>
+          )}
+         </div>
+       </div>
 
-      {/* Actions en Bas Améliorées */}
+       {/* Stories du Produit */}
+       {product && (
+         <div className="mt-8">
+           <ProductStories
+             productId={product.id}
+             sellerId={product.user_id}
+             onSwipeUp={(story) => {
+               // Navigation vers le produit depuis la story
+               console.log('Swipe up from story:', story);
+             }}
+           />
+         </div>
+       )}
+
+       {/* Actions en Bas Améliorées */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-50">
         <div className="p-4 space-y-3">
           {/* Actions Principales */}

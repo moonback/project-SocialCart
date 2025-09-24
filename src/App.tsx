@@ -19,6 +19,7 @@ const CreateProduct = lazy(() => import('./pages/CreateProduct'));
 const ProductManagement = lazy(() => import('./pages/ProductManagement'));
 const EditProduct = lazy(() => import('./pages/EditProduct'));
 const Settings = lazy(() => import('./pages/Settings'));
+const Stories = lazy(() => import('./pages/Stories'));
 
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
@@ -126,6 +127,7 @@ function AppRoutes() {
           <Route path="profile" element={<Profile />} />
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="cart" element={<Cart />} />
+          <Route path="stories" element={<Stories />} />
           <Route path="payment" element={
             <ProtectedRoute>
               <Payment />

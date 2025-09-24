@@ -282,13 +282,13 @@ export default function CreateProduct() {
           {/* Contenu des étapes */}
           <AnimatePresence mode="wait">
             {currentStep === 1 && (
-              <motion.div
+            <motion.div
                 key="step1"
                 initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="card p-8"
-              >
+              className="card p-8"
+            >
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-4">
@@ -317,9 +317,9 @@ export default function CreateProduct() {
                         <span>{errors.category}</span>
                       </div>
                     )}
-                  </div>
+                </div>
 
-                  <div>
+                <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-3">
                       Marque (optionnel)
                     </label>
@@ -334,8 +334,8 @@ export default function CreateProduct() {
                         </option>
                       ))}
                     </select>
-                  </div>
                 </div>
+              </div>
               </motion.div>
             )}
 
@@ -347,102 +347,102 @@ export default function CreateProduct() {
                 exit={{ opacity: 0, x: -20 }}
                 className="card p-8"
               >
-                <MediaUploader
-                  onFilesChange={handleMediaFilesChange}
-                  onVideoChange={handleVideoChange}
-                  maxFiles={8}
-                  maxFileSize={10}
-                  acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-                  acceptedVideoTypes={['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']}
-                  error={errors.media || errors.video}
-                />
-              </motion.div>
+              <MediaUploader
+                onFilesChange={handleMediaFilesChange}
+                onVideoChange={handleVideoChange}
+                maxFiles={8}
+                maxFileSize={10}
+                acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+                acceptedVideoTypes={['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']}
+                error={errors.media || errors.video}
+              />
+            </motion.div>
             )}
 
             {currentStep === 3 && (
-              <motion.div
+            <motion.div
                 key="step3"
                 initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 className="card p-8"
               >
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Informations de base */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Nom du produit *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    Nom du produit *
+                  </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         className="input"
-                        placeholder="Nom de votre produit"
-                      />
+                      placeholder="Nom de votre produit"
+                    />
                       {errors.name && (
                         <div className="flex items-center space-x-2 text-red-500 text-sm mt-1">
                           <AlertCircle className="w-4 h-4" />
                           <span>{errors.name}</span>
-                        </div>
-                      )}
-                    </div>
+                  </div>
+                  )}
+                </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Prix *
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={formData.price}
-                          onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                    Prix *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                           className="input pl-8"
-                          placeholder="0.00"
-                        />
+                      placeholder="0.00"
+                    />
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      </div>
-                      {errors.price && (
+                  </div>
+                  {errors.price && (
                         <div className="flex items-center space-x-2 text-red-500 text-sm mt-1">
                           <AlertCircle className="w-4 h-4" />
                           <span>{errors.price}</span>
                         </div>
-                      )}
-                    </div>
-                  </div>
+                  )}
+                </div>
+              </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-2">
-                      Description courte
-                    </label>
+                  Description courte
+                </label>
                     <input
                       type="text"
-                      value={formData.shortDescription}
-                      onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
+                  value={formData.shortDescription}
+                  onChange={(e) => setFormData(prev => ({ ...prev, shortDescription: e.target.value }))}
                       className="input"
                       placeholder="Description courte (optionnel)"
-                    />
-                  </div>
+                />
+              </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-surface-700 mb-2">
-                      Description complète *
-                    </label>
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  Description complète *
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                       className="input min-h-[120px] resize-none"
                       placeholder="Décrivez votre produit en détail..."
-                    />
-                    {errors.description && (
+                />
+                {errors.description && (
                       <div className="flex items-center space-x-2 text-red-500 text-sm mt-1">
                         <AlertCircle className="w-4 h-4" />
                         <span>{errors.description}</span>
                       </div>
-                    )}
-                  </div>
+                )}
+              </div>
 
                   {/* Variantes */}
                   <ProductVariants
@@ -451,96 +451,96 @@ export default function CreateProduct() {
                   />
 
                   {/* Informations supplémentaires */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Référence (SKU)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.sku}
-                        onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
+                    Référence (SKU)
+                  </label>
+                    <input
+                      type="text"
+                      value={formData.sku}
+                      onChange={(e) => setFormData(prev => ({ ...prev, sku: e.target.value }))}
                         className="input"
                         placeholder="SKU-001"
-                      />
-                    </div>
+                    />
+                </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Poids (kg)
-                      </label>
-                      <input
-                        type="number"
+                    Poids (kg)
+                  </label>
+                    <input
+                      type="number"
                         step="0.1"
-                        value={formData.weight}
-                        onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                      value={formData.weight}
+                      onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
                         className="input"
                         placeholder="0.5"
-                      />
-                    </div>
+                    />
                   </div>
+                </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Prix comparatif
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.comparePrice}
-                        onChange={(e) => setFormData(prev => ({ ...prev, comparePrice: e.target.value }))}
+                    Prix comparatif
+                  </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.comparePrice}
+                      onChange={(e) => setFormData(prev => ({ ...prev, comparePrice: e.target.value }))}
                         className="input"
                         placeholder="Prix barré"
-                      />
-                    </div>
+                    />
+                </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
                         Prix de revient (optionnel)
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.costPrice}
-                        onChange={(e) => setFormData(prev => ({ ...prev, costPrice: e.target.value }))}
-                        className="input"
+                  </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.costPrice}
+                      onChange={(e) => setFormData(prev => ({ ...prev, costPrice: e.target.value }))}
+                      className="input"
                         placeholder="Coût d'achat"
                       />
-                    </div>
-                  </div>
+                </div>
+              </div>
 
                   {/* Stock et statut */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Quantité en stock
-                      </label>
-                      <input
-                        type="number"
-                        value={formData.inventoryQuantity}
-                        onChange={(e) => setFormData(prev => ({ ...prev, inventoryQuantity: parseInt(e.target.value) || 0 }))}
-                        className="input"
+                    Quantité en stock
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.inventoryQuantity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, inventoryQuantity: parseInt(e.target.value) || 0 }))}
+                    className="input"
                         min="0"
-                      />
-                    </div>
+                  />
+                </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-surface-700 mb-2">
-                        Statut du produit
-                      </label>
-                      <select
-                        value={formData.status}
+                    Statut du produit
+                  </label>
+                  <select
+                    value={formData.status}
                         onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'draft' | 'active' | 'inactive' | 'archived' }))}
-                        className="input"
-                      >
-                        <option value="draft">Brouillon</option>
-                        <option value="active">Actif</option>
-                        <option value="inactive">Inactif</option>
-                        <option value="archived">Archivé</option>
-                      </select>
-                    </div>
-                  </div>
+                    className="input"
+                  >
+                    <option value="draft">Brouillon</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Inactif</option>
+                    <option value="archived">Archivé</option>
+                  </select>
+                </div>
+              </div>
 
                   {/* Options */}
                   <div className="space-y-4">
@@ -548,7 +548,7 @@ export default function CreateProduct() {
                     
                     <div className="space-y-3">
                       <label className="flex items-center space-x-3">
-                        <input
+                  <input
                           type="checkbox"
                           checked={formData.inventoryTracking}
                           onChange={(e) => setFormData(prev => ({ ...prev, inventoryTracking: e.target.checked }))}
@@ -558,7 +558,7 @@ export default function CreateProduct() {
                       </label>
 
                       <label className="flex items-center space-x-3">
-                        <input
+                  <input
                           type="checkbox"
                           checked={formData.allowBackorder}
                           onChange={(e) => setFormData(prev => ({ ...prev, allowBackorder: e.target.checked }))}
@@ -568,7 +568,7 @@ export default function CreateProduct() {
                       </label>
 
                       <label className="flex items-center space-x-3">
-                        <input
+                  <input
                           type="checkbox"
                           checked={formData.requiresShipping}
                           onChange={(e) => setFormData(prev => ({ ...prev, requiresShipping: e.target.checked }))}
@@ -578,24 +578,24 @@ export default function CreateProduct() {
                       </label>
 
                       <label className="flex items-center space-x-3">
-                        <input
+                  <input
                           type="checkbox"
                           checked={formData.taxable}
                           onChange={(e) => setFormData(prev => ({ ...prev, taxable: e.target.checked }))}
                           className="w-5 h-5 text-primary-600 rounded"
                         />
                         <span className="text-surface-700">Taxable</span>
-                      </label>
-                    </div>
-                  </div>
+                  </label>
+                </div>
+              </div>
                 </form>
-              </motion.div>
+            </motion.div>
             )}
           </AnimatePresence>
 
           {/* Boutons de navigation */}
           <div className="flex items-center justify-between">
-            <motion.button
+              <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={prevStep}
@@ -608,8 +608,8 @@ export default function CreateProduct() {
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Précédent</span>
-            </motion.button>
-
+              </motion.button>
+              
             {currentStep < 3 ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -644,19 +644,19 @@ export default function CreateProduct() {
           </div>
 
           {/* Barre de progression */}
-          {isUploading && (
+              {isUploading && (
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div
-                className="bg-gradient-primary h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${uploadProgress}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-          )}
+                    <motion.div
+                      className="bg-gradient-primary h-2 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${uploadProgress}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+              )}
 
           {/* Erreur générale */}
-          {errors.submit && (
+            {errors.submit && (
             <div className="flex items-center space-x-2 text-red-500 text-center justify-center">
               <AlertCircle className="w-5 h-5" />
               <span>{errors.submit}</span>

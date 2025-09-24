@@ -1,4 +1,4 @@
-import { Home, Search, Plus, Bell, User } from 'lucide-react';
+import { Home, Search, Plus, Bell, User, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ export function BottomNav() {
   const tabs = [
     { icon: Home, label: 'Accueil', path: '/' },
     { icon: Search, label: 'Rechercher', path: '/search' },
+    { icon: Play, label: 'Stories', path: '/stories' },
     { icon: Plus, label: 'Créer', path: '/create', special: true },
     { icon: Bell, label: 'Alertes', path: '/notifications' },
     { icon: User, label: 'Profil', path: '/profile' },
