@@ -18,6 +18,7 @@ const CreateProduct = lazy(() => import('./pages/CreateProduct'));
 const ProductManagement = lazy(() => import('./pages/ProductManagement'));
 const EditProduct = lazy(() => import('./pages/EditProduct'));
 const Settings = lazy(() => import('./pages/Settings'));
+const LoyaltyPage = lazy(() => import('./pages/LoyaltyPage'));
 
 // Loading Component
 function LoadingScreen({ message = "Chargement..." }: { message?: string }) {
@@ -133,6 +134,11 @@ function AppRoutes() {
           <Route path="settings" element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          } />
+          <Route path="loyalty" element={
+            <ProtectedRoute>
+              <LoyaltyPage />
             </ProtectedRoute>
           } />
         </Route>

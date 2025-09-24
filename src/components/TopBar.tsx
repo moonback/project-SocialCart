@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ShoppingCart, Bell, Menu, X, Settings, User, LogOut, Package } from 'lucide-react';
+import { Search, ShoppingCart, Bell, Menu, X, Settings, User, LogOut, Package, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { HeaderUserAvatar, UserAvatar } from './UserAvatar';
+import { LoyaltyBadge } from './LoyaltyBadge';
 
 export function TopBar() {
   const { itemCount } = useCart();
@@ -170,7 +171,10 @@ export function TopBar() {
                         className="rounded-xl"
                       />
                       <div>
-                        <p className="font-semibold text-surface-900">{user?.username}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-surface-900">{user?.username}</p>
+                          <LoyaltyBadge points={user?.loyalty_points} />
+                        </div>
                         <p className="text-sm text-surface-600">{user?.email}</p>
                       </div>
                     </div>
@@ -199,6 +203,18 @@ export function TopBar() {
                     >
                       <Package className="w-5 h-5 text-surface-600" />
                       <span className="text-surface-900">Mes Produits</span>
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                      onClick={() => {
+                        navigate('/loyalty');
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
+                    >
+                      <Star className="w-5 h-5 text-surface-600" />
+                      <span className="text-surface-900">Points de Fidélité</span>
                     </motion.button>
                     
                     <motion.button

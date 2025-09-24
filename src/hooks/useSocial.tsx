@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
 import { SocialService } from '../lib/social';
 import toast from 'react-hot-toast';
+import { LoyaltyService } from '../lib/loyalty';
 
 export interface SocialState {
   likedProducts: Set<string>;
@@ -96,6 +97,11 @@ export function useSocial() {
       // Toast après setState pour éviter les warnings
       if (isLiked) {
         toast.success('Produit liké ! ❤️');
+        // Attribution points fidélité (like)
+        const points = await LoyaltyService.awardPoints(user.id, 'like_product', productId);
+        if (points > 0) {
+          toast.success(`+${points} point${points > 1 ? 's' : ''} de fidélité ! ⭐`, { duration: 3000 });
+        }
       } else {
         toast.success('Like retiré');
       }
@@ -168,6 +174,10 @@ export function useSocial() {
       // Toast après setState pour éviter les warnings
       if (isFollowing) {
         toast.success('Utilisateur suivi ! 👥');
+        const points = await LoyaltyService.awardPoints(user.id, 'follow_user', userId);
+        if (points > 0) {
+          toast.success(`+${points} point${points > 1 ? 's' : ''} de fidélité ! ⭐`, { duration: 3000 });
+        }
       } else {
         toast.success('Suivi annulé');
       }
@@ -191,6 +201,11 @@ export function useSocial() {
     try {
       await SocialService.recordProductShare(productId, user.id, platform);
       toast.success(`Produit partagé sur ${platform} ! 📤`);
+      // Attribution points partage
+      const points = await LoyaltyService.awardPoints(user.id, 'share_product', productId);
+      if (points > 0) {
+        toast.success(`+${points} point${points > 1 ? 's' : ''} de fidélité ! ⭐`, { duration: 3000 });
+      }
     } catch (error) {
       console.error('Error sharing product:', error);
       toast.error('Erreur lors du partage');
@@ -226,6 +241,11 @@ export function useSocial() {
     try {
       await SocialService.addProductComment(productId, user.id, content.trim(), parentId);
       toast.success('Commentaire ajouté ! 💬');
+      // Attribution points commentaire
+      const points = await LoyaltyService.awardPoints(user.id, 'comment_product', productId);
+      if (points > 0) {
+        toast.success(`+${points} point${points > 1 ? 's' : ''} de fidélité ! ⭐`, { duration: 3000 });
+      }
     } catch (error) {
       console.error('Error adding comment:', error);
       toast.error('Erreur lors de l\'ajout du commentaire');

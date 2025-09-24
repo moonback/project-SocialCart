@@ -5,6 +5,7 @@ import { Product } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { useNavigate } from 'react-router-dom';
 import { ProductUserAvatar } from './UserAvatar';
+import { LoyaltyPoints } from './LoyaltyPoints';
 
 interface ProductCardProps {
   product: Product;
@@ -127,13 +128,18 @@ export function ProductCard({
           <h3 className="font-semibold text-surface-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
             {product.name}
           </h3>
-          <div className="flex items-center space-x-2">
-            <ProductUserAvatar 
-              avatarUrl={product.user?.avatar_url} 
-              username={product.user?.username} 
-              size="sm"
-            />
-            <span className="text-sm text-surface-500">@{product.user?.username || 'vendeur'}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <ProductUserAvatar 
+                avatarUrl={product.user?.avatar_url} 
+                username={product.user?.username} 
+                size="sm"
+              />
+              <span className="text-sm text-surface-500">@{product.user?.username || 'vendeur'}</span>
+            </div>
+            {product.user?.loyalty_points && product.user.loyalty_points > 0 && (
+              <LoyaltyPoints points={product.user.loyalty_points} size="sm" />
+            )}
           </div>
         </div>
 

@@ -13,6 +13,7 @@ import { MediaUploader } from '../components/MediaUploader';
 import { ImageAnalysisPanel } from '../components/ImageAnalysisPanel';
 import { ProductVariants } from '../components/ProductVariants';
 import { ProductService, CreateProductData } from '../lib/products';
+import { LoyaltyService } from '../lib/loyalty';
 import { getCategoryId, getBrandId } from '../lib/categories';
 import { ProductAnalysisResult } from '../lib/gemini';
 import toast from 'react-hot-toast';
@@ -236,7 +237,14 @@ export default function CreateProduct() {
 
       // Étape 3: Créer le produit
       setUploadProgress(90);
-      await ProductService.createProduct(productData, user.id);
+      const created = await ProductService.createProduct(productData, user.id);
+      // Fidélité: récompense création de produit
+      if (created && (created as any).id) {
+        const points = await LoyaltyService.awardPoints(user.id, 'create_product', (created as any).id);
+        if (points > 0) {
+          toast.success(`+${points} point${points > 1 ? 's' : ''} de fidélité ! ⭐`, { duration: 3000 });
+        }
+      }
       
       setUploadProgress(100);
       toast.success('Produit créé avec succès!', { id: 'create-product' });
