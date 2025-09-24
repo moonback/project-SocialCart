@@ -4,18 +4,14 @@ import {
   Package,
   DollarSign,
   FileText,
-  Check,
   AlertCircle,
   Tag,
   Sparkles,
   Settings,
-  Truck,
   Scale,
   Barcode,
   Target,
-  Eye,
-  EyeOff
-} from 'lucide-react';
+  Eye} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { MediaUploader } from '../components/MediaUploader';
@@ -174,8 +170,8 @@ export default function CreateProduct() {
         sku: formData.sku || undefined,
         weight: formData.weight ? parseFloat(formData.weight) : undefined,
         // Utiliser les utilitaires pour convertir les noms en UUIDs
-        category_id: getCategoryId(formData.category),
-        brand_id: getBrandId(formData.brand),
+        category_id: getCategoryId(formData.category) || undefined,
+        brand_id: getBrandId(formData.brand) || undefined,
         status: formData.status,
         inventory_tracking: formData.inventoryTracking,
         inventory_quantity: formData.inventoryQuantity,
@@ -193,7 +189,7 @@ export default function CreateProduct() {
 
       // Étape 3: Créer le produit
       setUploadProgress(90);
-      const createdProduct = await ProductService.createProduct(productData, user.id);
+      await ProductService.createProduct(productData, user.id);
       
       setUploadProgress(100);
       toast.success('Produit créé avec succès!', { id: 'create-product' });
@@ -539,7 +535,7 @@ export default function CreateProduct() {
                   </label>
                   <select
                     value={formData.status}
-                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as any }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'draft' | 'active' | 'inactive' | 'archived' }))}
                     className="input"
                   >
                     <option value="draft">Brouillon</option>
@@ -565,7 +561,7 @@ export default function CreateProduct() {
             </motion.div>
 
             {/* Shipping Information */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
@@ -607,7 +603,7 @@ export default function CreateProduct() {
                   />
                 </div>
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Advanced Settings */}
             <motion.div
@@ -626,63 +622,7 @@ export default function CreateProduct() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Inventory Tracking */}
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.inventoryTracking}
-                      onChange={(e) => setFormData(prev => ({ ...prev, inventoryTracking: e.target.checked }))}
-                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm font-semibold text-surface-700">Suivi d'inventaire</span>
-                  </label>
-                  <p className="text-xs text-surface-500">Suivre automatiquement le stock</p>
-                </div>
-
-                {/* Allow Backorder */}
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.allowBackorder}
-                      onChange={(e) => setFormData(prev => ({ ...prev, allowBackorder: e.target.checked }))}
-                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm font-semibold text-surface-700">Autoriser les commandes en attente</span>
-                  </label>
-                  <p className="text-xs text-surface-500">Permettre les commandes même sans stock</p>
-                </div>
-
-                {/* Requires Shipping */}
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.requiresShipping}
-                      onChange={(e) => setFormData(prev => ({ ...prev, requiresShipping: e.target.checked }))}
-                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm font-semibold text-surface-700">Nécessite une expédition</span>
-                  </label>
-                  <p className="text-xs text-surface-500">Produit physique nécessitant un envoi</p>
-                </div>
-
-                {/* Taxable */}
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.taxable}
-                      onChange={(e) => setFormData(prev => ({ ...prev, taxable: e.target.checked }))}
-                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm font-semibold text-surface-700">Assujetti aux taxes</span>
-                  </label>
-                  <p className="text-xs text-surface-500">Produit soumis à la TVA</p>
-                </div>
-              </div>
+              
 
               {/* Tags Section */}
               <div className="space-y-4">
