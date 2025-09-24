@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ChevronUp, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Heart, ChevronUp, ChevronDown, ChevronRight, ChevronLeft, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { VideoPlayer } from './VideoPlayer';
 import { ActionButtons } from './ActionButtons';
 import { ActionsMenu } from './ActionsMenu';
@@ -223,7 +223,13 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
             }`}
           >
              {/* Zone vidéo/image - Centrée avec fond blanc */}
-             <div className="relative w-full h-full flex items-center justify-center bg-white">
+             <div 
+               className="relative w-full h-full flex items-center justify-center bg-white"
+               onClick={() => {
+                 setShowControls(true);
+                 setTimeout(() => setShowControls(false), 3000);
+               }}
+             >
               <VideoPlayer
                 videoUrl={currentProduct.video_url}
                 imageUrl={currentProduct.image_url}
@@ -297,8 +303,44 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
                   )}
                 </div>
 
+                {/* Contrôles vidéo pour desktop */}
+                {currentProduct.video_url && (
+                  <div className="absolute bottom-18 left-18 flex items-center space-x-3 bg-glass-white backdrop-blur-md rounded-2xl px-4 py-3 shadow-large border border-surface-200 transition-all duration-300">
+                    <button
+                      onClick={() => togglePlayPause(currentProduct.id)}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200 hover:scale-105"
+                    >
+                      {isPlaying ? (
+                        <Pause className="w-5 h-5 text-white" />
+                      ) : (
+                        <Play className="w-5 h-5 text-white ml-0.5" />
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => toggleMute(currentProduct.id)}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-200 hover:scale-105"
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-5 h-5 text-white" />
+                      ) : (
+                        <Volume2 className="w-5 h-5 text-white" />
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={changePlaybackSpeed}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-xs hover:bg-white/30 transition-all duration-200 hover:scale-105"
+                    >
+                      {playbackSpeed}x
+                    </button>
+                  </div>
+                )}
+
                 {/* Statistiques de likes sur la vidéo/image */}
-                <div className="absolute bottom-18 left-18 bg-glass-white backdrop-blur-md rounded-2xl px-3 py-2 shadow-large border border-surface-200 flex items-center space-x-2 transition-all duration-300">
+                <div className={`absolute bg-glass-white backdrop-blur-md rounded-2xl px-3 py-2 shadow-large border border-surface-200 flex items-center space-x-2 transition-all duration-300 ${
+                  currentProduct.video_url ? 'bottom-32 left-18' : 'bottom-18 left-18'
+                }`}>
                   <Heart className={`w-5 h-5 ${isLiked(currentProduct.id) ? 'text-red-500 fill-current' : 'text-surface-600'}`} />
                   <span className="text-white font-bold text-base">{currentProduct.likes_count}</span>
                 </div>
@@ -326,7 +368,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
             opacity: isInfoPanelCollapsed ? 0 : 1
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10"
+          className="fixed top-16 right-0 w-96 h-full bg-surface-50 border-l border-surface-200 flex flex-col overflow-hidden z-10"
         >
               {/* Informations produit */}
           <div className="p-6 border-b border-surface-200">
@@ -425,11 +467,7 @@ export const DesktopVideoFeed: React.FC<DesktopVideoFeedProps> = ({ products, on
                 </div>
               </div>
 
-              {/* Contenu scrollable */}
-          <div className="flex-1 overflow-y-auto scrollbar-thin p-6">
-                {/* Espace supplémentaire pour le scroll */}
-            <div className="h-32"></div>
-              </div>
+              
             </motion.div>
         )}
 
