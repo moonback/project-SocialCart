@@ -412,107 +412,131 @@ export function VideoFeed({ products }: VideoFeedProps) {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.8, y: 20 }}
                     transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
-                     className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 relative z-[100000]"
+                     className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 relative z-[100000] border border-white/20"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex flex-col space-y-4">
                       {/* Header */}
                       <div className="text-center pb-2">
-                        <h3 className="text-lg font-bold text-gray-900">Actions</h3>
-                        <p className="text-sm text-gray-500">Que souhaitez-vous faire ?</p>
+                        <h3 className="text-lg font-bold text-white drop-shadow-lg">Actions</h3>
+                        <p className="text-sm text-white/80">Que souhaitez-vous faire ?</p>
                       </div>
 
                       {/* Actions */}
                       <div className="space-y-3">
                         {/* Comment Button */}
                         <motion.button
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
                             setShowComments(true);
                             setShowActionsMenu(false);
                           }}
-                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 border border-white/20 shadow-lg"
                         >
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <MessageCircle className="w-5 h-5 text-blue-600" />
+                          <div className="w-10 h-10 bg-blue-500/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-blue-400/30">
+                            <MessageCircle className="w-5 h-5 text-blue-300" />
                           </div>
                           <div className="flex-1 text-left">
-                            <span className="text-gray-900 font-medium">Commentaires</span>
-                            <p className="text-sm text-gray-500">Voir et ajouter des commentaires</p>
+                            <span className="text-white font-medium">Commentaires</span>
+                            <p className="text-sm text-white/70">Voir et ajouter des commentaires</p>
                           </div>
                         </motion.button>
 
                         {/* Share Button */}
                         <motion.button
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
                             setShowShare(true);
                             setShowActionsMenu(false);
                           }}
-                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 border border-white/20 shadow-lg"
                         >
-                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <Share className="w-5 h-5 text-green-600" />
+                          <div className="w-10 h-10 bg-blue-500/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-blue-400/30">
+                            <Share className="w-5 h-5 text-blue-300" />
                           </div>
                           <div className="flex-1 text-left">
-                            <span className="text-gray-900 font-medium">Partager</span>
-                            <p className="text-sm text-gray-500">Partager ce produit</p>
+                            <span className="text-white font-medium">Partager</span>
+                            <p className="text-sm text-white/70">Partager ce produit</p>
                           </div>
                         </motion.button>
 
-                        {/* Bookmark Button */}
+                        {/* Bookmark Button - Different states */}
                         <motion.button
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
                             toggleBookmark(product.id);
                             setShowActionsMenu(false);
                           }}
-                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                          className={`w-full flex items-center space-x-4 px-4 py-3 rounded-2xl backdrop-blur-md transition-all duration-300 border shadow-lg ${
+                            isBookmarked(product.id) 
+                              ? 'bg-blue-500/30 hover:bg-blue-500/40 border-blue-400/50' 
+                              : 'bg-white/10 hover:bg-white/20 border-white/20'
+                          }`}
                         >
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            isBookmarked(product.id) ? 'bg-yellow-100' : 'bg-gray-100'
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm border ${
+                            isBookmarked(product.id) 
+                              ? 'bg-blue-500/30 border-blue-400/50' 
+                              : 'bg-white/10 border-white/20'
                           }`}>
                             <Bookmark 
                               className={`w-5 h-5 ${
-                                isBookmarked(product.id) ? 'text-yellow-600 fill-yellow-600' : 'text-gray-600'
+                                isBookmarked(product.id) 
+                                  ? 'text-blue-300 fill-blue-300' 
+                                  : 'text-white/70'
                               }`} 
                             />
                           </div>
                           <div className="flex-1 text-left">
-                            <span className="text-gray-900 font-medium">
+                            <span className={`font-medium ${
+                              isBookmarked(product.id) ? 'text-blue-200' : 'text-white'
+                            }`}>
                               {isBookmarked(product.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                             </span>
-                            <p className="text-sm text-gray-500">
+                            <p className={`text-sm ${
+                              isBookmarked(product.id) ? 'text-blue-300/80' : 'text-white/70'
+                            }`}>
                               {isBookmarked(product.id) ? 'Retirer de votre liste' : 'Sauvegarder pour plus tard'}
                             </p>
                           </div>
                         </motion.button>
 
-                        {/* Follow Button */}
+                        {/* Follow Button - Different states */}
                         <motion.button
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
                             toggleFollow(product.user_id);
                             setShowActionsMenu(false);
                           }}
-                          className="w-full flex items-center space-x-4 px-4 py-3 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-gray-100"
+                          className={`w-full flex items-center space-x-4 px-4 py-3 rounded-2xl backdrop-blur-md transition-all duration-300 border shadow-lg ${
+                            isFollowing(product.user_id) 
+                              ? 'bg-blue-500/30 hover:bg-blue-500/40 border-blue-400/50' 
+                              : 'bg-white/10 hover:bg-white/20 border-white/20'
+                          }`}
                         >
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            isFollowing(product.user_id) ? 'bg-purple-100' : 'bg-gray-100'
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm border ${
+                            isFollowing(product.user_id) 
+                              ? 'bg-blue-500/30 border-blue-400/50' 
+                              : 'bg-white/10 border-white/20'
                           }`}>
                             <UserPlus className={`w-5 h-5 ${
-                              isFollowing(product.user_id) ? 'text-purple-600' : 'text-gray-600'
+                              isFollowing(product.user_id) 
+                                ? 'text-blue-300' 
+                                : 'text-white/70'
                             }`} />
                           </div>
                           <div className="flex-1 text-left">
-                            <span className="text-gray-900 font-medium">
+                            <span className={`font-medium ${
+                              isFollowing(product.user_id) ? 'text-blue-200' : 'text-white'
+                            }`}>
                               {isFollowing(product.user_id) ? 'Ne plus suivre' : 'Suivre'}
                             </span>
-                            <p className="text-sm text-gray-500">
+                            <p className={`text-sm ${
+                              isFollowing(product.user_id) ? 'text-blue-300/80' : 'text-white/70'
+                            }`}>
                               {isFollowing(product.user_id) ? 'Arrêter de suivre ce vendeur' : 'Suivre ce vendeur'}
                             </p>
                           </div>
@@ -521,10 +545,10 @@ export function VideoFeed({ products }: VideoFeedProps) {
 
                       {/* Close Button */}
                       <motion.button
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setShowActionsMenu(false)}
-                        className="w-full py-3 bg-gray-100 text-gray-600 rounded-2xl font-medium hover:bg-gray-200 transition-all duration-200"
+                        className="w-full py-3 bg-white/10 backdrop-blur-md text-white/80 rounded-2xl font-medium hover:bg-white/20 transition-all duration-300 border border-white/20 shadow-lg"
                       >
                         Annuler
                       </motion.button>
