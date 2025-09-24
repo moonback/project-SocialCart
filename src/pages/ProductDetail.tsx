@@ -24,6 +24,7 @@ import { ProductCard } from '../components/ProductCard';
 import { ProductService } from '../lib/products';
 import { getCategoryName, getBrandName } from '../lib/categories';
 import { UserAvatar } from '../components/UserAvatar';
+import { ProductStories } from '../components/ProductStories';
 import toast from 'react-hot-toast';
 
 // Résout une URL d'avatar : si c'est un chemin de stockage, retourne l'URL publique
@@ -798,11 +799,25 @@ export default function ProductDetail() {
                 <ProductCard key={suggestion.id} product={suggestion} />
               ))}
             </div>
-          </motion.div>
-        </div>
-      </div>
+           </motion.div>
+         </div>
+       </div>
 
-      {/* Actions en Bas Améliorées */}
+       {/* Stories du Produit */}
+       {product && (
+         <div className="mt-8">
+           <ProductStories
+             productId={product.id}
+             sellerId={product.user_id}
+             onSwipeUp={(story) => {
+               // Navigation vers le produit depuis la story
+               console.log('Swipe up from story:', story);
+             }}
+           />
+         </div>
+       )}
+
+       {/* Actions en Bas Améliorées */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-50">
         <div className="p-4 space-y-3">
           {/* Actions Principales */}
