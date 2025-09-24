@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { VideoFeed } from '../components/VideoFeed';
+import { AdaptiveVideoFeed } from '../components/AdaptiveVideoFeed';
 import { ProductService, Product } from '../lib/products';
 
 export default function Home() {
@@ -106,5 +106,5 @@ export default function Home() {
     );
   }
 
-  return <VideoFeed products={products} />;
+  return <AdaptiveVideoFeed products={products} />;
 }
