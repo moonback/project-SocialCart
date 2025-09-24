@@ -137,113 +137,124 @@ export function TopBar() {
           </motion.button>
 
           {/* Profile */}
-          <div className="relative" ref={profileMenuRef}>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-primary-200 hover:border-primary-400 transition-colors"
-            >
-              <HeaderUserAvatar 
-                avatarUrl={user?.avatar_url} 
-                username={user?.username} 
-                size="md"
-                className="w-full h-full"
-              />
-            </motion.button>
+          {user ? (
+            <div className="relative" ref={profileMenuRef}>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-primary-200 hover:border-primary-400 transition-colors"
+              >
+                <HeaderUserAvatar 
+                  avatarUrl={user?.avatar_url} 
+                  username={user?.username} 
+                  size="md"
+                  className="w-full h-full"
+                />
+              </motion.button>
 
-            {/* Profile Menu Dropdown */}
-            <AnimatePresence>
-              {isProfileMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 top-12 w-56 bg-white/90 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 overflow-hidden z-50"
-                >
-                  <div className="p-3 border-b border-white/20">
-                    <div className="flex items-center space-x-3">
-                      <UserAvatar 
-                        avatarUrl={user?.avatar_url} 
-                        username={user?.username} 
-                        size="lg"
-                        className="rounded-xl"
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold text-surface-900">{user?.username}</p>
-                          <LoyaltyBadge points={user?.loyalty_points} />
+              {/* Profile Menu Dropdown */}
+              <AnimatePresence>
+                {isProfileMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 top-12 w-56 bg-white/90 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 overflow-hidden z-50"
+                  >
+                    <div className="p-3 border-b border-white/20">
+                      <div className="flex items-center space-x-3">
+                        <UserAvatar 
+                          avatarUrl={user?.avatar_url} 
+                          username={user?.username} 
+                          size="lg"
+                          className="rounded-xl"
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-surface-900">{user?.username}</p>
+                            <LoyaltyBadge points={user?.loyalty_points} />
+                          </div>
+                          <p className="text-sm text-surface-600">{user?.email}</p>
                         </div>
-                        <p className="text-sm text-surface-600">{user?.email}</p>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="py-2">
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
-                      onClick={() => {
-                        navigate('/profile');
-                        setIsProfileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
-                    >
-                      <User className="w-5 h-5 text-surface-600" />
-                      <span className="text-surface-900">Profil</span>
-                    </motion.button>
                     
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
-                      onClick={() => {
-                        navigate('/products');
-                        setIsProfileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
-                    >
-                      <Package className="w-5 h-5 text-surface-600" />
-                      <span className="text-surface-900">Mes Produits</span>
-                    </motion.button>
-                    
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
-                      onClick={() => {
-                        navigate('/loyalty');
-                        setIsProfileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
-                    >
-                      <Star className="w-5 h-5 text-surface-600" />
-                      <span className="text-surface-900">Points de Fidélité</span>
-                    </motion.button>
-                    
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
-                      onClick={() => {
-                        navigate('/settings');
-                        setIsProfileMenuOpen(false);
-                      }}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
-                    >
-                      <Settings className="w-5 h-5 text-surface-600" />
-                      <span className="text-surface-900">Paramètres</span>
-                    </motion.button>
-                    
-                    <div className="border-t border-white/20 my-2" />
-                    
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.05)' }}
-                      onClick={handleSignOut}
-                      className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-red-50 transition-colors"
-                    >
-                      <LogOut className="w-5 h-5 text-red-600" />
-                      <span className="text-red-600">Se déconnecter</span>
-                    </motion.button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                    <div className="py-2">
+                      <motion.button
+                        whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                        onClick={() => {
+                          navigate('/profile');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
+                      >
+                        <User className="w-5 h-5 text-surface-600" />
+                        <span className="text-surface-900">Profil</span>
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                        onClick={() => {
+                          navigate('/products');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
+                      >
+                        <Package className="w-5 h-5 text-surface-600" />
+                        <span className="text-surface-900">Mes Produits</span>
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                        onClick={() => {
+                          navigate('/loyalty');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
+                      >
+                        <Star className="w-5 h-5 text-surface-600" />
+                        <span className="text-surface-900">Points de Fidélité</span>
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                        onClick={() => {
+                          navigate('/settings');
+                          setIsProfileMenuOpen(false);
+                        }}
+                        className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-white/50 transition-colors backdrop-blur-sm"
+                      >
+                        <Settings className="w-5 h-5 text-surface-600" />
+                        <span className="text-surface-900">Paramètres</span>
+                      </motion.button>
+                      
+                      <div className="border-t border-white/20 my-2" />
+                      
+                      <motion.button
+                        whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.05)' }}
+                        onClick={handleSignOut}
+                        className="w-full px-4 py-3 flex items-center space-x-3 text-left hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut className="w-5 h-5 text-red-600" />
+                        <span className="text-red-600">Se déconnecter</span>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/auth')}
+              className="px-4 py-2 rounded-xl bg-gradient-primary text-white font-semibold shadow-md hover:shadow-lg"
+            >
+              Se connecter
+            </motion.button>
+          )}
         </div>
       </div>
 
