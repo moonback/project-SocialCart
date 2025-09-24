@@ -62,6 +62,11 @@ export default function Search() {
       product.price >= priceRange[0] && product.price <= priceRange[1]
     );
 
+    // Limiter à 8 produits maximum pour la section "Trending Products" (quand pas de recherche)
+    if (!query.trim()) {
+      filteredProducts = filteredProducts.slice(0, 8);
+    }
+
     setSearchResults(filteredProducts);
   };
 
@@ -83,7 +88,7 @@ export default function Search() {
         {/* Filter Toggle */}
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            {query ? `Results for "${query}"` : 'Trending Products'}
+            {query ? `Results for "${query}" (${searchResults.length})` : `Trending Products (${searchResults.length})`}
           </h2>
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -155,11 +160,28 @@ export default function Search() {
         ) : (
           <>
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4">
-                {searchResults.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {searchResults.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                
+                {/* Message si plus de 8 produits disponibles mais seulement 8 affichés */}
+                {!query.trim() && allProducts.length > 8 && (
+                  <div className="text-center py-6">
+                    <p className="text-gray-600 text-sm mb-3">
+                      Affichage des 8 produits les plus populaires
+                    </p>
+                    <button
+                      onClick={() => setQuery('')}
+                      className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      Voir tous les {allProducts.length} produits
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-lg mb-2">
