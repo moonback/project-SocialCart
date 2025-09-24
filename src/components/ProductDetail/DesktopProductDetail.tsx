@@ -22,7 +22,8 @@ import {
   Truck,
   RotateCcw,
   Shield,
-  X
+  X,
+  SquarePen
 } from 'lucide-react';
 import { Product } from '../../lib/supabase';
 import { UserAvatar } from '../UserAvatar';
@@ -30,6 +31,7 @@ import { ProductCard } from '../ProductCard';
 import { StatsPanel } from '../VideoFeed/StatsPanel';
 import { RecommendationsPanel } from '../VideoFeed/RecommendationsPanel';
 import { getCategoryName, getBrandName } from '../../lib/categories';
+import { useAuth } from '../../hooks/useAuth';
 
 interface DesktopProductDetailProps {
   product: Product;
@@ -68,8 +70,12 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
   isLiked,
   isBookmarked,
 }) => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'description' | 'specifications' | 'reviews' | 'shipping'>('description');
   const [showVideo, setShowVideo] = useState(false);
+
+  // Vérifier si c'est le produit de l'utilisateur connecté
+  const isOwner = user && product.user_id === user.id;
 
   // Gérer la fermeture de la vidéo avec la touche Escape
   useEffect(() => {
@@ -562,19 +568,59 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
 
           {/* Sidebar droite - 3 colonnes */}
           <div className="col-span-3 space-y-6">
-            {/* Statistiques */}
-            <StatsPanel
-              product={{
-                id: product.id,
-                name: product.name,
-                likes_count: product.likes_count || 0,
-                views_count: product.views_count || 0,
-                sales_count: product.sales_count || 0,
-                created_at: product.created_at,
-              }}
-              isLiked={isLiked}
-              viewersCount={Math.floor(Math.random() * 50) + 20}
-            />
+            {/* Statistiques - uniquement pour le propriétaire */}
+            {isOwner && (
+              <StatsPanel
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  likes_count: product.likes_count || 0,
+                  views_count: product.views_count || 0,
+                  sales_count: product.sales_count || 0,
+                  created_at: product.created_at,
+                }}
+                isLiked={isLiked}
+                viewersCount={Math.floor(Math.random() * 50) + 20}
+              />
+            )}
+
+            {/* Informations publiques pour les visiteurs */}
+            {!isOwner && (
+              <div className="bg-white rounded-xl p-6 border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-4">Informations produit</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Popularité</span>
+                    <div className="flex items-center space-x-1">
+                      <Heart className="w-4 h-4 text-red-500" />
+                      <span className="font-medium">{product.likes_count || 0} likes</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Vues</span>
+                    <div className="flex items-center space-x-1">
+                      <Eye className="w-4 h-4 text-blue-500" />
+                      <span className="font-medium">{product.views_count || 0}</span>
+                    </div>
+                  </div>
+                  {product.rating_average && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Note moyenne</span>
+                      <div className="flex items-center space-x-1">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="font-medium">{product.rating_average.toFixed(1)}/5</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Ajouté le</span>
+                    <span className="font-medium">
+                      {new Date(product.created_at).toLocaleDateString('fr-FR')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Recommandations */}
             <RecommendationsPanel
@@ -608,25 +654,53 @@ export const DesktopProductDetail: React.FC<DesktopProductDetailProps> = ({
 
             {/* Actions supplémentaires */}
             <div className="bg-white rounded-xl p-4 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-3">Actions</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">
+                {isOwner ? 'Gestion' : 'Actions'}
+              </h3>
               <div className="space-y-2">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onReport}
-                  className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <Flag className="w-4 h-4" />
-                  <span>Signaler ce produit</span>
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Garantie produit</span>
-                </motion.button>
+                {isOwner ? (
+                  // Actions pour le propriétaire
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      onClick={() => window.location.href = `/edit-product/${product.id}`}
+                    >
+                      <SquarePen className="w-4 h-4" />
+                      <span>Modifier le produit</span>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                      <span>Promouvoir</span>
+                    </motion.button>
+                  </>
+                ) : (
+                  // Actions pour les visiteurs
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={onReport}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Flag className="w-4 h-4" />
+                      <span>Signaler ce produit</span>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Garantie produit</span>
+                    </motion.button>
+                  </>
+                )}
               </div>
             </div>
           </div>
