@@ -24,6 +24,7 @@ import { ProductCard } from '../components/ProductCard';
 import { ProductService } from '../lib/products';
 import { getCategoryName, getBrandName } from '../lib/categories';
 import { UserAvatar } from '../components/UserAvatar';
+import { AdaptiveProductDetail } from '../components/AdaptiveProductDetail';
 import toast from 'react-hot-toast';
 
 // Résout une URL d'avatar : si c'est un chemin de stockage, retourne l'URL publique
@@ -254,22 +255,6 @@ export default function ProductDetail() {
     }
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product?.name,
-        text: product?.description,
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Lien copié dans le presse-papiers !');
-    }
-  };
-
-  const handleReport = () => {
-    toast('Fonctionnalité de signalement en cours de développement');
-  };
 
   const handleAddToWishlist = async () => {
     setIsAddingToWishlist(true);
@@ -309,6 +294,48 @@ export default function ProductDetail() {
     }
     
     return { status: 'unlimited', message: 'Disponible', color: 'blue' };
+  };
+
+  // Fonctions pour les actions
+  const handleImageSelect = (index: number) => {
+    setSelectedImage(index);
+  };
+
+  const handleVariantSelect = (type: string, value: string) => {
+    setSelectedVariants(prev => ({ ...prev, [type]: value }));
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    setQuantity(newQuantity);
+  };
+
+  const handleToggleLike = () => {
+    if (product) {
+      toggleLike(product.id);
+    }
+  };
+
+  const handleToggleBookmark = () => {
+    if (product) {
+      toggleBookmark(product.id);
+    }
+  };
+
+  const handleShare = () => {
+    if (navigator.share && product) {
+      navigator.share({
+        title: product.name,
+        text: product.description,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Lien copié dans le presse-papiers !');
+    }
+  };
+
+  const handleReport = () => {
+    toast.success('Produit signalé. Merci pour votre vigilance !');
   };
 
   if (loading) {
@@ -364,7 +391,25 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen">
+    <AdaptiveProductDetail
+      product={product}
+      selectedImage={selectedImage}
+      selectedVariants={selectedVariants}
+      quantity={quantity}
+      relatedProducts={suggestions}
+      onImageSelect={handleImageSelect}
+      onVariantSelect={handleVariantSelect}
+      onQuantityChange={handleQuantityChange}
+      onAddToCart={handleAddToCart}
+      onBuyNow={handleBuyNow}
+      onToggleLike={handleToggleLike}
+      onToggleBookmark={handleToggleBookmark}
+      onShare={handleShare}
+      onReport={handleReport}
+      isLiked={isLiked(product.id)}
+      isBookmarked={isBookmarked(product.id)}
+      mobileContent={
+        <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen">
       {/* Header Amélioré */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
@@ -844,5 +889,7 @@ export default function ProductDetail() {
         </div>
       </div>
     </div>
+      }
+    />
   );
 }

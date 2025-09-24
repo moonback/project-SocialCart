@@ -1,0 +1,1 @@
+export { DesktopProductDetail } from './DesktopProductDetail';
