@@ -34,10 +34,10 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
     <motion.div 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-3xl border-b border-white/30 shadow-2xl mobile-header"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-3xl border-b border-primary-200/30 shadow-glass-blue mobile-header"
       style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
+        boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
       }}
     >
       <div className="flex items-center justify-between px-4 py-2 md:py-3">
@@ -49,9 +49,9 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
           whileTap={{ scale: 0.95 }}
         >
           <div 
-            className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl flex items-center justify-center border border-white/40 backdrop-blur-md"
+            className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary-200/40 backdrop-blur-md"
             style={{
-              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%)',
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%)',
               boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}
           >
@@ -74,10 +74,10 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
                 name="search"
                 type="text"
                 placeholder="Rechercher des produits..."
-                className="pl-10 pr-4 py-2 w-full text-sm border border-white/30 rounded-xl backdrop-blur-md"
+                className="pl-10 pr-4 py-2 w-full text-sm border border-primary-200/30 rounded-xl backdrop-blur-md"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1)'
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(59, 130, 246, 0.1)'
                 }}
                 onFocus={() => navigate('/search')}
               />
@@ -95,16 +95,16 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             className={`relative w-11 h-11 rounded-2xl border-2 border-primary-400/60 shadow-lg bg-gradient-to-br ${
               isStoriesOpen
                 ? 'from-primary-100/80 to-primary-300/60 text-primary-700'
-                : 'from-white/20 to-white/5 text-surface-600 hover:from-primary-50/60 hover:to-white/20'
+                : 'from-primary-50/20 to-primary-100/5 text-primary-600 hover:from-primary-100/60 hover:to-primary-200/20'
             } transition-all duration-300 flex items-center justify-center`}
             style={{
-              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
+              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.15), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
             <Camera className="w-5 h-5 md:w-6 md:h-6 drop-shadow" />
             {isStoriesOpen && (
               <motion.div 
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-primary-500 to-purple-500 rounded-full shadow-lg"
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full shadow-lg"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
               />
@@ -116,9 +116,9 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.13, rotate: -2 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="md:hidden w-11 h-11 rounded-2xl border-2 border-blue-300/40 shadow-lg bg-gradient-to-br from-white/20 to-blue-50/10 text-blue-700 hover:from-blue-100/40 hover:to-white/20 transition-all duration-300 flex items-center justify-center"
+            className="md:hidden w-11 h-11 rounded-2xl border-2 border-primary-300/40 shadow-lg bg-gradient-to-br from-primary-50/20 to-primary-100/10 text-primary-700 hover:from-primary-100/40 hover:to-primary-200/20 transition-all duration-300 flex items-center justify-center"
             style={{
-              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
+              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.15), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
             <Search className="w-5 h-5 md:w-6 md:h-6" />
@@ -129,9 +129,9 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.13, rotate: 2 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => navigate('/notifications')}
-            className="relative w-11 h-11 rounded-2xl border-2 border-pink-300/40 shadow-lg bg-gradient-to-br from-white/20 to-pink-50/10 text-pink-700 hover:from-pink-100/40 hover:to-white/20 transition-all duration-300 flex items-center justify-center"
+            className="relative w-11 h-11 rounded-2xl border-2 border-primary-300/40 shadow-lg bg-gradient-to-br from-primary-50/20 to-primary-100/10 text-primary-700 hover:from-primary-100/40 hover:to-primary-200/20 transition-all duration-300 flex items-center justify-center"
             style={{
-              boxShadow: '0 6px 24px 0 rgba(236,72,153,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
+              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.15), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
             <Bell className="w-5 h-5 md:w-6 md:h-6" />
@@ -147,9 +147,9 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.13, rotate: -2 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => navigate('/cart')}
-            className="relative w-11 h-11 rounded-2xl border-2 border-purple-300/40 shadow-lg bg-gradient-to-br from-white/20 to-purple-50/10 text-purple-700 hover:from-purple-100/40 hover:to-white/20 transition-all duration-300 flex items-center justify-center"
+            className="relative w-11 h-11 rounded-2xl border-2 border-primary-300/40 shadow-lg bg-gradient-to-br from-primary-50/20 to-primary-100/10 text-primary-700 hover:from-primary-100/40 hover:to-primary-200/20 transition-all duration-300 flex items-center justify-center"
             style={{
-              boxShadow: '0 6px 24px 0 rgba(147,51,234,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
+              boxShadow: '0 6px 24px 0 rgba(59,130,246,0.15), 0 1.5px 0 rgba(255,255,255,0.18) inset'
             }}
           >
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
@@ -157,7 +157,7 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
               <motion.div 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-glow border-2 border-white"
+                className="absolute -top-2 -right-2 w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-glow border-2 border-white"
               >
                 {itemCount > 99 ? '99+' : itemCount}
               </motion.div>
@@ -170,9 +170,9 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
               whileHover={{ scale: 1.13 }}
               whileTap={{ scale: 0.92 }}
               onClick={() => setIsProfileMenuOpen(true)}
-              className="w-10 h-10 md:w-11 md:h-11 rounded-2xl overflow-hidden border-2 border-white/60 shadow-lg bg-gradient-to-br from-white/30 to-primary-50/20 transition-all duration-300 flex items-center justify-center"
+              className="w-10 h-10 md:w-11 md:h-11 rounded-2xl overflow-hidden border-2 border-primary-200/60 shadow-lg bg-gradient-to-br from-primary-100/30 to-primary-200/20 transition-all duration-300 flex items-center justify-center"
               style={{
-                boxShadow: '0 6px 24px 0 rgba(59,130,246,0.10), 0 1.5px 0 rgba(255,255,255,0.18) inset'
+                boxShadow: '0 6px 24px 0 rgba(59,130,246,0.15), 0 1.5px 0 rgba(255,255,255,0.18) inset'
               }}
             >
               <HeaderUserAvatar 
@@ -187,9 +187,9 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => navigate('/auth')}
-              className="px-4 py-2 md:px-5 md:py-2.5 rounded-xl border-2 border-primary-400/60 shadow-lg bg-gradient-to-r from-primary-500 via-blue-500 to-purple-500 text-white font-semibold text-sm transition-all duration-300"
+              className="px-4 py-2 md:px-5 md:py-2.5 rounded-xl border-2 border-primary-400/60 shadow-lg bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white font-semibold text-sm transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, rgba(59,130,246,0.92) 0%, rgba(147,51,234,0.92) 100%)',
+                background: 'linear-gradient(135deg, rgba(59,130,246,0.92) 0%, rgba(37,99,235,0.92) 100%)',
                 boxShadow: '0 6px 24px 0 rgba(59,130,246,0.18), 0 1.5px 0 rgba(255,255,255,0.18) inset'
               }}
             >
@@ -215,10 +215,10 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
                   name="search"
                   type="text"
                   placeholder="Rechercher des produits..."
-                  className="pl-10 pr-4 py-2.5 w-full text-sm border border-white/30 rounded-xl backdrop-blur-md"
+                  className="pl-10 pr-4 py-2.5 w-full text-sm border border-primary-200/30 rounded-xl backdrop-blur-md"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1)'
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(59, 130, 246, 0.1)'
                   }}
                   autoFocus
                 />

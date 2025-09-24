@@ -12,7 +12,6 @@ import {
   Gift,
   Shield,
   Zap,
-  Play,
   TrendingUp,
   Award,
   Clock,
@@ -223,12 +222,12 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-surface-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
       {/* Background decorations avec effets glassmorphism cohérents */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Formes géométriques flottantes avec couleurs de marque */}
+        {/* Formes géométriques flottantes avec couleurs de marque bleue cohérente */}
         <motion.div 
-          className="absolute -top-40 -right-40 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl"
+          className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/30 rounded-full blur-3xl"
           style={{ y: ySpring }}
           animate={{ 
             scale: [1, 1.2, 1],
@@ -241,7 +240,7 @@ export default function LandingPage() {
           }}
         />
         <motion.div 
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-500/20 rounded-full blur-3xl"
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl"
           style={{ y: ySpring }}
           animate={{ 
             scale: [1.2, 1, 1.2],
@@ -255,7 +254,7 @@ export default function LandingPage() {
           }}
         />
         <motion.div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-600/15 rounded-full blur-3xl"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl"
           animate={{ 
             scale: [1, 1.3, 1],
             opacity: [0.3, 0.6, 0.3]
@@ -269,7 +268,7 @@ export default function LandingPage() {
         
         {/* Effet de souris interactif avec couleurs de marque */}
         <motion.div
-          className="absolute w-96 h-96 bg-gradient-primary/10 rounded-full blur-3xl"
+          className="absolute w-96 h-96 bg-gradient-to-r from-blue-500/15 to-cyan-500/15 rounded-full blur-3xl"
           animate={{
             x: mousePosition.x * 0.3,
             y: mousePosition.y * 0.3,
@@ -277,11 +276,11 @@ export default function LandingPage() {
           transition={{ type: "spring", stiffness: 150, damping: 15 }}
         />
         
-        {/* Particules avec couleurs de marque */}
+        {/* Particules avec couleurs de marque bleue cohérente */}
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-primary-300/60 rounded-full"
+            className="absolute w-2 h-2 bg-blue-300/80 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -298,8 +297,8 @@ export default function LandingPage() {
           />
         ))}
         
-        {/* Grille de fond subtile */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(14,165,233,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(14,165,233,0.1)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        {/* Grille de fond subtile avec couleur bleue cohérente */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.15)_1px,transparent_1px)] bg-[size:50px_50px]" />
       </div>
 
       {/* Navigation */}
@@ -323,13 +322,13 @@ export default function LandingPage() {
             className="mb-8"
           >
             <motion.div
-              className="inline-flex items-center text-white px-6 py-3 bg-gradient-glass backdrop-blur-md border border-primary-200/30 rounded-2xl text-primary-700 text-sm font-semibold mb-6 shadow-glass"
+              className="inline-flex items-center text-white px-6 py-3 bg-white/10 backdrop-blur-xl border border-blue-200/40 rounded-2xl text-blue-100 text-sm font-semibold mb-6 shadow-2xl shadow-blue-500/20"
               whileHover={{ scale: 1.05 }}
               animate={{ 
                 boxShadow: [
-                  "0 8px 32px rgba(14, 165, 233, 0.2)",
-                  "0 12px 40px rgba(14, 165, 233, 0.3)",
-                  "0 8px 32px rgba(14, 165, 233, 0.2)"
+                  "0 8px 32px rgba(59, 130, 246, 0.3)",
+                  "0 12px 40px rgba(59, 130, 246, 0.4)",
+                  "0 8px 32px rgba(59, 130, 246, 0.3)"
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -353,7 +352,7 @@ export default function LandingPage() {
               } : {}}
               transition={{ duration: 3, repeat: Infinity }}
               style={{
-                background: "linear-gradient(45deg, #0ea5e9, #38bdf8, #7dd3fc, #0ea5e9)",
+                background: "linear-gradient(45deg, #3b82f6, #06b6d4, #8b5cf6, #3b82f6)",
                 backgroundSize: "300% 300%",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -375,9 +374,9 @@ export default function LandingPage() {
                 className="text-white"
                 animate={heroInView ? {
                   textShadow: [
-                    "0 0 20px rgba(14, 165, 233, 0.5)",
-                    "0 0 40px rgba(14, 165, 233, 0.7)",
-                    "0 0 20px rgba(14, 165, 233, 0.5)"
+                    "0 0 20px rgba(59, 130, 246, 0.6)",
+                    "0 0 40px rgba(59, 130, 246, 0.8)",
+                    "0 0 20px rgba(59, 130, 246, 0.6)"
                   ]
                 } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -406,16 +405,16 @@ export default function LandingPage() {
             <motion.button
               whileHover={{ 
                 scale: 1.05,
-                boxShadow: "0 20px 40px rgba(14, 165, 233, 0.3)"
+                boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)"
               }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/auth')}
-              className="group relative px-8 py-4 bg-gradient-primary text-white font-bold text-lg rounded-2xl shadow-glow flex items-center space-x-3 transition-all duration-300 overflow-hidden"
+              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-2xl shadow-blue-500/30 flex items-center space-x-3 transition-all duration-300 overflow-hidden"
               animate={heroInView ? {
                 boxShadow: [
-                  "0 8px 32px rgba(14, 165, 233, 0.2)",
-                  "0 12px 40px rgba(14, 165, 233, 0.3)",
-                  "0 8px 32px rgba(14, 165, 233, 0.2)"
+                  "0 8px 32px rgba(59, 130, 246, 0.3)",
+                  "0 12px 40px rgba(59, 130, 246, 0.4)",
+                  "0 8px 32px rgba(59, 130, 246, 0.3)"
                 ]
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
@@ -432,18 +431,9 @@ export default function LandingPage() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </motion.button>
             
-            <motion.button
-              whileHover={{ 
-                scale: 1.05,
-                backgroundColor: "rgba(14, 165, 233, 0.1)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="group px-8 py-4 bg-gradient-glass backdrop-blur-md border border-primary-200/30 hover:bg-gradient-glass-blue text-primary-700 font-semibold text-lg rounded-2xl transition-all duration-300 flex items-center space-x-2 shadow-glass"
-            >
-              <Play className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-              <span>Voir la démo</span>
-            </motion.button>
+           
           </motion.div>
+
 
           {/* Démonstration de produits avec images */}
           <motion.div 
@@ -471,7 +461,7 @@ export default function LandingPage() {
                 {[...Array(4)].map((_, index) => (
                   <motion.div
                     key={index}
-                    className="relative w-48 h-64 rounded-2xl bg-gradient-glass backdrop-blur-md border border-primary-200/20 animate-pulse"
+                    className="relative w-48 h-64 rounded-2xl bg-white/10 backdrop-blur-xl border border-blue-200/30 animate-pulse"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
@@ -497,7 +487,7 @@ export default function LandingPage() {
                     style={{ perspective: "1000px" }}
                     onClick={() => navigate(`/product/${product.id}`)}
                   >
-                    <div className="relative w-48 h-64 rounded-2xl overflow-hidden shadow-2xl bg-gradient-glass backdrop-blur-md border border-primary-200/20">
+                    <div className="relative w-48 h-64 rounded-2xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-xl border border-blue-200/30">
                       <img 
                         src={getProductImage(product)} 
                         alt={product.name}
@@ -510,7 +500,7 @@ export default function LandingPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       
                       {/* Badge de prix */}
-                      <div className="absolute top-3 right-3 bg-gradient-primary text-white px-2 py-1 rounded-lg text-xs font-bold">
+                      <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2 py-1 rounded-lg text-xs font-bold">
                         {product.price.toFixed(2)}€
                       </div>
                       
@@ -547,7 +537,7 @@ export default function LandingPage() {
                     
                     {/* Effet de halo */}
                     <motion.div
-                      className="absolute inset-0 w-48 h-64 bg-gradient-primary rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                      className="absolute inset-0 w-48 h-64 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-25 transition-opacity duration-300"
                     />
                   </motion.div>
                 ))}
@@ -583,12 +573,12 @@ export default function LandingPage() {
                   whileHover={{ rotate: 5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl shadow-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
                     <stat.icon className="w-8 h-8 text-white" />
                   </div>
                   {/* Effet de halo au hover */}
                   <motion.div
-                    className="absolute inset-0 w-16 h-16 bg-gradient-primary rounded-2xl mx-auto blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                    className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl mx-auto blur-xl opacity-0 group-hover:opacity-35 transition-opacity duration-300"
                   />
                 </motion.div>
                 
@@ -596,9 +586,9 @@ export default function LandingPage() {
                   className="text-3xl md:text-4xl font-bold text-white mb-2"
                   animate={heroInView ? {
                     textShadow: [
-                      "0 0 10px rgba(14, 165, 233, 0.3)",
-                      "0 0 20px rgba(14, 165, 233, 0.5)",
-                      "0 0 10px rgba(14, 165, 233, 0.3)"
+                      "0 0 10px rgba(59, 130, 246, 0.4)",
+                      "0 0 20px rgba(59, 130, 246, 0.6)",
+                      "0 0 10px rgba(59, 130, 246, 0.4)"
                     ]
                   } : {}}
                   transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
@@ -634,25 +624,25 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 1.2 }}
           >
             <motion.div
-              className="inline-flex items-center px-6 py-3 bg-gradient-glass-blue backdrop-blur-md border border-primary-200/30 rounded-2xl text-primary-700 text-sm font-semibold mb-6 shadow-glass"
+              className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-xl border border-blue-200/40 rounded-2xl text-blue-100 text-sm font-semibold mb-6 shadow-2xl shadow-blue-500/20"
               animate={featuresInView ? {
                 boxShadow: [
-                  "0 8px 32px rgba(14, 165, 233, 0.2)",
-                  "0 12px 40px rgba(14, 165, 233, 0.3)",
-                  "0 8px 32px rgba(14, 165, 233, 0.2)"
+                  "0 8px 32px rgba(59, 130, 246, 0.3)",
+                  "0 12px 40px rgba(59, 130, 246, 0.4)",
+                  "0 8px 32px rgba(59, 130, 246, 0.3)"
                 ]
               } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Target className="w-4 h-4 mr-2 text-primary-600" />
+              <Target className="w-4 h-4 mr-2 text-blue-400" />
               Fonctionnalités Premium
-              <Award className="w-4 h-4 ml-2 text-primary-600" />
+              <Award className="w-4 h-4 ml-2 text-blue-400" />
             </motion.div>
             
-            <h2 className="text-4xl md:text-5xl font-bold text-surface-900 mb-6">
+            <h2 className="text-4xl md:text-5xl text-white font-bold mb-6">
               Pourquoi choisir{' '}
               <motion.span 
-                className="bg-gradient-primary bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent"
                 animate={featuresInView ? {
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
                 } : {}}
@@ -661,7 +651,7 @@ export default function LandingPage() {
                 SocialCart
               </motion.span> ?
             </h2>
-            <p className="text-xl text-surface-600 max-w-3xl mx-auto">
+            <p className="text-xl text-blue-200 max-w-3xl mx-auto">
               Une plateforme complète qui transforme votre expérience d'achat en aventure sociale
             </p>
           </motion.div>
@@ -679,51 +669,51 @@ export default function LandingPage() {
                 whileHover={{ y: -10 }}
               >
                 <motion.div 
-                  className="relative bg-gradient-glass backdrop-blur-md border border-primary-200/20 rounded-3xl p-8 h-full transition-all duration-300 hover:bg-gradient-glass-blue hover:border-primary-300/30 overflow-hidden shadow-glass"
+                  className="relative bg-white/10 backdrop-blur-xl border border-blue-200/30 rounded-3xl p-8 h-full transition-all duration-300 hover:bg-white/15 hover:border-blue-300/40 overflow-hidden shadow-2xl shadow-blue-500/10"
                   animate={hoveredFeature === index ? {
                     boxShadow: [
-                      "0 8px 32px rgba(14, 165, 233, 0.15)",
-                      "0 12px 40px rgba(14, 165, 233, 0.25)",
-                      "0 8px 32px rgba(14, 165, 233, 0.15)"
+                      "0 8px 32px rgba(59, 130, 246, 0.2)",
+                      "0 12px 40px rgba(59, 130, 246, 0.3)",
+                      "0 8px 32px rgba(59, 130, 246, 0.2)"
                     ]
                   } : {}}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   {/* Effet de brillance au hover */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-200/10 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/15 to-transparent"
                     initial={{ x: "-100%" }}
                     animate={hoveredFeature === index ? { x: "100%" } : { x: "-100%" }}
                     transition={{ duration: 0.6 }}
                   />
                   
                   <motion.div
-                    className="relative w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mb-6 shadow-glow"
+                    className="relative w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-2xl shadow-blue-500/30"
                     whileHover={{ 
                       scale: 1.1, 
                       rotate: 5,
-                      boxShadow: "0 20px 40px rgba(14, 165, 233, 0.3)"
+                      boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)"
                     }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <feature.icon className="w-8 h-8 text-white" />
                     {/* Effet de halo */}
                     <motion.div
-                      className="absolute inset-0 w-16 h-16 bg-gradient-primary rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                      className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-35 transition-opacity duration-300"
                     />
                   </motion.div>
                   
-                  <h3 className="text-xl font-bold text-surface-900 mb-4 group-hover:text-primary-700 transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors duration-300">
                     {feature.title}
                   </h3>
                   
-                  <p className="text-surface-600 leading-relaxed mb-4">
+                  <p className="text-blue-200 leading-relaxed mb-4">
                     {feature.description}
                   </p>
                   
                   {/* Statistique de la fonctionnalité */}
                   <motion.div
-                    className="flex items-center text-sm text-primary-600 opacity-80"
+                    className="flex items-center text-sm text-blue-400 opacity-80"
                     initial={{ opacity: 0 }}
                     animate={hoveredFeature === index ? { opacity: 1 } : { opacity: 0.8 }}
                     transition={{ duration: 0.3 }}
@@ -754,25 +744,25 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 2.0 }}
           >
             <motion.div
-              className="inline-flex items-center px-6 py-3 bg-gradient-glass-blue backdrop-blur-md border border-primary-200/30 rounded-2xl text-primary-700 text-sm font-semibold mb-6 shadow-glass"
+              className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-xl border border-blue-200/40 rounded-2xl text-blue-100 text-sm font-semibold mb-6 shadow-2xl shadow-blue-500/20"
               animate={{
                 boxShadow: [
-                  "0 8px 32px rgba(14, 165, 233, 0.2)",
-                  "0 12px 40px rgba(14, 165, 233, 0.3)",
-                  "0 8px 32px rgba(14, 165, 233, 0.2)"
+                  "0 8px 32px rgba(59, 130, 246, 0.3)",
+                  "0 12px 40px rgba(59, 130, 246, 0.4)",
+                  "0 8px 32px rgba(59, 130, 246, 0.3)"
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Monitor className="w-4 h-4 mr-2 text-primary-600" />
+              <Monitor className="w-4 h-4 mr-2 text-blue-400" />
               Interface Démo
-              <Smartphone className="w-4 h-4 ml-2 text-primary-600" />
+              <Smartphone className="w-4 h-4 ml-2 text-blue-400" />
             </motion.div>
             
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Découvrez l'interface{' '}
               <motion.span 
-                className="bg-gradient-primary bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent"
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
                 }}
@@ -795,7 +785,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 2.2 }}
             >
               <motion.div
-                className="relative mx-auto w-80 h-96 bg-gradient-glass backdrop-blur-md border border-primary-200/20 rounded-3xl p-4 shadow-2xl"
+                className="relative mx-auto w-80 h-96 bg-white/10 backdrop-blur-xl border border-blue-200/30 rounded-3xl p-4 shadow-2xl"
                 whileHover={{ 
                   scale: 1.05,
                   rotateY: 5
@@ -821,7 +811,7 @@ export default function LandingPage() {
               
               {/* Effet de halo */}
               <motion.div
-                className="absolute inset-0 w-80 h-96 bg-gradient-primary rounded-3xl mx-auto blur-2xl opacity-20"
+                className="absolute inset-0 w-80 h-96 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl mx-auto blur-2xl opacity-25"
                 animate={{
                   scale: [1, 1.1, 1],
                   opacity: [0.2, 0.3, 0.2]
@@ -843,7 +833,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 2.4 }}
             >
               <motion.div
-                className="relative mx-auto w-full max-w-lg h-64 bg-gradient-glass backdrop-blur-md border border-primary-200/20 rounded-3xl p-4 shadow-2xl"
+                className="relative mx-auto w-full max-w-lg h-64 bg-white/10 backdrop-blur-xl border border-blue-200/30 rounded-3xl p-4 shadow-2xl"
                 whileHover={{ 
                   scale: 1.05,
                   rotateY: -5
@@ -869,7 +859,7 @@ export default function LandingPage() {
               
               {/* Effet de halo */}
               <motion.div
-                className="absolute inset-0 w-full max-w-lg h-64 bg-gradient-primary rounded-3xl mx-auto blur-2xl opacity-20"
+                className="absolute inset-0 w-full max-w-lg h-64 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl mx-auto blur-2xl opacity-25"
                 animate={{
                   scale: [1, 1.1, 1],
                   opacity: [0.2, 0.3, 0.2]
@@ -895,7 +885,7 @@ export default function LandingPage() {
               className="text-center group"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
                 <Smartphone className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Mobile First</h3>
@@ -906,7 +896,7 @@ export default function LandingPage() {
               className="text-center group"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
                 <Monitor className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Responsive Design</h3>
@@ -917,7 +907,7 @@ export default function LandingPage() {
               className="text-center group"
               whileHover={{ y: -5 }}
             >
-              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/40 transition-all duration-300">
                 <Zap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Performance</h3>
@@ -1035,7 +1025,7 @@ export default function LandingPage() {
       >
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
-            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-12"
+            className="bg-white/10 backdrop-blur-xl border border-blue-200/30 rounded-3xl p-12 shadow-2xl shadow-blue-500/10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 2.4 }}
@@ -1060,7 +1050,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 2.6 }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/30">
                   <Users className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Communauté</h3>
@@ -1073,7 +1063,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 2.8 }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/30">
                   <Star className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Qualité</h3>
@@ -1086,7 +1076,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 3.0 }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/30">
                   <Shield className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Sécurité</h3>
@@ -1106,13 +1096,13 @@ export default function LandingPage() {
       >
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
-            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-12"
+            className="bg-white/10 backdrop-blur-xl border border-blue-200/30 rounded-3xl p-12 shadow-2xl shadow-blue-500/10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 2.4 }}
           >
             <motion.div
-              className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg"
+              className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-500/30"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -1134,7 +1124,7 @@ export default function LandingPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/auth')}
-              className="px-10 py-5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold text-xl rounded-xl shadow-lg shadow-blue-500/25 flex items-center space-x-3 mx-auto transition-all duration-300"
+              className="px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xl rounded-xl shadow-2xl shadow-blue-500/30 flex items-center space-x-3 mx-auto transition-all duration-300"
             >
               <Sparkles className="w-6 h-6" />
               <span>Créer mon compte gratuit</span>

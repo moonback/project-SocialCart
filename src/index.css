@@ -16,7 +16,7 @@
 
   body {
     @apply font-inter antialiased;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #f8fafc 100%);
     min-height: 100vh;
   }
 
@@ -261,25 +261,33 @@
     }
   }
 
-  /* Glass morphism - Effets glass améliorés */
+  /* Glass morphism - Effets glass améliorés avec couleur bleue cohérente */
   .glass {
     @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-glass;
   }
 
   .glass-strong {
-    @apply bg-white/20 backdrop-blur-lg border border-white/30 shadow-glass;
+    @apply bg-white/20 backdrop-blur-lg border border-white/30 shadow-glass-blue;
   }
 
   .glass-blue {
-    @apply bg-blue-500/10 backdrop-blur-md border border-blue-500/20 shadow-glass;
+    @apply bg-primary-500/10 backdrop-blur-md border border-primary-500/20 shadow-glass-blue;
+  }
+
+  .glass-blue-strong {
+    @apply bg-primary-500/20 backdrop-blur-lg border border-primary-500/30 shadow-glass-blue-lg;
   }
 
   .glass-primary {
-    @apply bg-primary-500/10 backdrop-blur-md border border-primary-500/20 shadow-glass;
+    @apply bg-primary-500/10 backdrop-blur-md border border-primary-500/20 shadow-glass-blue;
   }
 
   .glass-card {
-    @apply bg-gradient-glass backdrop-blur-lg border border-white/20 rounded-3xl shadow-glass;
+    @apply bg-gradient-glass-blue backdrop-blur-lg border border-primary-200/20 rounded-3xl shadow-glass-blue;
+  }
+
+  .glass-card-hover {
+    @apply glass-card hover:bg-gradient-glass-blue-strong hover:shadow-glass-blue-lg hover:border-primary-300/30;
   }
 
   /* Animation utilities */
@@ -310,6 +318,15 @@
     }
   }
 
+  @keyframes pulseGlowBlue {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.7);
+    }
+  }
+
   @keyframes gradientShift {
     0% {
       background-position: 0% 50%;
@@ -327,7 +344,7 @@
     animation: gradientShift 3s ease infinite;
   }
 
-  /* Glass effect utilities */
+  /* Glass effect utilities - Améliorées avec couleur bleue cohérente */
   .glass {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -338,6 +355,14 @@
     background: rgba(59, 130, 246, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-blue-strong {
+    background: rgba(59, 130, 246, 0.2);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 40px 0 rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   /* Text utilities */
