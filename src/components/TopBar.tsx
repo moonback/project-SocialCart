@@ -34,7 +34,11 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
     <motion.div 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-glass mobile-header"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-3xl border-b border-white/30 shadow-2xl mobile-header"
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+      }}
     >
       <div className="flex items-center justify-between px-4 py-2 md:py-3">
         {/* Logo */}
@@ -44,8 +48,14 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-primary rounded-xl md:rounded-2xl flex items-center justify-center shadow-glow border border-white/30 backdrop-blur-sm">
-            <span className="text-white font-bold text-sm md:text-base">SC</span>
+          <div 
+            className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl flex items-center justify-center border border-white/40 backdrop-blur-md"
+            style={{
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%)',
+              boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <span className="text-white font-bold text-sm md:text-base drop-shadow-lg">SC</span>
           </div>
           <div className="hidden sm:block">
             <span className="text-display text-lg md:text-xl text-gradient">
@@ -64,7 +74,11 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
                 name="search"
                 type="text"
                 placeholder="Rechercher des produits..."
-                className="input-glass pl-10 pr-4 py-2 w-full text-sm"
+                className="pl-10 pr-4 py-2 w-full text-sm border border-white/30 rounded-xl backdrop-blur-md"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1)'
+                }}
                 onFocus={() => navigate('/search')}
               />
             </div>
@@ -78,9 +92,14 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onToggleStories}
-            className={`btn-floating relative ${isStoriesOpen ? 'bg-primary-100 text-primary-600' : ''}`}
+            className={`relative w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md transition-all duration-300 ${
+              isStoriesOpen ? 'bg-primary-500/20 text-primary-600' : 'bg-white/10 text-surface-600 hover:bg-white/20'
+            }`}
+            style={{
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+            }}
           >
-            <Camera className="w-4 h-4 md:w-5 md:h-5 text-surface-600" />
+            <Camera className="w-4 h-4 md:w-5 md:h-5" />
             {isStoriesOpen && (
               <motion.div 
                 className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary-500 rounded-full"
@@ -95,9 +114,12 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="md:hidden btn-floating"
+            className="md:hidden w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md bg-white/10 text-surface-600 hover:bg-white/20 transition-all duration-300"
+            style={{
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+            }}
           >
-            <Search className="w-4 h-4 md:w-5 md:h-5 text-surface-600" />
+            <Search className="w-4 h-4 md:w-5 md:h-5" />
           </motion.button>
 
           {/* Notifications */}
@@ -105,9 +127,12 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => navigate('/notifications')}
-            className="btn-floating relative"
+            className="relative w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md bg-white/10 text-surface-600 hover:bg-white/20 transition-all duration-300"
+            style={{
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+            }}
           >
-            <Bell className="w-4 h-4 md:w-5 md:h-5 text-surface-600" />
+            <Bell className="w-4 h-4 md:w-5 md:h-5" />
             <motion.div 
               className="absolute -top-1 -right-1 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full"
               animate={{ scale: [1, 1.2, 1] }}
@@ -120,9 +145,12 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => navigate('/cart')}
-            className="btn-floating relative"
+            className="relative w-10 h-10 rounded-xl border border-white/30 backdrop-blur-md bg-white/10 text-surface-600 hover:bg-white/20 transition-all duration-300"
+            style={{
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+            }}
           >
-            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-surface-600" />
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
             {itemCount > 0 && (
               <motion.div 
                 initial={{ scale: 0 }}
@@ -140,7 +168,10 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsProfileMenuOpen(true)}
-              className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl overflow-hidden border-2 border-primary-200 hover:border-primary-400 transition-colors"
+              className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl overflow-hidden border border-white/40 backdrop-blur-md transition-all duration-300"
+              style={{
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              }}
             >
               <HeaderUserAvatar 
                 avatarUrl={user?.avatar_url} 
@@ -154,7 +185,11 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/auth')}
-              className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl bg-gradient-primary text-white font-semibold text-sm shadow-md hover:shadow-lg"
+              className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border border-white/40 backdrop-blur-md text-white font-semibold text-sm transition-all duration-300"
+              style={{
+                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%)',
+                boxShadow: '0 4px 16px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              }}
             >
               Se connecter
             </motion.button>
@@ -178,7 +213,11 @@ export function TopBar({ onToggleStories, isStoriesOpen = false }: TopBarProps) 
                   name="search"
                   type="text"
                   placeholder="Rechercher des produits..."
-                  className="input pl-10 pr-4 py-2.5 w-full text-sm"
+                  className="pl-10 pr-4 py-2.5 w-full text-sm border border-white/30 rounded-xl backdrop-blur-md"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1)'
+                  }}
                   autoFocus
                 />
                 <button
