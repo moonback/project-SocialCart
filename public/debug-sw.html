@@ -6,7 +6,7 @@
     <title>Debug Service Worker - SocialCart</title>
     <style>
         body {
-            font-family: system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -14,36 +14,79 @@
         }
         .container {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .section h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        button {
+            background: #a855f7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #9333ea;
+        }
+        button.danger {
+            background: #ef4444;
+        }
+        button.danger:hover {
+            background: #dc2626;
         }
         .status {
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 6px;
             margin: 10px 0;
         }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .warning { background: #fff3cd; color: #856404; }
-        .info { background: #d1ecf1; color: #0c5460; }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
         }
-        button:hover { background: #0056b3; }
-        .danger { background: #dc3545; }
-        .danger:hover { background: #c82333; }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
         pre {
             background: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
+            padding: 15px;
+            border-radius: 6px;
             overflow-x: auto;
+            font-size: 12px;
+        }
+        .icon-test {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .icon-test img {
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -51,106 +94,286 @@
     <div class="container">
         <h1>🔧 Debug Service Worker - SocialCart</h1>
         
-        <div id="status"></div>
-        
-        <h2>Actions</h2>
-        <button onclick="checkSWStatus()">Vérifier le statut</button>
-        <button onclick="clearAllCaches()" class="danger">Nettoyer tous les caches</button>
-        <button onclick="unregisterSW()" class="danger">Désinscrire le SW</button>
-        <button onclick="reloadPage()">Recharger la page</button>
-        
-        <h2>Informations détaillées</h2>
-        <div id="details"></div>
+        <!-- Status général -->
+        <div class="section">
+            <h2>📊 Status Général</h2>
+            <div id="generalStatus" class="status info">
+                Chargement des informations...
+            </div>
+            <button onclick="checkGeneralStatus()">🔄 Actualiser</button>
+        </div>
+
+        <!-- Service Worker -->
+        <div class="section">
+            <h2>⚙️ Service Worker</h2>
+            <div id="swStatus" class="status info">
+                Vérification du service worker...
+            </div>
+            <button onclick="checkServiceWorker()">🔍 Vérifier SW</button>
+            <button onclick="unregisterServiceWorker()" class="danger">🗑️ Supprimer SW</button>
+            <button onclick="registerServiceWorker()">📝 Enregistrer SW</button>
+        </div>
+
+        <!-- Cache -->
+        <div class="section">
+            <h2>💾 Cache</h2>
+            <div id="cacheStatus" class="status info">
+                Vérification du cache...
+            </div>
+            <button onclick="checkCache()">🔍 Vérifier Cache</button>
+            <button onclick="clearCache()" class="danger">🗑️ Vider Cache</button>
+        </div>
+
+        <!-- Manifest -->
+        <div class="section">
+            <h2>📋 Manifest PWA</h2>
+            <div id="manifestStatus" class="status info">
+                Vérification du manifest...
+            </div>
+            <button onclick="checkManifest()">🔍 Vérifier Manifest</button>
+        </div>
+
+        <!-- Icônes -->
+        <div class="section">
+            <h2>🎨 Icônes PWA</h2>
+            <div id="iconsStatus" class="status info">
+                Test des icônes...
+            </div>
+            <div class="icon-test" id="iconTest">
+                <!-- Les icônes seront ajoutées ici -->
+            </div>
+            <button onclick="testIcons()">🖼️ Tester Icônes</button>
+        </div>
+
+        <!-- Logs -->
+        <div class="section">
+            <h2>📝 Logs</h2>
+            <pre id="logs">Logs apparaîtront ici...</pre>
+            <button onclick="clearLogs()">🗑️ Vider Logs</button>
+        </div>
     </div>
 
     <script>
-        function addStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status');
-            const div = document.createElement('div');
-            div.className = `status ${type}`;
-            div.textContent = message;
-            statusDiv.appendChild(div);
-        }
+        let logs = [];
 
-        function addDetails(title, content) {
-            const detailsDiv = document.getElementById('details');
-            const div = document.createElement('div');
-            div.innerHTML = `<h3>${title}</h3><pre>${content}</pre>`;
-            detailsDiv.appendChild(div);
-        }
-
-        async function checkSWStatus() {
-            document.getElementById('status').innerHTML = '';
-            document.getElementById('details').innerHTML = '';
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            logs.push(logMessage);
             
-            addStatus('Vérification du Service Worker...', 'info');
+            const logsElement = document.getElementById('logs');
+            logsElement.textContent = logs.join('\n');
+            logsElement.scrollTop = logsElement.scrollHeight;
+            
+            console.log(logMessage);
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logs').textContent = 'Logs vidés...';
+        }
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        // Vérification générale
+        function checkGeneralStatus() {
+            log('Vérification du status général...');
+            
+            const isOnline = navigator.onLine;
+            const userAgent = navigator.userAgent;
+            const language = navigator.language;
+            
+            updateStatus('generalStatus', 
+                `En ligne: ${isOnline ? '✅' : '❌'} | Langue: ${language} | SW Supporté: ${'serviceWorker' in navigator ? '✅' : '❌'}`,
+                isOnline ? 'success' : 'error'
+            );
+            
+            log(`Status: En ligne=${isOnline}, Langue=${language}, SW=${'serviceWorker' in navigator}`);
+        }
+
+        // Vérification Service Worker
+        function checkServiceWorker() {
+            log('Vérification du service worker...');
             
             if (!('serviceWorker' in navigator)) {
-                addStatus('❌ Service Worker non supporté par ce navigateur', 'error');
+                updateStatus('swStatus', '❌ Service Worker non supporté', 'error');
+                log('Service Worker non supporté par ce navigateur');
                 return;
             }
-            
-            try {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                addStatus(`✅ ${registrations.length} Service Worker(s) trouvé(s)`, 'success');
-                
-                registrations.forEach((registration, index) => {
-                    addDetails(`Service Worker ${index + 1}`, JSON.stringify({
-                        scope: registration.scope,
-                        state: registration.active?.state,
-                        scriptURL: registration.active?.scriptURL,
-                        updateViaCache: registration.updateViaCache
-                    }, null, 2));
-                });
-                
-                // Vérifier les caches
-                if ('caches' in window) {
-                    const cacheNames = await caches.keys();
-                    addStatus(`📦 ${cacheNames.length} cache(s) trouvé(s)`, 'info');
-                    
-                    cacheNames.forEach(async (cacheName) => {
-                        const cache = await caches.open(cacheName);
-                        const keys = await cache.keys();
-                        addDetails(`Cache: ${cacheName}`, `${keys.length} entrées\nURLs: ${keys.map(req => req.url).join('\n')}`);
+
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                if (registrations.length === 0) {
+                    updateStatus('swStatus', '⚠️ Aucun service worker enregistré', 'info');
+                    log('Aucun service worker enregistré');
+                } else {
+                    updateStatus('swStatus', `✅ ${registrations.length} service worker(s) enregistré(s)`, 'success');
+                    registrations.forEach((reg, index) => {
+                        log(`SW ${index + 1}: ${reg.scope} - Actif: ${reg.active ? 'Oui' : 'Non'}`);
                     });
                 }
-                
-            } catch (error) {
-                addStatus(`❌ Erreur lors de la vérification: ${error.message}`, 'error');
-            }
+            }).catch(error => {
+                updateStatus('swStatus', `❌ Erreur: ${error.message}`, 'error');
+                log(`Erreur SW: ${error.message}`);
+            });
         }
 
-        async function clearAllCaches() {
+        // Supprimer Service Worker
+        function unregisterServiceWorker() {
+            log('Suppression du service worker...');
+            
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                if (registrations.length === 0) {
+                    log('Aucun service worker à supprimer');
+                    return;
+                }
+
+                Promise.all(registrations.map(reg => reg.unregister())).then(() => {
+                    updateStatus('swStatus', '✅ Service worker supprimé', 'success');
+                    log('Service worker supprimé avec succès');
+                }).catch(error => {
+                    updateStatus('swStatus', `❌ Erreur suppression: ${error.message}`, 'error');
+                    log(`Erreur suppression SW: ${error.message}`);
+                });
+            });
+        }
+
+        // Enregistrer Service Worker
+        function registerServiceWorker() {
+            log('Enregistrement du service worker...');
+            
+            navigator.serviceWorker.register('/sw.js').then(registration => {
+                updateStatus('swStatus', '✅ Service worker enregistré', 'success');
+                log(`Service worker enregistré: ${registration.scope}`);
+            }).catch(error => {
+                updateStatus('swStatus', `❌ Erreur enregistrement: ${error.message}`, 'error');
+                log(`Erreur enregistrement SW: ${error.message}`);
+            });
+        }
+
+        // Vérification Cache
+        function checkCache() {
+            log('Vérification du cache...');
+            
             if (!('caches' in window)) {
-                addStatus('❌ Cache API non supportée', 'error');
+                updateStatus('cacheStatus', '❌ Cache API non supportée', 'error');
+                log('Cache API non supportée');
                 return;
             }
+
+            caches.keys().then(cacheNames => {
+                if (cacheNames.length === 0) {
+                    updateStatus('cacheStatus', 'ℹ️ Aucun cache trouvé', 'info');
+                    log('Aucun cache trouvé');
+                } else {
+                    updateStatus('cacheStatus', `✅ ${cacheNames.length} cache(s) trouvé(s)`, 'success');
+                    cacheNames.forEach(name => {
+                        log(`Cache: ${name}`);
+                    });
+                }
+            }).catch(error => {
+                updateStatus('cacheStatus', `❌ Erreur: ${error.message}`, 'error');
+                log(`Erreur cache: ${error.message}`);
+            });
+        }
+
+        // Vider Cache
+        function clearCache() {
+            log('Vidage du cache...');
             
-            try {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-                addStatus(`✅ ${cacheNames.length} cache(s) supprimé(s)`, 'success');
-            } catch (error) {
-                addStatus(`❌ Erreur lors du nettoyage: ${error.message}`, 'error');
-            }
+            caches.keys().then(cacheNames => {
+                if (cacheNames.length === 0) {
+                    log('Aucun cache à vider');
+                    return;
+                }
+
+                Promise.all(cacheNames.map(name => caches.delete(name))).then(() => {
+                    updateStatus('cacheStatus', '✅ Cache vidé', 'success');
+                    log('Cache vidé avec succès');
+                }).catch(error => {
+                    updateStatus('cacheStatus', `❌ Erreur: ${error.message}`, 'error');
+                    log(`Erreur vidage cache: ${error.message}`);
+                });
+            });
         }
 
-        async function unregisterSW() {
-            try {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                await Promise.all(registrations.map(registration => registration.unregister()));
-                addStatus(`✅ ${registrations.length} Service Worker(s) désinscrit(s)`, 'success');
-            } catch (error) {
-                addStatus(`❌ Erreur lors de la désinscription: ${error.message}`, 'error');
-            }
+        // Vérification Manifest
+        function checkManifest() {
+            log('Vérification du manifest...');
+            
+            fetch('/manifest.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(manifest => {
+                    updateStatus('manifestStatus', `✅ Manifest valide: ${manifest.name}`, 'success');
+                    log(`Manifest: ${manifest.name} (${manifest.short_name})`);
+                    log(`Icônes: ${manifest.icons ? manifest.icons.length : 0}`);
+                })
+                .catch(error => {
+                    updateStatus('manifestStatus', `❌ Erreur: ${error.message}`, 'error');
+                    log(`Erreur manifest: ${error.message}`);
+                });
         }
 
-        function reloadPage() {
-            window.location.reload();
+        // Test des icônes
+        function testIcons() {
+            log('Test des icônes...');
+            
+            const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            const iconContainer = document.getElementById('iconTest');
+            iconContainer.innerHTML = '';
+            
+            let successCount = 0;
+            let totalCount = iconSizes.length;
+
+            iconSizes.forEach(size => {
+                const img = document.createElement('img');
+                img.src = `/icons/icon-${size}x${size}.png`;
+                img.alt = `${size}x${size}`;
+                img.width = Math.min(size, 100);
+                img.height = Math.min(size, 100);
+                img.style.border = '1px solid #ddd';
+                img.style.borderRadius = '4px';
+                
+                img.onload = () => {
+                    successCount++;
+                    img.style.borderColor = '#10b981';
+                    log(`✅ Icône ${size}x${size} chargée`);
+                    
+                    if (successCount === totalCount) {
+                        updateStatus('iconsStatus', `✅ Toutes les icônes chargées (${successCount}/${totalCount})`, 'success');
+                    }
+                };
+                
+                img.onerror = () => {
+                    img.style.borderColor = '#ef4444';
+                    log(`❌ Erreur chargement icône ${size}x${size}`);
+                    
+                    if (successCount === totalCount - 1) {
+                        updateStatus('iconsStatus', `⚠️ ${successCount}/${totalCount} icônes chargées`, 'error');
+                    }
+                };
+                
+                iconContainer.appendChild(img);
+            });
         }
 
-        // Vérification automatique au chargement
-        window.addEventListener('load', checkSWStatus);
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page de debug chargée');
+            checkGeneralStatus();
+            checkServiceWorker();
+            checkCache();
+            checkManifest();
+            testIcons();
+        });
     </script>
 </body>
 </html>

@@ -22,6 +22,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ProfileImageUploader } from '../components/ProfileImageUploader';
+import { UserStories } from '../components/UserStories';
+import { StoryStats } from '../components/StoryStats';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -648,6 +650,28 @@ export default function Profile() {
                   <span>Se déconnecter</span>
                 </motion.button>
               </motion.div>
+
+              {/* Stories Section - Seulement pour les vendeurs */}
+              {profile?.is_seller && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-6"
+                >
+                  {/* Statistiques des Stories */}
+                  <StoryStats 
+                    userId={user?.id || ''} 
+                    isOwnProfile={true} 
+                  />
+
+                  {/* Stories de l'utilisateur */}
+                  <UserStories 
+                    userId={user?.id || ''} 
+                    isOwnProfile={true} 
+                  />
+                </motion.div>
+              )}
             </motion.div>
           )}
 

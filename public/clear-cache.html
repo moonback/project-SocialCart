@@ -3,168 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nettoyage du Cache - SocialCart</title>
+    <title>Nettoyage Cache - SocialCart</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 600px;
-            margin: 50px auto;
+            margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 20px;
+            background: #f5f5f5;
         }
         .container {
-            background: rgba(255, 255, 255, 0.1);
+            background: white;
             padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
         }
         h1 {
-            text-align: center;
-            margin-bottom: 30px;
+            color: #333;
+            margin-bottom: 20px;
         }
-        .button {
-            background: rgba(255, 255, 255, 0.2);
+        button {
+            background: #a855f7;
+            color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
+            border-radius: 8px;
             cursor: pointer;
             margin: 10px;
-            transition: all 0.3s ease;
-            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
         }
-        .button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+        button:hover {
+            background: #9333ea;
+        }
+        button.danger {
+            background: #ef4444;
+        }
+        button.danger:hover {
+            background: #dc2626;
         }
         .status {
-            margin-top: 20px;
+            margin: 20px 0;
             padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            font-family: monospace;
-            white-space: pre-line;
+            border-radius: 8px;
+            font-weight: 500;
         }
-        .success { color: #4ade80; }
-        .error { color: #f87171; }
-        .warning { color: #fbbf24; }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        .icon-test {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .icon-test img {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        .icon-test img.loaded {
+            border-color: #10b981;
+        }
+        .icon-test img.error {
+            border-color: #ef4444;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🧹 Nettoyage du Cache</h1>
-        <p>Utilisez cette page pour nettoyer le cache du Service Worker et résoudre les problèmes de PWA.</p>
         
-        <button class="button" onclick="clearServiceWorkers()">
-            🗑️ Désinscrire les Service Workers
-        </button>
-        
-        <button class="button" onclick="clearCaches()">
-            📦 Nettoyer les Caches
-        </button>
-        
-        <button class="button" onclick="clearStorage()">
-            💾 Nettoyer le Stockage Local
-        </button>
-        
-        <button class="button" onclick="clearAll()">
-            🚀 Nettoyer Tout
-        </button>
-        
-        <button class="button" onclick="reloadPage()">
-            🔄 Recharger la Page
-        </button>
-        
-        <div id="status" class="status"></div>
+        <div id="status" class="status info">
+            Cliquez sur les boutons ci-dessous pour nettoyer le cache
+        </div>
+
+        <div>
+            <button onclick="clearServiceWorker()">🗑️ Supprimer Service Worker</button>
+            <button onclick="clearCache()">💾 Vider le Cache</button>
+            <button onclick="clearAll()" class="danger">🔥 Tout Nettoyer</button>
+        </div>
+
+        <div>
+            <button onclick="testIcons()">🖼️ Tester les Icônes</button>
+            <button onclick="reloadPage()">🔄 Recharger la Page</button>
+        </div>
+
+        <div id="iconTest" class="icon-test">
+            <!-- Les icônes seront testées ici -->
+        </div>
+
+        <div id="logs" style="margin-top: 20px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
+            Logs apparaîtront ici...
+        </div>
     </div>
 
     <script>
-        function log(message, type = 'info') {
-            const status = document.getElementById('status');
+        function log(message) {
             const timestamp = new Date().toLocaleTimeString();
-            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '';
-            status.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
-            status.scrollTop = status.scrollHeight;
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            
+            const logsElement = document.getElementById('logs');
+            logsElement.innerHTML += logMessage + '<br>';
+            logsElement.scrollTop = logsElement.scrollHeight;
         }
 
-        async function clearServiceWorkers() {
-            log('🗑️ Désinscription des Service Workers...', 'warning');
+        function updateStatus(message, type = 'info') {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        function clearServiceWorker() {
+            log('Suppression du service worker...');
             
+            if (!('serviceWorker' in navigator)) {
+                updateStatus('❌ Service Worker non supporté', 'error');
+                log('Service Worker non supporté par ce navigateur');
+                return;
+            }
+
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                if (registrations.length === 0) {
+                    updateStatus('ℹ️ Aucun service worker à supprimer', 'info');
+                    log('Aucun service worker enregistré');
+                    return;
+                }
+
+                Promise.all(registrations.map(reg => reg.unregister())).then(() => {
+                    updateStatus('✅ Service worker supprimé', 'success');
+                    log(`Service worker supprimé: ${registrations.length} enregistrement(s)`);
+                }).catch(error => {
+                    updateStatus('❌ Erreur suppression SW', 'error');
+                    log(`Erreur: ${error.message}`);
+                });
+            });
+        }
+
+        function clearCache() {
+            log('Vidage du cache...');
+            
+            if (!('caches' in window)) {
+                updateStatus('❌ Cache API non supportée', 'error');
+                log('Cache API non supportée');
+                return;
+            }
+
+            caches.keys().then(cacheNames => {
+                if (cacheNames.length === 0) {
+                    updateStatus('ℹ️ Aucun cache à vider', 'info');
+                    log('Aucun cache trouvé');
+                    return;
+                }
+
+                Promise.all(cacheNames.map(name => caches.delete(name))).then(() => {
+                    updateStatus('✅ Cache vidé', 'success');
+                    log(`Cache vidé: ${cacheNames.length} cache(s)`);
+                }).catch(error => {
+                    updateStatus('❌ Erreur vidage cache', 'error');
+                    log(`Erreur: ${error.message}`);
+                });
+            });
+        }
+
+        function clearAll() {
+            log('Nettoyage complet...');
+            
+            // Supprimer le service worker
             if ('serviceWorker' in navigator) {
-                try {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    log(`📋 ${registrations.length} service worker(s) trouvé(s)`);
-                    
-                    for (let registration of registrations) {
-                        await registration.unregister();
-                        log(`✅ Service Worker désinscrit: ${registration.scope}`);
-                    }
-                    
-                    log('🎉 Tous les Service Workers ont été désinscrits !', 'success');
-                } catch (error) {
-                    log(`❌ Erreur lors de la désinscription: ${error.message}`, 'error');
-                }
-            } else {
-                log('ℹ️ Service Workers non supportés par ce navigateur', 'warning');
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    Promise.all(registrations.map(reg => reg.unregister()));
+                });
             }
-        }
 
-        async function clearCaches() {
-            log('📦 Nettoyage des caches...', 'warning');
-            
+            // Vider le cache
             if ('caches' in window) {
-                try {
-                    const cacheNames = await caches.keys();
-                    log(`📋 ${cacheNames.length} cache(s) trouvé(s)`);
-                    
-                    await Promise.all(
-                        cacheNames.map(async (cacheName) => {
-                            await caches.delete(cacheName);
-                            log(`✅ Cache supprimé: ${cacheName}`);
-                        })
-                    );
-                    
-                    log('🎉 Tous les caches ont été supprimés !', 'success');
-                } catch (error) {
-                    log(`❌ Erreur lors du nettoyage des caches: ${error.message}`, 'error');
-                }
-            } else {
-                log('ℹ️ Cache API non supportée par ce navigateur', 'warning');
+                caches.keys().then(cacheNames => {
+                    Promise.all(cacheNames.map(name => caches.delete(name)));
+                });
             }
+
+            // Vider le localStorage
+            localStorage.clear();
+            sessionStorage.clear();
+
+            updateStatus('✅ Nettoyage complet terminé', 'success');
+            log('Nettoyage complet terminé - Rechargez la page');
         }
 
-        function clearStorage() {
-            log('💾 Nettoyage du stockage local...', 'warning');
+        function testIcons() {
+            log('Test des icônes...');
             
-            try {
-                localStorage.clear();
-                sessionStorage.clear();
-                log('✅ localStorage et sessionStorage nettoyés !', 'success');
-            } catch (error) {
-                log(`❌ Erreur lors du nettoyage du stockage: ${error.message}`, 'error');
-            }
-        }
+            const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            const iconContainer = document.getElementById('iconTest');
+            iconContainer.innerHTML = '';
+            
+            let successCount = 0;
+            let totalCount = iconSizes.length;
 
-        async function clearAll() {
-            log('🚀 Nettoyage complet en cours...', 'warning');
-            await clearServiceWorkers();
-            await clearCaches();
-            clearStorage();
-            log('🎉 Nettoyage complet terminé !', 'success');
-            log('🔄 Rechargez la page pour appliquer les changements', 'warning');
+            iconSizes.forEach(size => {
+                const img = document.createElement('img');
+                img.src = `/icons/icon-${size}x${size}.png`;
+                img.alt = `${size}x${size}`;
+                img.width = Math.min(size, 80);
+                img.height = Math.min(size, 80);
+                img.style.border = '2px solid #e5e7eb';
+                img.style.borderRadius = '8px';
+                
+                img.onload = () => {
+                    successCount++;
+                    img.classList.add('loaded');
+                    log(`✅ Icône ${size}x${size} chargée`);
+                    
+                    if (successCount === totalCount) {
+                        updateStatus(`✅ Toutes les icônes chargées (${successCount}/${totalCount})`, 'success');
+                    }
+                };
+                
+                img.onerror = () => {
+                    img.classList.add('error');
+                    log(`❌ Erreur chargement icône ${size}x${size}`);
+                    
+                    if (successCount === totalCount - 1) {
+                        updateStatus(`⚠️ ${successCount}/${totalCount} icônes chargées`, 'error');
+                    }
+                };
+                
+                iconContainer.appendChild(img);
+            });
         }
 
         function reloadPage() {
-            log('🔄 Rechargement de la page...', 'warning');
+            log('Rechargement de la page...');
             window.location.reload();
         }
 
-        // Log initial
-        log('🧹 Page de nettoyage du cache chargée');
-        log('ℹ️ Cliquez sur les boutons pour nettoyer différents types de cache');
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page de nettoyage chargée');
+            updateStatus('Prêt pour le nettoyage', 'info');
+        });
     </script>
 </body>
 </html>

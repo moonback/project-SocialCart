@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Stories Setup</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #a855f7;
+            background: #f8f9fa;
+        }
+        .step h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .step p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .code {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .success {
+            border-left-color: #10b981;
+            background: #d1fae5;
+        }
+        .warning {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+        }
+        .error {
+            border-left-color: #ef4444;
+            background: #fee2e2;
+        }
+        button {
+            background: #a855f7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #9333ea;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test de Configuration Stories</h1>
+        
+        <div id="status" class="status info">
+            Vérification de la configuration...
+        </div>
+
+        <div class="step success">
+            <h3>✅ Étape 1 : Exécuter le Script SQL</h3>
+            <p>Copiez et exécutez ce script dans Supabase SQL Editor :</p>
+            <div class="code">
+-- Exécuter dans Supabase SQL Editor
+\i supabase/MINIMAL_STORIES_SETUP.sql
+            </div>
+            <p><strong>OU</strong> copiez le contenu du fichier <code>supabase/MINIMAL_STORIES_SETUP.sql</code> et exécutez-le directement.</p>
+        </div>
+
+        <div class="step warning">
+            <h3>⚠️ Étape 2 : Vérifier les Icônes PWA</h3>
+            <p>Testez les icônes avec ces boutons :</p>
+            <button onclick="window.open('/test-icons.html', '_blank')">🖼️ Tester les Icônes</button>
+            <button onclick="window.open('/fix-icons.html', '_blank')">🔧 Corriger les Icônes</button>
+            <button onclick="window.open('/clear-cache.html', '_blank')">🧹 Nettoyer le Cache</button>
+        </div>
+
+        <div class="step">
+            <h3>🔄 Étape 3 : Recharger la Page</h3>
+            <p>Après avoir exécuté le script SQL, rechargez cette page avec Ctrl+F5</p>
+            <button onclick="location.reload()">🔄 Recharger</button>
+        </div>
+
+        <div class="step">
+            <h3>🧪 Étape 4 : Tester les Stories</h3>
+            <p>Une fois le script SQL exécuté :</p>
+            <ul>
+                <li>Allez sur la page d'accueil</li>
+                <li>Cliquez sur le bouton "+" dans la barre des stories</li>
+                <li>Créez une story de test</li>
+            </ul>
+        </div>
+
+        <div class="step error">
+            <h3>❌ Erreurs Actuelles à Corriger</h3>
+            <p>Ces erreurs devraient disparaître après l'exécution du script SQL :</p>
+            <ul>
+                <li><code>Could not find the function public.mark_story_as_viewed</code></li>
+                <li><code>Error while trying to use the following icon from the Manifest</code></li>
+                <li><code>404 (Not Found) on mark_story_as_viewed</code></li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #e0f2fe; border-radius: 8px;">
+            <h3>📞 Support</h3>
+            <p>Si vous rencontrez des problèmes :</p>
+            <ul>
+                <li>Vérifiez que vous êtes connecté à Supabase</li>
+                <li>Vérifiez que le script SQL s'est exécuté sans erreur</li>
+                <li>Vérifiez la console du navigateur pour d'autres erreurs</li>
+                <li>Utilisez les outils de debug : <button onclick="window.open('/debug-sw.html', '_blank')">🔧 Debug SW</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'info') {
+            document.getElementById('status').textContent = message;
+            document.getElementById('status').className = `status ${type}`;
+        }
+
+        // Test automatique au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('Configuration vérifiée - Suivez les étapes ci-dessous', 'info');
+        });
+    </script>
+</body>
+</html>
